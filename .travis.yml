@@ -1,0 +1,25 @@
+#sudo: false
+# travis-ci.org build & test configuration
+language: python
+
+matrix:
+    include:
+        - python: 3.8
+        - python: 3.9-dev
+    allow_failures:
+
+install:
+  - pwd
+  - pip install --upgrade pip
+  - pip install -e '.[tests]'
+  - pip install codecov
+  - pip list
+
+script:
+  - pytest -vv --cov
+
+after_success:
+  - coverage combine
+  - codecov
+
+cache: apt
