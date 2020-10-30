@@ -23,3 +23,13 @@ after_success:
   - codecov
 
 cache: apt
+
+deploy:
+  provider: pypi
+  username: __token__
+  password:
+    secure: YfLD5IaxpjY3vZh+ZqSQWLaICK9GK+qxAccmRPC5nKRpZ6CgVShQZ6P+zMMvrmgLN9Yp58su3MA+/PSVhbk3G4FiGv5QLJZjpXTfmeHKNgjDp6gaBsiujcOTFxbwQEAWtNz+ADBsfaQPDQn+UoN/dSlCM5G8pqJWkWPtPuRqwcKUCQNgypRsnHZzLVppgE3C58sPcRur12YUVtEazEQDVD/PEAHbB97OQoDt6oh1/WqVHZJh7YkwFFMwdYMqHnE4djogIDvuOJmmxefPaAb/GORCcuQzQmL8nElKN9BcG50NyRpLw5WhS/toSLPUVBbQ0WihMg/RrXr/BOGxbBdoiE1sZDlei7SNbPhN6u5Y4sUQlvxBuDw0PNK4+VSn80+bTt5JOu71rUPl9rAotbyLMNe1ZozgjNb3Lia6YBD/zH4nW/EEzfXJV+DBpF5nJ/76fBQ10/flI47+jn95cGwFhw4atIlqNrFqTD+ac1me7Nl9wrU608WKNx9/JDKeduxFu72sUifu/90Djd99teWW2C5gAwScIM/oYadg0pE/1wlCd2v2ZcXOA1aoliAk0jfTERSqoQTbDVOvHTM/Ugoai0FHdJuernKYg+nvoIChniZcpEFjvGsmEbZf+Euc9dRRfYnq6xL73YK12mkYQukNl1ywKrDLmlCqdhhGFzsxOVQ=
+  on:
+    tags: true
+    python: 3.8
+    condition: $TRAVIS_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+$
