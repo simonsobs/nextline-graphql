@@ -2,24 +2,17 @@
 uvicorn nextlinegraphql:app
 '''
 
-from pathlib import Path
-
 import asyncio
 from ariadne import (
     gql,
     QueryType,
     SubscriptionType,
-    load_schema_from_path,
     make_executable_schema
     )
 from ariadne.asgi import GraphQL
 
-##__________________________________________________________________||
-_THISDIR = Path(__file__).resolve().parent
-_SCHEMADIR = _THISDIR / 'schema/'
-type_defs = load_schema_from_path(_SCHEMADIR)
+from .schema import type_defs
 
-##__________________________________________________________________||
 query = QueryType()
 subscription = SubscriptionType()
 
