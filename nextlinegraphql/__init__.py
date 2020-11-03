@@ -2,25 +2,22 @@
 uvicorn nextlinegraphql:app
 '''
 
+from pathlib import Path
+
 import asyncio
 from ariadne import (
     gql,
     QueryType,
     SubscriptionType,
+    load_schema_from_path,
     make_executable_schema
     )
 from ariadne.asgi import GraphQL
 
 ##__________________________________________________________________||
-type_def = gql("""
-    type Query {
-        hello: String!
-    }
-
-    type Subscription {
-        counter: Int!
-    }
-""")
+_THISDIR = Path(__file__).resolve().parent
+_SCHEMADIR = _THISDIR / 'schema/'
+type_defs = load_schema_from_path(_SCHEMADIR)
 
 ##__________________________________________________________________||
 query = QueryType()
@@ -46,7 +43,7 @@ def counter_resolver(count, info):
 
 
 ##__________________________________________________________________||
-schema = make_executable_schema(type_def, [query, subscription])
+schema = make_executable_schema(type_defs, [query, subscription])
 app = GraphQL(schema, debug=True)
 
 ##__________________________________________________________________||
