@@ -8,8 +8,10 @@ from nextlinegraphql import schema
 ##__________________________________________________________________||
 @pytest.fixture(autouse=True)
 def mock_asyncio_sleep(monkeypatch):
-    y = AsyncMock()
-    monkeypatch.setattr("nextlinegraphql.asyncio.sleep", y)
+    import asyncio
+    y = Mock(wraps=asyncio)
+    y.sleep = AsyncMock()
+    monkeypatch.setattr("nextlinegraphql.bindables.asyncio", y)
     yield y
 
 ##__________________________________________________________________||
