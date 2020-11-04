@@ -1,10 +1,12 @@
 import asyncio
 from ariadne import QueryType, SubscriptionType
+from ariadne import QueryType, MutationType, SubscriptionType
 
 
 ##__________________________________________________________________||
 query = QueryType()
 subscription = SubscriptionType()
+mutation = MutationType()
 
 @query.field("hello")
 async def resolve_hello(_, info):
