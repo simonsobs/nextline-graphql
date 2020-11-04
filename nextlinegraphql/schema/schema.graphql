@@ -5,3 +5,7 @@ type Query {
 type Subscription {
     counter: Int!
 }
+
+type Mutation {
+    exec: Boolean!
+}
