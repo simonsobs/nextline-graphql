@@ -27,6 +27,24 @@ async def counter_generator(obj, info):
 def counter_resolver(count, info):
     return count + 1
 
+@subscription.source("status")
+async def status_generator(obj, info):
+    previous = None
+    while True:
+        nextline = get_nextline()
+        if previous == nextline.status:
+            await asyncio.sleep(0.1)
+            continue
+        previous = nextline.status
+        yield nextline.status
+        if nextline.status == 'finished':
+            break
+
+
+@subscription.field("status")
+async def status_resolver(status, info):
+    return status
+
 ##__________________________________________________________________||
 _THIS_DIR = Path(__file__).resolve().parent
 statement = """
@@ -43,12 +61,21 @@ breaks = {
     'script': ['run', 'task', 'task_imp', 'atask']
 }
 
+nextline_holder = []
+
+def get_nextline():
+    if not nextline_holder:
+        nextline_holder.append(Nextline(statement, breaks))
+    return nextline_holder[0]
+
 @mutation.field("exec")
-def resolve_exec(_, info):
+async def resolve_exec(_, info):
     print(_)
     print(info)
-    nextline = Nextline(statement, breaks)
-    nextline.run()
+    nextline = get_nextline()
+    print(nextline.status)
+    if nextline.status == 'initialized':
+        nextline.run()
     return True
 
 ##__________________________________________________________________||
