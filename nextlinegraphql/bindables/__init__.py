@@ -1,6 +1,6 @@
 from pathlib import Path
 import asyncio
-from ariadne import QueryType, MutationType, SubscriptionType
+from ariadne import QueryType, MutationType, SubscriptionType, ObjectType
 
 from nextline import Nextline
 
@@ -15,13 +15,29 @@ async def resolve_hello(_, info):
     user_agent = request.headers.get("user-agent", "guest")
     return "Hello, %s!" % user_agent
 
+@query.field("state")
+async def resolve_state(_, info):
+    return { }
+
+state = ObjectType("State")
+
+@state.field("state")
+async def resolve_state_(obj, *_):
+    return '12345'
+
+@subscription.source("state")
+async def state_generator(obj, info):
+    yield {}
+
+@subscription.field("state")
+async def state_resolver(state, info):
+    return state
 
 @subscription.source("counter")
 async def counter_generator(obj, info):
     for i in range(5):
         await asyncio.sleep(1)
         yield i
-
 
 @subscription.field("counter")
 def counter_resolver(count, info):
@@ -39,7 +55,6 @@ async def status_generator(obj, info):
         yield nextline.status
         if nextline.status == 'finished':
             break
-
 
 @subscription.field("status")
 async def status_resolver(status, info):

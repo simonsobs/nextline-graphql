@@ -1,12 +1,18 @@
 type Query {
     hello: String!
+    state: State!
 }
 
 type Subscription {
     counter: Int!
     status: String!
+    state: State!
 }
 
 type Mutation {
     exec: Boolean!
+}
+
+type State {
+    state: String!
 }

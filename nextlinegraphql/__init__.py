@@ -7,10 +7,10 @@ from ariadne import make_executable_schema
 from ariadne.asgi import GraphQL
 
 from .schema import type_defs
-from .bindables import query, mutation, subscription
+from .bindables import query, mutation, subscription, state
 
 ##__________________________________________________________________||
-schema = make_executable_schema(type_defs, [query, mutation, subscription])
+schema = make_executable_schema(type_defs, query, mutation, subscription, state)
 app = GraphQL(schema, debug=True)
 
 ##__________________________________________________________________||
