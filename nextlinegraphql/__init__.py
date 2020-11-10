@@ -1,5 +1,6 @@
 '''
 uvicorn nextlinegraphql:app
+uvicorn --reload --reload-dir nextline-graphql nextlinegraphql:app
 '''
 
 from ariadne import make_executable_schema
