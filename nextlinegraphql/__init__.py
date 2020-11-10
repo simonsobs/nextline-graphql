@@ -4,11 +4,12 @@ uvicorn --reload --reload-dir nextline-graphql nextlinegraphql:app
 '''
 
 from ariadne.asgi import GraphQL
+from starlette.middleware.cors import CORSMiddleware
 
 from .schema import schema
 
 ##__________________________________________________________________||
-app = GraphQL(schema, debug=True)
+app = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=("GET", "POST", "OPTIONS"))
 
 ##__________________________________________________________________||
 from ._version import get_versions
