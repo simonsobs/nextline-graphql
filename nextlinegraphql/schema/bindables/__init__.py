@@ -47,23 +47,6 @@ async def counter_generator(obj, info):
 def counter_resolver(count, info):
     return count + 1
 
-@subscription.source("status")
-async def status_generator(obj, info):
-    previous = None
-    while True:
-        nextline = get_nextline()
-        if previous == nextline.status:
-            await asyncio.sleep(0.1)
-            continue
-        previous = nextline.status
-        yield nextline.status
-        if nextline.status == 'finished':
-            break
-
-@subscription.field("status")
-async def status_resolver(status, info):
-    return status
-
 ##__________________________________________________________________||
 _THIS_DIR = Path(__file__).resolve().parent
 statement = """
