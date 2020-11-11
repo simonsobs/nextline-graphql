@@ -23,11 +23,15 @@ state = ObjectType("State")
 
 @state.field("state")
 async def resolve_state_(obj, *_):
-    return '12345'
+    nextline = get_nextline()
+    return nextline.status
 
 @subscription.source("state")
 async def state_generator(obj, info):
-    yield {}
+    while True:
+        yield {}
+        await event.wait()
+        event.clear()
 
 @subscription.field("state")
 async def state_resolver(state, info):
@@ -72,25 +76,37 @@ script.run()
 del _THIS_DIR
 
 breaks = {
-    '__main__': ['<module>'],
-    'script': ['run', 'task', 'task_imp', 'atask']
+    # '__main__': ['<module>'],
+    # 'script': ['run', 'task', 'task_imp', 'atask']
 }
 
 nextline_holder = []
+event = asyncio.Event()
 
 def get_nextline():
     if not nextline_holder:
         nextline_holder.append(Nextline(statement, breaks))
     return nextline_holder[0]
 
+async def poll(nextline):
+    while True:
+        event.set()
+        print(nextline)
+        await asyncio.sleep(1.0)
+
+async def run_nextline():
+    nextline = get_nextline()
+    print(nextline.status)
+    if nextline.status == 'initialized':
+        asyncio.create_task(poll(nextline))
+        nextline.run()
+    return
+
 @mutation.field("exec")
 async def resolve_exec(_, info):
     print(_)
     print(info)
-    nextline = get_nextline()
-    print(nextline.status)
-    if nextline.status == 'initialized':
-        nextline.run()
+    await run_nextline()
     return True
 
 ##__________________________________________________________________||
