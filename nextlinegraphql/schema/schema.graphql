@@ -10,6 +10,7 @@ type Subscription {
 
 type Mutation {
     exec: Boolean!
+    reset: Boolean!
 }
 
 type State {
