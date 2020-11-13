@@ -23,9 +23,15 @@ async def resolve_state(_, info):
 state = ObjectType("State")
 
 @state.field("state")
-async def resolve_state_(obj, *_):
+async def resolve_state_state(obj, *_):
     nextline = get_nextline()
     return nextline.status
+
+@state.field("nthreads")
+async def resolve_state_nthreads(obj, *_):
+    nextline = get_nextline()
+    print(nextline)
+    return nextline.nthreads()
 
 @subscription.source("state")
 async def state_generator(obj, info):
@@ -61,7 +67,7 @@ del _THIS_DIR
 
 breaks = {
     # '__main__': ['<module>'],
-    # 'script': ['run', 'task', 'task_imp', 'atask']
+    'script': ['run', 'task', 'task_imp', 'atask']
 }
 
 nextline_holder = []
@@ -83,11 +89,11 @@ async def intract(nextline):
     await asyncio.sleep(0.1)
     print(nextline.nthreads())
     while nextline.status == "running":
-        if nextline.trace.pdb_cis:
-            pdb_ci = nextline.trace.pdb_cis[0]
+        if nextline.pdb_cis:
+            pdb_ci = nextline.pdb_cis[0]
             commands = deque(['w', 'list', 'll', 'next'])
             nprompts = pdb_ci.nprompts - 1
-            while not pdb_ci.exited:
+            while not pdb_ci.ended:
                 if nprompts < pdb_ci.nprompts:
                     print(pdb_ci.stdout, end='')
                     command = commands.popleft()

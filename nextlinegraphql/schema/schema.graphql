@@ -15,4 +15,5 @@ type Mutation {
 
 type State {
     state: String!
+    nthreads: Int
 }
