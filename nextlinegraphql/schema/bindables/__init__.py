@@ -64,15 +64,15 @@ def counter_resolver(count, info):
     return count + 1
 
 ##__________________________________________________________________||
-_THIS_DIR = Path(__file__).resolve().parent
-statement = """
 import sys
-sys.path.insert(0, "{}")
+_THIS_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(_THIS_DIR))
+del _THIS_DIR
+
+statement = """
 import script
 script.run()
-""".lstrip().format(_THIS_DIR)
-
-del _THIS_DIR
+""".lstrip()
 
 breaks = {
     # '__main__': ['<module>'],
