@@ -30,8 +30,17 @@ async def resolve_state_state(obj, *_):
 @state.field("nthreads")
 async def resolve_state_nthreads(obj, *_):
     nextline = get_nextline()
-    print(nextline)
     return nextline.nthreads()
+
+@state.field("threads")
+async def resolve_state_nthread(obj, *_):
+    nextline = get_nextline()
+    if nextline.state is None:
+        return []
+    return [
+        { "threadId": str(thid) } for thid, thda in nextline.state.data.items()
+        if any([not tada['finished'] for tada in thda.values()])
+    ]
 
 @subscription.source("state")
 async def state_generator(obj, info):

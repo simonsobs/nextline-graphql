@@ -13,7 +13,12 @@ type Mutation {
     reset: Boolean!
 }
 
+type Thread {
+    threadId: String!
+}
+
 type State {
     state: String!
     nthreads: Int
+    threads: [Thread]
 }
