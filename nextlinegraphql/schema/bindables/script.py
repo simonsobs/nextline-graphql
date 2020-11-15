@@ -1,7 +1,6 @@
 import threading
 import asyncio
 
-##__________________________________________________________________||
 def task_imp():
     tid = threading.get_ident()
     for i in range(2):
@@ -34,8 +33,6 @@ def run():
     run_threads()
     asyncio.run(run_coroutines())
 
-##__________________________________________________________________||
 if __name__ == '__main__':
     run()
 
-##__________________________________________________________________||
