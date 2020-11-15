@@ -37,10 +37,24 @@ async def resolve_state_nthread(obj, *_):
     nextline = get_nextline()
     if nextline.state is None:
         return []
-    return [
-        { "threadId": str(thid) } for thid, thda in nextline.state.data.items()
+    ret = [
+        {
+            "threadId": str(thid),
+            "tasks": [
+                {
+                    "taskId": taid,
+                    "finished": tada['finished'],
+                    "prompting": tada['prompting'],
+                    "fileName": tada['file_name'],
+                    "lineNo": tada['line_no'],
+                    "fileLines": tada['file_lines']
+                } for taid, tada in thda.items() if not tada['finished']
+            ]
+         } for thid, thda in nextline.state.data.items()
         if any([not tada['finished'] for tada in thda.values()])
     ]
+    print(ret)
+    return ret
 
 @subscription.source("state")
 async def state_generator(obj, info):

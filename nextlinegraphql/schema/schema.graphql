@@ -13,8 +13,18 @@ type Mutation {
     reset: Boolean!
 }
 
+type Task {
+    taskId: String,
+    finished: Boolean,
+    prompting: Int,
+    fileName: String,
+    lineNo: Int,
+    fileLines: [String]
+}
+
 type Thread {
     threadId: String!
+    tasks: [Task]
 }
 
 type State {
