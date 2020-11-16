@@ -2,12 +2,12 @@ import threading
 import asyncio
 
 def task_imp():
-    tid = threading.get_ident()
     for i in range(2):
         print('in task() i={}'.format(i))
 
 def task():
-    return task_imp()
+    task_imp()
+    return
 
 def run_threads():
     nthreads = 2
@@ -21,13 +21,14 @@ def run_threads():
         t.join()
 
 async def atask():
+    await asyncio.sleep(1)
     print('here')
 
 async def run_coroutines():
-    a1 = atask()
-    a2 = atask()
-    a3 = atask()
-    await asyncio.gather(a1, a2, a3)
+    a1 = asyncio.create_task(atask())
+    a2 = asyncio.create_task(atask())
+    a3 = asyncio.create_task(atask())
+    await asyncio.wait({a1, a2, a3})
 
 def run():
     run_threads()
