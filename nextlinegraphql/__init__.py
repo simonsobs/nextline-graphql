@@ -9,7 +9,8 @@ from starlette.middleware.cors import CORSMiddleware
 from .schema import schema
 
 ##__________________________________________________________________||
-app = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=("GET", "POST", "OPTIONS"))
+# app = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=("GET", "POST", "OPTIONS"))
+app = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
 
 ##__________________________________________________________________||
 from ._version import get_versions
