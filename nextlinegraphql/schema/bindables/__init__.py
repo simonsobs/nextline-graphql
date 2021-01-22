@@ -112,8 +112,13 @@ breaks = {
     'script': ['run', 'run_threads', 'task', 'task_imp', 'atask', 'run_coroutines']
 }
 
-# https://stackoverflow.com/a/33006667/7309855
 class Event_ts(asyncio.Event):
+    '''A thread-safe asyncio event
+
+    Code copied from
+    https://stackoverflow.com/a/33006667/7309855
+
+    '''
     def set(self):
         self._loop.call_soon_threadsafe(super().set)
     def clear(self):
