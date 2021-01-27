@@ -1,6 +1,7 @@
 from collections import deque
 from pathlib import Path
 import asyncio
+import janus
 from ariadne import QueryType, MutationType, SubscriptionType, ObjectType
 
 from nextline import Nextline
@@ -71,6 +72,35 @@ async def state_generator(obj, info):
 @subscription.field("state")
 async def state_resolver(state, info):
     return state
+
+class StreamOut:
+    def __init__(self, queue):
+        self.queue = queue
+    def write(self, s):
+        self.queue.put(s)
+    def flush(self):
+        pass
+
+@subscription.source("stdout")
+async def stdout_generator(_, info):
+    queue = janus.Queue()
+    stdout_org = sys.stdout
+    sys.stdout = StreamOut(queue.sync_q)
+    nextline = get_nextline()
+    while True:
+        v = await queue.async_q.get()
+        if nextline.status == 'running':
+            yield v
+        else:
+            stdout_org.write(v)
+    sys.stdout = stdout_org
+    await fut
+    queue.close()
+    await queue.wait_closed()
+
+@subscription.field("stdout")
+async def stdout_resolver(stdout, info):
+    return stdout
 
 @subscription.source("counter")
 async def counter_generator(obj, info):

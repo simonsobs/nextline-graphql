@@ -6,6 +6,7 @@ type Query {
 type Subscription {
     counter: Int!
     state: State!
+    stdout: String
 }
 
 type Mutation {
