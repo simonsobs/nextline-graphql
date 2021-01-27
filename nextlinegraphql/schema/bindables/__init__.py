@@ -64,9 +64,9 @@ async def resolve_state_threads(obj, *_):
 @subscription.source("state")
 async def state_generator(obj, info):
     while True:
-        await event.wait()
         yield {}
         event.clear()
+        await event.wait()
 
 @subscription.field("state")
 async def state_resolver(state, info):
