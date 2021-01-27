@@ -29,7 +29,8 @@ setup(
         'nextline>=0.0.3',
         'ariadne>=0.12.0',
         'uvicorn>=0.12.2',
-        'websockets>=8.1'
+        'websockets>=8.1',
+        'janus>=0.6'
     ],
     extras_require={
         'tests': [
