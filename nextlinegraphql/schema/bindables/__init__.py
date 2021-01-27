@@ -164,7 +164,7 @@ def get_nextline():
 
 async def run_nextline():
     nextline = get_nextline()
-    print(nextline.status)
+    # print(nextline.status)
     if nextline.status == 'initialized':
         nextline.run()
     return
@@ -176,8 +176,8 @@ def reset_nextline():
 
 @mutation.field("exec")
 async def resolve_exec(_, info):
-    print(_)
-    print(info)
+    # print(_)
+    # print(info)
     await run_nextline()
     return True
 
