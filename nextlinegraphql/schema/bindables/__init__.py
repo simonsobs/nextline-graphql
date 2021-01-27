@@ -132,41 +132,11 @@ def get_nextline():
         nextline_holder.append(Nextline(statement, breaks, event=event))
     return nextline_holder[0]
 
-async def poll(nextline):
-    while True:
-        event.set()
-        await asyncio.sleep(2)
-
-async def intract(nextline):
-    print(nextline.status)
-    await asyncio.sleep(0.1)
-    print(nextline.nthreads())
-    while nextline.status == "running":
-        if nextline.state.prompting:
-            thread_asynctask_id = nextline.state.prompting[0]
-            pdb_ci = nextline.pdb_ci_registry.get_ci(thread_asynctask_id)
-            commands = deque(['w', 'list', 'll', 'next'])
-            nprompts = pdb_ci.nprompts - 1
-            while not pdb_ci.ended:
-                if nprompts < pdb_ci.nprompts:
-                    print(pdb_ci.stdout, end='')
-                    command = commands.popleft()
-                    print(command)
-                    pdb_ci.send_pdb_command(command)
-                nprompts = pdb_ci.nprompts
-                await asyncio.sleep(1)
-        await asyncio.sleep(1)
-    print(nextline.nthreads())
-
-    await nextline.wait()
-
 async def run_nextline():
     nextline = get_nextline()
     print(nextline.status)
     if nextline.status == 'initialized':
-        # asyncio.create_task(poll(nextline))
         nextline.run()
-        # asyncio.create_task(intract(nextline))
     return
 
 def reset_nextline():
