@@ -118,7 +118,7 @@ _THIS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(_THIS_DIR))
 del _THIS_DIR
 
-statement = """
+statement_ = """
 import time
 time.sleep(3)
 
@@ -135,6 +135,85 @@ scriptone.run()
 
 import scripttwo
 scripttwo.run()
+""".strip()
+
+statement = """
+import time
+from ocs.matched_client import MatchedClient
+
+therm_client = MatchedClient('LSA23JD')
+
+## Channel 1
+# Stop data acquisition if it was running
+therm_client.acq.stop()
+
+# Start a short running task and check status
+params = {"channel": 1}
+therm_client.set_active_channel.start(**params)
+response = therm_client.set_active_channel.status()
+print(response.session.get('data'))
+
+# Wait for task to complete, then show status
+therm_client.set_active_channel.wait()
+response = therm_client.set_active_channel.status()
+print(response.session.get('data'))
+
+# Start long running process
+therm_client.acq.start()
+
+# Wait long enough to make sure there's something interesting in the status
+time.sleep(10)
+
+# Get status
+response = therm_client.acq.status()
+print(response.session.get('data'))
+
+
+## Channel 2
+# Stop data acquisition if it was running
+therm_client.acq.stop()
+
+# Swap to a different channel
+params = {"channel": 2}
+therm_client.set_active_channel.start(**params)
+response = therm_client.set_active_channel.status()
+print(response.session.get('data'))
+
+# Wait for task to complete, then show status
+therm_client.set_active_channel.wait()
+response = therm_client.set_active_channel.status()
+print(response.session.get('data'))
+
+# Start long running process
+therm_client.acq.start()
+
+# Wait long enough to make sure there's something interesting in the status
+time.sleep(10)
+
+# Get status
+response = therm_client.acq.status()
+print(response.session.get('data'))
+
+
+## Autoscan
+# Stop data acquisition if it was running
+therm_client.acq.stop()
+
+# Turn on autoscan
+params = {"autoscan": True}
+therm_client.set_autoscan.start(**params)
+response = therm_client.set_autoscan.status()
+print(response.session.get('data'))
+
+# Start long running process
+therm_client.acq.start()
+
+# Wait long enough to make sure there's something interesting in the status
+time.sleep(10)
+
+# Get status
+response = therm_client.acq.status()
+print(response.session.get('data'))
 """.strip()
 
 breaks = {
