@@ -12,6 +12,9 @@ from .schema import schema
 # app = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=("GET", "POST", "OPTIONS"))
 app = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
 
+##__________________________________________________________________||
+# remove args so that they won't be processed in the executing script
+# TODO This should be properly handled and tested
 import sys
 sys.argv[1:] = []
 
