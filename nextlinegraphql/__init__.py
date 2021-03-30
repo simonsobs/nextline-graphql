@@ -4,13 +4,20 @@ uvicorn --reload --reload-dir nextline-graphql nextlinegraphql:app
 '''
 
 from ariadne.asgi import GraphQL
+
+from starlette.applications import Starlette
+from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
 from .schema import schema
 
 ##__________________________________________________________________||
-# app = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=("GET", "POST", "OPTIONS"))
-app = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
+middleware = [
+    Middleware(CORSMiddleware, allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
+]
+
+app = Starlette(debug=True, middleware=middleware)
+app.mount("/", GraphQL(schema, debug=True))
 
 ##__________________________________________________________________||
 # remove args so that they won't be processed in the executing script
