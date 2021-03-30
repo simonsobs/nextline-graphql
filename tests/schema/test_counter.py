@@ -1,3 +1,4 @@
+import sys
 from ariadne import graphql, subscribe
 
 import pytest
@@ -11,7 +12,8 @@ def mock_asyncio_sleep(monkeypatch):
     import asyncio
     y = Mock(wraps=asyncio)
     y.sleep = AsyncMock()
-    monkeypatch.setattr("nextlinegraphql.bindables.asyncio", y)
+    module = sys.modules['nextlinegraphql.schema.bindables']
+    monkeypatch.setattr(module, "asyncio", y)
     yield y
 
 ##__________________________________________________________________||

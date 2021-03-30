@@ -12,48 +12,15 @@ snapshots['test_schema 1'] = {
         '__schema': {
             'types': [
                 {
-                    'description': None,
-                    'fields': [
-                        {
-                            'description': None,
-                            'name': 'hello',
-                            'type': {
-                                'name': None
-                            }
-                        }
-                    ],
-                    'inputFields': None,
-                    'name': 'Query'
-                },
-                {
-                    'description': 'The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.',
-                    'fields': None,
-                    'inputFields': None,
-                    'name': 'String'
-                },
-                {
-                    'description': None,
-                    'fields': [
-                        {
-                            'description': None,
-                            'name': 'counter',
-                            'type': {
-                                'name': None
-                            }
-                        }
-                    ],
-                    'inputFields': None,
-                    'name': 'Subscription'
-                },
-                {
-                    'description': 'The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.',
-                    'fields': None,
-                    'inputFields': None,
-                    'name': 'Int'
-                },
-                {
                     'description': 'A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation, and subscription operations.',
                     'fields': [
+                        {
+                            'description': None,
+                            'name': 'description',
+                            'type': {
+                                'name': 'String'
+                            }
+                        },
                         {
                             'description': 'A list of all types supported by this server.',
                             'name': 'types',
@@ -94,9 +61,15 @@ snapshots['test_schema 1'] = {
                     'name': '__Schema'
                 },
                 {
+                    'description': 'The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.',
+                    'fields': None,
+                    'inputFields': None,
+                    'name': 'String'
+                },
+                {
                     'description': '''The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
 
-Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name and description, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.''',
+Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name, description and optional `specifiedByUrl`, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.''',
                     'fields': [
                         {
                             'description': None,
@@ -115,6 +88,13 @@ Depending on the kind of a type, certain fields describe information about that 
                         {
                             'description': None,
                             'name': 'description',
+                            'type': {
+                                'name': 'String'
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'specifiedByUrl',
                             'type': {
                                 'name': 'String'
                             }
@@ -170,12 +150,6 @@ Depending on the kind of a type, certain fields describe information about that 
                     'fields': None,
                     'inputFields': None,
                     'name': '__TypeKind'
-                },
-                {
-                    'description': 'The `Boolean` scalar type represents `true` or `false`.',
-                    'fields': None,
-                    'inputFields': None,
-                    'name': 'Boolean'
                 },
                 {
                     'description': 'Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type.',
@@ -262,6 +236,12 @@ Depending on the kind of a type, certain fields describe information about that 
                     'name': '__InputValue'
                 },
                 {
+                    'description': 'The `Boolean` scalar type represents `true` or `false`.',
+                    'fields': None,
+                    'inputFields': None,
+                    'name': 'Boolean'
+                },
+                {
                     'description': 'One possible value for a given Enum. Enum values are unique values, not a placeholder for a string or numeric value. However an Enum value is returned in a JSON response as a string.',
                     'fields': [
                         {
@@ -317,6 +297,13 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                         },
                         {
                             'description': None,
+                            'name': 'isRepeatable',
+                            'type': {
+                                'name': None
+                            }
+                        },
+                        {
+                            'description': None,
                             'name': 'locations',
                             'type': {
                                 'name': None
@@ -338,6 +325,180 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                     'fields': None,
                     'inputFields': None,
                     'name': '__DirectiveLocation'
+                },
+                {
+                    'description': None,
+                    'fields': [
+                        {
+                            'description': None,
+                            'name': 'hello',
+                            'type': {
+                                'name': None
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'state',
+                            'type': {
+                                'name': None
+                            }
+                        }
+                    ],
+                    'inputFields': None,
+                    'name': 'Query'
+                },
+                {
+                    'description': None,
+                    'fields': [
+                        {
+                            'description': None,
+                            'name': 'counter',
+                            'type': {
+                                'name': None
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'state',
+                            'type': {
+                                'name': None
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'stdout',
+                            'type': {
+                                'name': 'String'
+                            }
+                        }
+                    ],
+                    'inputFields': None,
+                    'name': 'Subscription'
+                },
+                {
+                    'description': 'The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.',
+                    'fields': None,
+                    'inputFields': None,
+                    'name': 'Int'
+                },
+                {
+                    'description': None,
+                    'fields': [
+                        {
+                            'description': None,
+                            'name': 'exec',
+                            'type': {
+                                'name': None
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'reset',
+                            'type': {
+                                'name': None
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'sendPdbCommand',
+                            'type': {
+                                'name': None
+                            }
+                        }
+                    ],
+                    'inputFields': None,
+                    'name': 'Mutation'
+                },
+                {
+                    'description': None,
+                    'fields': [
+                        {
+                            'description': None,
+                            'name': 'taskId',
+                            'type': {
+                                'name': 'String'
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'prompting',
+                            'type': {
+                                'name': 'Int'
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'fileName',
+                            'type': {
+                                'name': 'String'
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'lineNo',
+                            'type': {
+                                'name': 'Int'
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'fileLines',
+                            'type': {
+                                'name': None
+                            }
+                        }
+                    ],
+                    'inputFields': None,
+                    'name': 'Task'
+                },
+                {
+                    'description': None,
+                    'fields': [
+                        {
+                            'description': None,
+                            'name': 'threadId',
+                            'type': {
+                                'name': None
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'tasks',
+                            'type': {
+                                'name': None
+                            }
+                        }
+                    ],
+                    'inputFields': None,
+                    'name': 'Thread'
+                },
+                {
+                    'description': None,
+                    'fields': [
+                        {
+                            'description': None,
+                            'name': 'state',
+                            'type': {
+                                'name': None
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'nthreads',
+                            'type': {
+                                'name': 'Int'
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'threads',
+                            'type': {
+                                'name': None
+                            }
+                        }
+                    ],
+                    'inputFields': None,
+                    'name': 'State'
                 }
             ]
         }
