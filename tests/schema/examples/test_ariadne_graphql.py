@@ -18,7 +18,26 @@ def mock_asyncio_sleep(monkeypatch):
 
 ##__________________________________________________________________||
 @pytest.mark.asyncio
-async def test_counter(snapshot):
+async def test_query():
+
+    query = '''
+      { hello }
+    '''
+    data = { 'query': query }
+
+    request = Mock()
+    request.headers = {'user-agent': 'Mozilla/5.0'}
+    context_value = { 'request': request }
+    success, response = await graphql(schema, data, context_value=context_value)
+    assert success
+    assert 'errors' not in response
+    expect = {'data': {'hello': 'Hello, Mozilla/5.0!'}}
+    assert expect == response
+
+
+##__________________________________________________________________||
+@pytest.mark.asyncio
+async def test_subscription():
 
     query = '''
       subscription {
@@ -29,16 +48,27 @@ async def test_counter(snapshot):
     data = { 'query': query }
     success, result = await subscribe(schema, data)
     assert success
+
     response = await result.__anext__()
-    snapshot.assert_match(response.data)
+    expect = {'counter': 1}
+    assert expect == response.data
+
     response = await result.__anext__()
-    snapshot.assert_match(response.data)
+    expect = {'counter': 2}
+    assert expect == response.data
+
     response = await result.__anext__()
-    snapshot.assert_match(response.data)
+    expect = {'counter': 3}
+    assert expect == response.data
+
     response = await result.__anext__()
-    snapshot.assert_match(response.data)
+    expect = {'counter': 4}
+    assert expect == response.data
+
     response = await result.__anext__()
-    snapshot.assert_match(response.data)
+    expect = {'counter': 5}
+    assert expect == response.data
+
     with pytest.raises(StopAsyncIteration):
         response = await result.__anext__()
 
