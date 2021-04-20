@@ -57,10 +57,6 @@ async def test_subscription():
         }
     }
 
-    headers = {
-        'Content-Type:': "application/json"
-    }
-
     async with TestClient(app) as client:
         async with client.websocket_connect("/") as ws:
             await ws.send_json(data)
