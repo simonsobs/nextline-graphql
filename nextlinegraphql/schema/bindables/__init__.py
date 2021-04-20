@@ -64,6 +64,7 @@ async def resolve_state_threads(obj, *_):
 
 @subscription.source("state")
 async def state_generator(obj, info):
+    event = get_event()
     while True:
         yield {}
         event.clear()
@@ -154,11 +155,18 @@ class Event_ts(asyncio.Event):
     def clear(self):
         self._loop.call_soon_threadsafe(super().clear)
 
+event_holder = []
+
+def get_event():
+    if not event_holder:
+        event_holder.append(Event_ts())
+    return event_holder[0]
+
 nextline_holder = []
-event = Event_ts()
 
 def get_nextline():
     if not nextline_holder:
+        event = get_event()
         nextline_holder.append(Nextline(statement, breaks, event=event))
     return nextline_holder[0]
 
@@ -172,6 +180,7 @@ async def run_nextline():
 def reset_nextline():
     nextline_holder[:] = []
     get_nextline()
+    event = get_event()
     event.set()
 
 @mutation.field("exec")
