@@ -6,6 +6,8 @@ from ariadne import QueryType, MutationType, SubscriptionType, ObjectType
 
 from nextline import Nextline
 
+from .thread_safe_event import ThreadSafeAsyncioEvent
+
 ##__________________________________________________________________||
 query = QueryType()
 subscription = SubscriptionType()
@@ -143,23 +145,12 @@ breaks = {
     'script': ['run', 'run_threads', 'task', 'task_imp', 'atask', 'run_coroutines']
 }
 
-class Event_ts(asyncio.Event):
-    '''A thread-safe asyncio event
-
-    Code copied from
-    https://stackoverflow.com/a/33006667/7309855
-
-    '''
-    def set(self):
-        self._loop.call_soon_threadsafe(super().set)
-    def clear(self):
-        self._loop.call_soon_threadsafe(super().clear)
-
 event_holder = []
 
 def get_event():
     if not event_holder:
-        event_holder.append(Event_ts())
+        event = ThreadSafeAsyncioEvent()
+        event_holder.append(event)
     return event_holder[0]
 
 nextline_holder = []
