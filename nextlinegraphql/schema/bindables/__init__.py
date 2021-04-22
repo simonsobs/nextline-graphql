@@ -4,9 +4,7 @@ import asyncio
 import janus
 from ariadne import QueryType, MutationType, SubscriptionType, ObjectType
 
-from nextline import Nextline
-
-from .thread_safe_event import ThreadSafeAsyncioEvent
+from nextline import Nextline, ThreadSafeAsyncioEvent
 
 ##__________________________________________________________________||
 query = QueryType()
