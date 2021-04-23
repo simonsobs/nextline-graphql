@@ -87,7 +87,6 @@ async def stdout_generator(_, info):
         else:
             stdout_org.write(v)
     sys.stdout = stdout_org
-    await fut
     queue.close()
     await queue.wait_closed()
 
