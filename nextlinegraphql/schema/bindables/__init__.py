@@ -56,14 +56,18 @@ def reshape_state(state):
     ]
     return ret
 
-@subscription.source("state")
-async def state_generator(obj, info):
+async def nextline_generator():
     event = get_event()
     nextline = get_nextline()
     while True:
         yield nextline
         event.clear()
         await event.wait()
+
+@subscription.source("state")
+async def state_generator(obj, info):
+    async for nextline in nextline_generator():
+        yield nextline
 
 @subscription.field("state")
 async def state_resolver(state, info):
