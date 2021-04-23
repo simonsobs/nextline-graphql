@@ -1,6 +1,7 @@
 from collections import deque
 from pathlib import Path
 import asyncio
+import threading
 import janus
 from ariadne import QueryType, MutationType, SubscriptionType, ObjectType
 
@@ -73,6 +74,30 @@ class StreamOut:
         self.queue.put(s)
     def flush(self):
         pass
+
+class QueueDist:
+    def __init__(self, queue: janus.Queue):
+        self.queue = queue
+        self.subscribers = []
+
+        self.t = threading.Thread(target=self._listen, daemon=True)
+        self.t.start()
+
+    def _listen(self):
+        while True:
+            v = self.queue.sync_q.get()
+            for s in self.subscribers:
+                s.sync_q.put(v)
+
+    def subscribe(self):
+        ret = janus.Queue()
+        self.subscribers.append(ret)
+        return ret
+
+    async def unsubscribe(self, queue):
+        self.subscribers.remove(queue)
+        queue.close()
+        await queue.wait_closed()
 
 @subscription.source("stdout")
 async def stdout_generator(_, info):
