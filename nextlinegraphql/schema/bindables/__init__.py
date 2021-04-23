@@ -36,11 +36,12 @@ async def resolve_state_nthreads(obj, *_):
 @state.field("threads")
 async def resolve_state_threads(obj, *_):
     nextline = get_nextline()
-    if nextline.state is None:
+    return reshape_state(nextline.state)
+
+def reshape_state(state):
+    if state is None:
         return []
-    state = nextline.state.data
-    from pprint import pprint
-    # pprint(state)
+    state = state.data
     ret = [
         {
             "threadId": str(thid),
@@ -55,11 +56,6 @@ async def resolve_state_threads(obj, *_):
             ]
         } for thid, thda in state.items()
     ]
-    # pprint([
-    #     (thid, thda)
-    #     for thid, thda in state.items()
-    #     if any([not tada['finished'] for tada in thda.values()])
-    # ])
     return ret
 
 @subscription.source("state")
