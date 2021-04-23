@@ -19,23 +19,21 @@ async def resolve_hello(_, info):
 
 @query.field("state")
 async def resolve_state(_, info):
-    return { }
+    nextline = get_nextline()
+    return nextline
 
 state = ObjectType("State")
 
 @state.field("state")
-async def resolve_state_state(obj, *_):
-    nextline = get_nextline()
+async def resolve_state_state(nextline, *_):
     return nextline.status
 
 @state.field("nthreads")
-async def resolve_state_nthreads(obj, *_):
-    nextline = get_nextline()
+async def resolve_state_nthreads(nextline, *_):
     return nextline.nthreads()
 
 @state.field("threads")
-async def resolve_state_threads(obj, *_):
-    nextline = get_nextline()
+async def resolve_state_threads(nextline, *_):
     return reshape_state(nextline.state)
 
 def reshape_state(state):
@@ -61,8 +59,9 @@ def reshape_state(state):
 @subscription.source("state")
 async def state_generator(obj, info):
     event = get_event()
+    nextline = get_nextline()
     while True:
-        yield {}
+        yield nextline
         event.clear()
         await event.wait()
 
