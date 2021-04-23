@@ -4,7 +4,7 @@ import asyncio
 import janus
 from ariadne import QueryType, MutationType, SubscriptionType, ObjectType
 
-from nextline import Nextline, ThreadSafeAsyncioEvent
+from nextline import Nextline
 
 ##__________________________________________________________________||
 query = QueryType()
@@ -56,18 +56,11 @@ def reshape_state(state):
     ]
     return ret
 
-async def nextline_generator():
-    event = get_event()
-    nextline = get_nextline()
-    while True:
-        yield nextline
-        event.clear()
-        await event.wait()
-
 @subscription.source("state")
 async def state_generator(obj, info):
-    async for nextline in nextline_generator():
-        yield nextline
+    nextline = get_nextline()
+    async for n in nextline.nextline_generator():
+        yield n
 
 @subscription.field("state")
 async def state_resolver(state, info):
@@ -142,20 +135,11 @@ breaks = {
     'script': ['run', 'run_threads', 'task', 'task_imp', 'atask', 'run_coroutines']
 }
 
-event_holder = []
-
-def get_event():
-    if not event_holder:
-        event = ThreadSafeAsyncioEvent()
-        event_holder.append(event)
-    return event_holder[0]
-
 nextline_holder = []
 
 def get_nextline():
     if not nextline_holder:
-        event = get_event()
-        nextline_holder.append(Nextline(statement, breaks, event=event))
+        nextline_holder.append(Nextline(statement, breaks))
     return nextline_holder[0]
 
 async def run_nextline():
