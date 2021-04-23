@@ -99,21 +99,46 @@ class QueueDist:
         queue.close()
         await queue.wait_closed()
 
+class StdoutQueue:
+    def __init__(self, queue: janus.Queue):
+        self.queue = queue
+        self.stdout_org = sys.stdout
+        sys.stdout = StreamOut(self.queue.sync_q)
+        self.queue_dist = QueueDist(self.queue)
+
+        self.q = self.subscribe()
+        self.t = threading.Thread(target=self._listen, daemon=True)
+        self.t.start()
+
+    def _listen(self):
+        while True:
+            v = self.q.sync_q.get()
+            self.stdout_org.write(v)
+
+    def subscribe(self):
+        return self.queue_dist.subscribe()
+
+    async def unsubscribe(self, queue):
+        await self.queue_dist.unsubscribe(queue)
+
+stdout_queue_holder = []
+
+async def get_stdout_queue():
+    if not stdout_queue_holder:
+        queue = janus.Queue()
+        stdout_queue_holder.append(StdoutQueue(queue))
+    return stdout_queue_holder[0]
+
 @subscription.source("stdout")
 async def stdout_generator(_, info):
-    queue = janus.Queue()
-    stdout_org = sys.stdout
-    sys.stdout = StreamOut(queue.sync_q)
+    stdout_queue = await get_stdout_queue()
+    queue = stdout_queue.subscribe()
     nextline = get_nextline()
     while True:
         v = await queue.async_q.get()
         if nextline.status == 'running':
             yield v
-        else:
-            stdout_org.write(v)
-    sys.stdout = stdout_org
-    queue.close()
-    await queue.wait_closed()
+    await stdout_queue.unsubscribe(queue)
 
 @subscription.field("stdout")
 async def stdout_resolver(stdout, info):
