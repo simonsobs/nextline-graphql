@@ -27,7 +27,7 @@ state = ObjectType("State")
 
 @state.field("state")
 async def resolve_state_state(nextline, *_):
-    return nextline.status
+    return nextline.global_state
 
 @state.field("nthreads")
 async def resolve_state_nthreads(nextline, *_):
@@ -136,7 +136,7 @@ async def stdout_generator(_, info):
     nextline = get_nextline()
     while True:
         v = await queue.async_q.get()
-        if nextline.status == 'running':
+        if nextline.global_state == 'running':
             yield v
     await stdout_queue.unsubscribe(queue)
 
@@ -193,8 +193,8 @@ def get_nextline():
 
 async def run_nextline():
     nextline = get_nextline()
-    # print(nextline.status)
-    if nextline.status == 'initialized':
+    # print(nextline.global_state)
+    if nextline.global_state == 'initialized':
         nextline.run()
     return
 
