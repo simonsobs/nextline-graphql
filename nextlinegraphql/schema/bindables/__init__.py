@@ -18,10 +18,25 @@ async def resolve_hello(_, info):
     user_agent = request.headers.get("user-agent", "guest")
     return "Hello, %s!" % user_agent
 
+@query.field("globalState")
+async def resolve_global_state(_, info):
+    nextline = get_nextline()
+    return nextline.global_state
+
 @query.field("state")
 async def resolve_state(_, info):
     nextline = get_nextline()
     return nextline
+
+@subscription.source("globalState")
+async def global_state_generator(_, info):
+    nextline = get_nextline()
+    async for s in nextline.global_state_generator():
+        yield s
+
+@subscription.field("globalState")
+def global_state_resolver(global_state, info):
+    return global_state
 
 state = ObjectType("State")
 

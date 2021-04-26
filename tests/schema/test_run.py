@@ -61,6 +61,18 @@ QUERY_STATE = '''
 }
 '''.strip()
 
+QUERY_GLOBAL_STATE = '''
+query GlobalState {
+  globalState
+}
+'''.strip()
+
+SUBSCRIBE_GLOBAL_STATE = '''
+subscription GlobalState {
+  globalState
+}
+'''.strip()
+
 ##__________________________________________________________________||
 async def prompting_thread_tasks(ws):
     prompting_counts_prev = {} # key (thread_id, task_id)
@@ -84,6 +96,19 @@ async def prompting_thread_tasks(ws):
 
 @pytest.mark.asyncio
 async def test_run(snapshot):
+
+    query_global_state = { 'query': QUERY_GLOBAL_STATE }
+
+    subscribe_global_state = {
+        'id': '1',
+        'type': 'start',
+        'payload': {
+            'variables': {},
+            'extensions': {},
+            'operationName': None,
+            'query': SUBSCRIBE_GLOBAL_STATE
+        }
+    }
 
     subscribe_state = {
         'id': '1',
@@ -112,7 +137,15 @@ async def test_run(snapshot):
         resp = await client.post("/", json=query_state, headers=headers)
         assert 'initialized' == resp.json()['data']['state']['globalState']
 
-        async with client.websocket_connect("/") as ws:
+        resp = await client.post("/", json=query_global_state, headers=headers)
+        assert 'initialized' == resp.json()['data']['globalState']
+
+        async with client.websocket_connect("/") as ws_global_state, \
+                   client.websocket_connect("/") as ws:
+
+            await ws_global_state.send_json(subscribe_global_state)
+            resp_json = await ws_global_state.receive_json()
+            assert 'initialized' == resp_json['payload']['data']['globalState']
 
             await ws.send_json(subscribe_state)
             resp_json = await ws.receive_json()
@@ -121,6 +154,9 @@ async def test_run(snapshot):
 
             resp = await client.post("/", json=mutate_exec, headers=headers)
             assert resp.json()['data']['exec']
+
+            resp_json = await ws_global_state.receive_json()
+            assert 'running' == resp_json['payload']['data']['globalState']
 
             niterations = 0
             all_thread_tasks = set()
@@ -137,8 +173,13 @@ async def test_run(snapshot):
             assert niterations >= 4
             assert len(all_thread_tasks) == 5
 
+            resp_json = await ws_global_state.receive_json()
+            assert 'running' == resp_json['payload']['data']['globalState']
 
         resp = await client.post("/", json=query_state, headers=headers)
         assert 'finished' == resp.json()['data']['state']['globalState']
+
+        resp = await client.post("/", json=query_global_state, headers=headers)
+        assert 'finished' == resp.json()['data']['globalState']
 
 ##__________________________________________________________________||

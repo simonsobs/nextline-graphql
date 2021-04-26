@@ -1,10 +1,12 @@
 type Query {
     hello: String!
+    globalState: String!
     state: State!
 }
 
 type Subscription {
     counter: Int!
+    globalState: String!
     state: State!
     stdout: String
 }

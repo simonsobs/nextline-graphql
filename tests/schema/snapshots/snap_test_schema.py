@@ -338,6 +338,13 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                         },
                         {
                             'description': None,
+                            'name': 'globalState',
+                            'type': {
+                                'name': None
+                            }
+                        },
+                        {
+                            'description': None,
                             'name': 'state',
                             'type': {
                                 'name': None
@@ -353,6 +360,13 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                         {
                             'description': None,
                             'name': 'counter',
+                            'type': {
+                                'name': None
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'globalState',
                             'type': {
                                 'name': None
                             }
