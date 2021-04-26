@@ -29,7 +29,7 @@ type Thread {
 }
 
 type State {
-    state: String!
+    globalState: String!
     nthreads: Int
     threads: [Thread]
 }

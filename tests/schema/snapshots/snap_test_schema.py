@@ -477,7 +477,7 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                     'fields': [
                         {
                             'description': None,
-                            'name': 'state',
+                            'name': 'globalState',
                             'type': {
                                 'name': None
                             }

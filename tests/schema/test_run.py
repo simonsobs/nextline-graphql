@@ -26,7 +26,7 @@ mutation SendPdbCommand(
 SUBSCRIBE_STATE = '''
 subscription State {
   state {
-    state
+    globalState
     nthreads
     threads {
       threadId
@@ -45,7 +45,7 @@ subscription State {
 QUERY_STATE = '''
 {
   state {
-    state
+    globalState
     nthreads
     threads {
       threadId
@@ -67,7 +67,7 @@ async def prompting_thread_tasks(ws):
     while True:
         resp_json = await ws.receive_json()
         state = resp_json['payload']['data']['state']
-        if not state['state'] == 'running':
+        if not state['globalState'] == 'running':
             return
         threads = state['threads']
         prompting_counts = {(th['threadId'], ta['taskId']): ta['prompting'] for th in threads for ta in th['tasks']}
@@ -110,14 +110,14 @@ async def test_run(snapshot):
 
     async with TestClient(app) as client:
         resp = await client.post("/", json=query_state, headers=headers)
-        assert 'initialized' == resp.json()['data']['state']['state']
+        assert 'initialized' == resp.json()['data']['state']['globalState']
 
         async with client.websocket_connect("/") as ws:
 
             await ws.send_json(subscribe_state)
             resp_json = await ws.receive_json()
             state = resp_json['payload']['data']['state']
-            assert state['state'] == 'initialized'
+            assert state['globalState'] == 'initialized'
 
             resp = await client.post("/", json=mutate_exec, headers=headers)
             assert resp.json()['data']['exec']
@@ -139,6 +139,6 @@ async def test_run(snapshot):
 
 
         resp = await client.post("/", json=query_state, headers=headers)
-        assert 'finished' == resp.json()['data']['state']['state']
+        assert 'finished' == resp.json()['data']['state']['globalState']
 
 ##__________________________________________________________________||

@@ -25,7 +25,7 @@ async def resolve_state(_, info):
 
 state = ObjectType("State")
 
-@state.field("state")
+@state.field("globalState")
 async def resolve_state_state(nextline, *_):
     return nextline.global_state
 
