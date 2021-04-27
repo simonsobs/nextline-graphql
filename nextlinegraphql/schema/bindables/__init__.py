@@ -177,7 +177,7 @@ del _THIS_DIR
 
 statement = """
 import time
-time.sleep(3)
+time.sleep(0.3)
 
 def f():
     for _ in range(1000):
@@ -186,6 +186,8 @@ def f():
 
 f()
 f()
+
+print('here!')
 
 import scriptone
 scriptone.run()
