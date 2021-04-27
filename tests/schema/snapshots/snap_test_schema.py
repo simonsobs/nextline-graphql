@@ -349,6 +349,13 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                             'type': {
                                 'name': None
                             }
+                        },
+                        {
+                            'description': None,
+                            'name': 'source',
+                            'type': {
+                                'name': None
+                            }
                         }
                     ],
                     'inputFields': None,

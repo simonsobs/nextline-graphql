@@ -28,6 +28,11 @@ async def resolve_state(_, info):
     nextline = get_nextline()
     return nextline
 
+@query.field("source")
+async def resolve_source(_, info, fileName=None):
+    nextline = get_nextline()
+    return nextline.get_source(fileName)
+
 @subscription.source("globalState")
 async def global_state_generator(_, info):
     nextline = get_nextline()
