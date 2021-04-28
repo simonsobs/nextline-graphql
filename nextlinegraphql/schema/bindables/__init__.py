@@ -66,7 +66,7 @@ async def stdout_generator(_, info):
     await stdout_queue.unsubscribe(queue)
 
 @subscription.field("stdout")
-async def stdout_resolver(stdout, info):
+def stdout_resolver(stdout, info):
     return stdout
 
 @subscription.source("state")
@@ -76,7 +76,7 @@ async def state_generator(obj, info):
         yield n
 
 @subscription.field("state")
-async def state_resolver(state, info):
+def state_resolver(state, info):
     return state
 
 ##__________________________________________________________________||
