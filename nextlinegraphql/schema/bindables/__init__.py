@@ -223,8 +223,6 @@ async def run_nextline():
 def reset_nextline():
     nextline_holder[:] = []
     get_nextline()
-    event = get_event()
-    event.set()
 
 @mutation.field("exec")
 async def resolve_exec(_, info):
