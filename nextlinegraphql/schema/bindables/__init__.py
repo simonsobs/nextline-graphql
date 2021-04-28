@@ -9,8 +9,6 @@ from nextline import Nextline
 
 ##__________________________________________________________________||
 query = QueryType()
-subscription = SubscriptionType()
-mutation = MutationType()
 
 @query.field("hello")
 async def resolve_hello(_, info):
@@ -33,6 +31,19 @@ async def resolve_source(_, info, fileName=None):
     nextline = get_nextline()
     return nextline.get_source(fileName)
 
+##__________________________________________________________________||
+subscription = SubscriptionType()
+
+@subscription.source("counter")
+async def counter_generator(obj, info):
+    for i in range(5):
+        await asyncio.sleep(1)
+        yield i
+
+@subscription.field("counter")
+def counter_resolver(count, info):
+    return count + 1
+
 @subscription.source("globalState")
 async def global_state_generator(_, info):
     nextline = get_nextline()
@@ -43,6 +54,59 @@ async def global_state_generator(_, info):
 def global_state_resolver(global_state, info):
     return global_state
 
+@subscription.source("stdout")
+async def stdout_generator(_, info):
+    stdout_queue = await get_stdout_queue()
+    queue = stdout_queue.subscribe()
+    nextline = get_nextline()
+    while True:
+        v = await queue.async_q.get()
+        if nextline.global_state == 'running':
+            yield v
+    await stdout_queue.unsubscribe(queue)
+
+@subscription.field("stdout")
+async def stdout_resolver(stdout, info):
+    return stdout
+
+@subscription.source("state")
+async def state_generator(obj, info):
+    nextline = get_nextline()
+    async for n in nextline.nextline_generator():
+        yield n
+
+@subscription.field("state")
+async def state_resolver(state, info):
+    return state
+
+##__________________________________________________________________||
+mutation = MutationType()
+
+@mutation.field("exec")
+async def resolve_exec(_, info):
+    # print(_)
+    # print(info)
+    await run_nextline()
+    return True
+
+@mutation.field("reset")
+async def resolve_reset(_, info):
+    reset_nextline()
+    return True
+
+@mutation.field("sendPdbCommand")
+async def resolve_send_pdb_command(_, info, threadId, taskId, command):
+    threadId = int(threadId)
+    taskId = int(taskId) if taskId else None
+    thread_asynctask_id = (threadId, taskId)
+    nextline = get_nextline()
+    pdb_ci = nextline.pdb_ci_registry.get_ci(thread_asynctask_id)
+    if pdb_ci is None:
+        return False
+    pdb_ci.send_pdb_command(command)
+    return True
+
+##__________________________________________________________________||
 state = ObjectType("State")
 
 @state.field("globalState")
@@ -76,16 +140,6 @@ def reshape_state(state):
         } for thid, thda in state.items()
     ]
     return ret
-
-@subscription.source("state")
-async def state_generator(obj, info):
-    nextline = get_nextline()
-    async for n in nextline.nextline_generator():
-        yield n
-
-@subscription.field("state")
-async def state_resolver(state, info):
-    return state
 
 class StreamOut:
     def __init__(self, queue):
@@ -149,31 +203,6 @@ async def get_stdout_queue():
         stdout_queue_holder.append(StdoutQueue(queue))
     return stdout_queue_holder[0]
 
-@subscription.source("stdout")
-async def stdout_generator(_, info):
-    stdout_queue = await get_stdout_queue()
-    queue = stdout_queue.subscribe()
-    nextline = get_nextline()
-    while True:
-        v = await queue.async_q.get()
-        if nextline.global_state == 'running':
-            yield v
-    await stdout_queue.unsubscribe(queue)
-
-@subscription.field("stdout")
-async def stdout_resolver(stdout, info):
-    return stdout
-
-@subscription.source("counter")
-async def counter_generator(obj, info):
-    for i in range(5):
-        await asyncio.sleep(1)
-        yield i
-
-@subscription.field("counter")
-def counter_resolver(count, info):
-    return count + 1
-
 ##__________________________________________________________________||
 import sys
 _THIS_DIR = Path(__file__).resolve().parent
@@ -223,30 +252,6 @@ async def run_nextline():
 def reset_nextline():
     nextline_holder[:] = []
     get_nextline()
-
-@mutation.field("exec")
-async def resolve_exec(_, info):
-    # print(_)
-    # print(info)
-    await run_nextline()
-    return True
-
-@mutation.field("reset")
-async def resolve_reset(_, info):
-    reset_nextline()
-    return True
-
-@mutation.field("sendPdbCommand")
-async def resolve_send_pdb_command(_, info, threadId, taskId, command):
-    threadId = int(threadId)
-    taskId = int(taskId) if taskId else None
-    thread_asynctask_id = (threadId, taskId)
-    nextline = get_nextline()
-    pdb_ci = nextline.pdb_ci_registry.get_ci(thread_asynctask_id)
-    if pdb_ci is None:
-        return False
-    pdb_ci.send_pdb_command(command)
-    return True
 
 ##__________________________________________________________________||
 bindables = [query, mutation, subscription, state]
