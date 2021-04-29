@@ -47,7 +47,7 @@ def counter_resolver(count, info):
 @subscription.source("globalState")
 async def global_state_generator(_, info):
     nextline = get_nextline()
-    async for s in nextline.global_state_generator():
+    async for s in nextline.subscribe_global_state():
         yield s
 
 @subscription.field("globalState")
