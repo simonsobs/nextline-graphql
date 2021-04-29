@@ -488,13 +488,6 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                             'type': {
                                 'name': 'Int'
                             }
-                        },
-                        {
-                            'description': None,
-                            'name': 'fileLines',
-                            'type': {
-                                'name': None
-                            }
                         }
                     ],
                     'inputFields': None,

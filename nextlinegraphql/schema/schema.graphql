@@ -29,7 +29,6 @@ type Task {
   prompting: Int
   fileName: String
   lineNo: Int
-  fileLines: [String]
 }
 
 type Thread {

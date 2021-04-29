@@ -35,7 +35,6 @@ subscription State {
         prompting
         fileName
         lineNo
-        fileLines
       }
     }
   }
@@ -54,7 +53,6 @@ QUERY_STATE = '''
         prompting
         fileName
         lineNo
-        fileLines
       }
     }
   }

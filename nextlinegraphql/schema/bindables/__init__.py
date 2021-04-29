@@ -144,7 +144,6 @@ def reshape_state(state):
                     "prompting": tada['prompting'],
                     "fileName": tada['file_name'],
                     "lineNo": tada['line_no'],
-                    "fileLines": tada['file_lines']
                 } for taid, tada in thda.items()
             ]
         } for thid, thda in state.items()
