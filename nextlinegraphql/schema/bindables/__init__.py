@@ -54,6 +54,16 @@ async def global_state_generator(_, info):
 def global_state_resolver(global_state, info):
     return global_state
 
+@subscription.source("threadTaskIds")
+async def thread_task_ids_generator(_, info):
+    nextline = get_nextline()
+    async for y in nextline.subscribe_thread_asynctask_ids():
+        yield y
+
+@subscription.field("threadTaskIds")
+def thread_task_ids_resolver(obj, info):
+    return obj
+
 @subscription.source("stdout")
 async def stdout_generator(_, info):
     stdout_queue = await get_stdout_queue()

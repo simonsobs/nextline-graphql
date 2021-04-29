@@ -73,6 +73,15 @@ subscription GlobalState {
 }
 '''.strip()
 
+SUBSCRIBE_THREAD_TASK_IDS = '''
+subscription ThreadTaskIds {
+  threadTaskIds {
+    threadId
+    taskId
+  }
+}
+'''.strip()
+
 ##__________________________________________________________________||
 async def prompting_thread_tasks(ws):
     prompting_counts_prev = {} # key (thread_id, task_id)
@@ -121,6 +130,17 @@ async def test_run(snapshot):
         }
     }
 
+    subscribe_thread_task_ids = {
+        'id': '1',
+        'type': 'start',
+        'payload': {
+            'variables': {},
+            'extensions': {},
+            'operationName': None,
+            'query': SUBSCRIBE_THREAD_TASK_IDS
+        }
+    }
+
     query_state = { 'query': QUERY_STATE }
 
     mutate_exec = { 'query': MUTATE_EXEC }
@@ -141,11 +161,17 @@ async def test_run(snapshot):
         assert 'initialized' == resp.json()['data']['globalState']
 
         async with client.websocket_connect("/") as ws_global_state, \
+                   client.websocket_connect("/") as ws_thread_task_ids, \
                    client.websocket_connect("/") as ws:
 
             await ws_global_state.send_json(subscribe_global_state)
             resp_json = await ws_global_state.receive_json()
             assert 'initialized' == resp_json['payload']['data']['globalState']
+
+            await ws_thread_task_ids.send_json(subscribe_thread_task_ids)
+            resp_json = await ws_thread_task_ids.receive_json()
+            from pprint import pprint
+            pprint(resp_json['payload']['data'])
 
             await ws.send_json(subscribe_state)
             resp_json = await ws.receive_json()

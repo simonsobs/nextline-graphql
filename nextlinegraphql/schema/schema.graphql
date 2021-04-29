@@ -8,6 +8,7 @@ type Query {
 type Subscription {
   counter: Int!
   globalState: String!
+  threadTaskIds: [ThreadTaskId!]!
   state: State!
   stdout: String
 }
@@ -16,6 +17,11 @@ type Mutation {
   exec: Boolean!
   reset: Boolean!
   sendPdbCommand(threadId: String!, taskId: String, command: String!): Boolean!
+}
+
+type ThreadTaskId {
+  threadId: String!
+  taskId: String
 }
 
 type Task {

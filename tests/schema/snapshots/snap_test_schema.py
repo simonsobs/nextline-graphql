@@ -380,6 +380,13 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                         },
                         {
                             'description': None,
+                            'name': 'threadTaskIds',
+                            'type': {
+                                'name': None
+                            }
+                        },
+                        {
+                            'description': None,
                             'name': 'state',
                             'type': {
                                 'name': None
@@ -429,6 +436,27 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                     ],
                     'inputFields': None,
                     'name': 'Mutation'
+                },
+                {
+                    'description': None,
+                    'fields': [
+                        {
+                            'description': None,
+                            'name': 'threadId',
+                            'type': {
+                                'name': None
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'taskId',
+                            'type': {
+                                'name': 'String'
+                            }
+                        }
+                    ],
+                    'inputFields': None,
+                    'name': 'ThreadTaskId'
                 },
                 {
                     'description': None,
