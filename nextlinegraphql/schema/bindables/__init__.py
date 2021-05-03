@@ -58,7 +58,7 @@ def global_state_resolver(global_state, info):
 async def thread_task_ids_generator(_, info):
     nextline = get_nextline()
     async for y in nextline.subscribe_thread_asynctask_ids():
-        yield y
+        yield [{'threadId': e[0], 'taskId': e[1]} for e in y]
 
 @subscription.field("threadTaskIds")
 def thread_task_ids_resolver(obj, info):
