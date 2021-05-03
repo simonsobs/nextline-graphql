@@ -64,6 +64,24 @@ async def thread_task_ids_generator(_, info):
 def thread_task_ids_resolver(obj, info):
     return obj
 
+@subscription.source("threadTaskState")
+async def thread_task_state_generator(_, info, threadId, taskId):
+    threadId = int(threadId)
+    taskId = int(taskId) if taskId else None
+    thread_asynctask_id = (threadId, taskId)
+    nextline = get_nextline()
+    async for y in nextline.subscribe_thread_asynctask_state(thread_asynctask_id):
+        y = {
+            "prompting": y['prompting'],
+            "fileName": y['file_name'],
+            "lineNo": y['line_no'],
+        }
+        yield y
+
+@subscription.field("threadTaskState")
+def thread_task_state_resolver(obj, info, threadId, taskId):
+    return obj
+
 @subscription.source("stdout")
 async def stdout_generator(_, info):
     stdout_queue = await get_stdout_queue()

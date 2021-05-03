@@ -9,6 +9,7 @@ type Subscription {
   counter: Int!
   globalState: String!
   threadTaskIds: [ThreadTaskId!]!
+  threadTaskState(threadId: String!, taskId: String): ThreadTaskState
   state: State!
   stdout: String
 }
@@ -22,6 +23,12 @@ type Mutation {
 type ThreadTaskId {
   threadId: String!
   taskId: String
+}
+
+type ThreadTaskState {
+  prompting: Int
+  fileName: String
+  lineNo: Int
 }
 
 type Task {
