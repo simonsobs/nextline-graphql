@@ -113,10 +113,7 @@ async def resolve_send_pdb_command(_, info, threadId, taskId, command):
     taskId = int(taskId) if taskId else None
     thread_asynctask_id = (threadId, taskId)
     nextline = get_nextline()
-    pdb_ci = nextline.pdb_ci_registry.get_ci(thread_asynctask_id)
-    if pdb_ci is None:
-        return False
-    pdb_ci.send_pdb_command(command)
+    nextline.send_pdb_command(thread_asynctask_id, command)
     return True
 
 ##__________________________________________________________________||
