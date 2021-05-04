@@ -21,11 +21,6 @@ async def resolve_global_state(_, info):
     nextline = get_nextline()
     return nextline.global_state
 
-@query.field("state")
-async def resolve_state(_, info):
-    nextline = get_nextline()
-    return nextline
-
 @query.field("source")
 async def resolve_source(_, info, fileName=None):
     nextline = get_nextline()
@@ -97,16 +92,6 @@ async def stdout_generator(_, info):
 def stdout_resolver(stdout, info):
     return stdout
 
-@subscription.source("state")
-async def state_generator(obj, info):
-    nextline = get_nextline()
-    async for n in nextline.nextline_generator():
-        yield n
-
-@subscription.field("state")
-def state_resolver(state, info):
-    return state
-
 ##__________________________________________________________________||
 mutation = MutationType()
 
@@ -135,39 +120,6 @@ async def resolve_send_pdb_command(_, info, threadId, taskId, command):
     return True
 
 ##__________________________________________________________________||
-state = ObjectType("State")
-
-@state.field("globalState")
-async def resolve_state_state(nextline, *_):
-    return nextline.global_state
-
-@state.field("nthreads")
-async def resolve_state_nthreads(nextline, *_):
-    return nextline.nthreads()
-
-@state.field("threads")
-async def resolve_state_threads(nextline, *_):
-    return reshape_state(nextline.state)
-
-def reshape_state(state):
-    if state is None:
-        return []
-    state = state.data
-    ret = [
-        {
-            "threadId": str(thid),
-            "tasks": [
-                {
-                    "taskId": str(taid) if taid else "",
-                    "prompting": tada['prompting'],
-                    "fileName": tada['file_name'],
-                    "lineNo": tada['line_no'],
-                } for taid, tada in thda.items()
-            ]
-        } for thid, thda in state.items()
-    ]
-    return ret
-
 class StreamOut:
     def __init__(self, queue):
         self.queue = queue
@@ -281,6 +233,6 @@ def reset_nextline():
     get_nextline()
 
 ##__________________________________________________________________||
-bindables = [query, mutation, subscription, state]
+bindables = [query, mutation, subscription]
 
 ##__________________________________________________________________||

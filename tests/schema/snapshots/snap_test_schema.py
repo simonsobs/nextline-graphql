@@ -345,13 +345,6 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                         },
                         {
                             'description': None,
-                            'name': 'state',
-                            'type': {
-                                'name': None
-                            }
-                        },
-                        {
-                            'description': None,
                             'name': 'source',
                             'type': {
                                 'name': None
@@ -390,13 +383,6 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                             'name': 'threadTaskState',
                             'type': {
                                 'name': 'ThreadTaskState'
-                            }
-                        },
-                        {
-                            'description': None,
-                            'name': 'state',
-                            'type': {
-                                'name': None
                             }
                         },
                         {
@@ -492,90 +478,6 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                     ],
                     'inputFields': None,
                     'name': 'ThreadTaskState'
-                },
-                {
-                    'description': None,
-                    'fields': [
-                        {
-                            'description': None,
-                            'name': 'taskId',
-                            'type': {
-                                'name': 'String'
-                            }
-                        },
-                        {
-                            'description': None,
-                            'name': 'prompting',
-                            'type': {
-                                'name': 'Int'
-                            }
-                        },
-                        {
-                            'description': None,
-                            'name': 'fileName',
-                            'type': {
-                                'name': 'String'
-                            }
-                        },
-                        {
-                            'description': None,
-                            'name': 'lineNo',
-                            'type': {
-                                'name': 'Int'
-                            }
-                        }
-                    ],
-                    'inputFields': None,
-                    'name': 'Task'
-                },
-                {
-                    'description': None,
-                    'fields': [
-                        {
-                            'description': None,
-                            'name': 'threadId',
-                            'type': {
-                                'name': None
-                            }
-                        },
-                        {
-                            'description': None,
-                            'name': 'tasks',
-                            'type': {
-                                'name': None
-                            }
-                        }
-                    ],
-                    'inputFields': None,
-                    'name': 'Thread'
-                },
-                {
-                    'description': None,
-                    'fields': [
-                        {
-                            'description': None,
-                            'name': 'globalState',
-                            'type': {
-                                'name': None
-                            }
-                        },
-                        {
-                            'description': None,
-                            'name': 'nthreads',
-                            'type': {
-                                'name': 'Int'
-                            }
-                        },
-                        {
-                            'description': None,
-                            'name': 'threads',
-                            'type': {
-                                'name': None
-                            }
-                        }
-                    ],
-                    'inputFields': None,
-                    'name': 'State'
                 }
             ]
         }
