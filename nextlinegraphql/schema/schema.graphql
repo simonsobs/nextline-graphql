@@ -2,6 +2,7 @@ type Query {
   hello: String!
   globalState: String!
   source(fileName: String): [String]
+  sourceLine(lineNo: Int!, fileName: String): String
 }
 
 type Subscription {

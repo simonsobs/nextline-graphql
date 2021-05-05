@@ -26,6 +26,11 @@ async def resolve_source(_, info, fileName=None):
     nextline = get_nextline()
     return nextline.get_source(fileName)
 
+@query.field("sourceLine")
+async def resolve_source_line(_, info, lineNo, fileName=None):
+    nextline = get_nextline()
+    return nextline.get_source_line(lineNo, fileName)
+
 ##__________________________________________________________________||
 subscription = SubscriptionType()
 
