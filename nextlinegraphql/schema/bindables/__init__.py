@@ -206,16 +206,11 @@ import scripttwo
 scripttwo.run()
 """.strip()
 
-breaks = {
-    # '__main__': ['<module>'],
-    'script': ['run', 'run_threads', 'task', 'task_imp', 'atask', 'run_coroutines']
-}
-
 nextline_holder = []
 
 def get_nextline():
     if not nextline_holder:
-        nextline_holder.append(Nextline(statement, breaks))
+        nextline_holder.append(Nextline(statement))
     return nextline_holder[0]
 
 async def run_nextline():
