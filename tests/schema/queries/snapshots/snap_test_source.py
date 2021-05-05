@@ -23,11 +23,11 @@ snapshots['test_source[default] 1'] = {
             '',
             "print('here!')",
             '',
-            'import scriptone',
-            'scriptone.run()',
+            'import script_threading',
+            'script_threading.run()',
             '',
-            'import scripttwo',
-            'scripttwo.run()'
+            'import script_asyncio',
+            'script_asyncio.run()'
         ]
     }
 }
@@ -76,11 +76,11 @@ snapshots['test_source[string] 1'] = {
             '',
             "print('here!')",
             '',
-            'import scriptone',
-            'scriptone.run()',
+            'import script_threading',
+            'script_threading.run()',
             '',
-            'import scripttwo',
-            'scripttwo.run()'
+            'import script_asyncio',
+            'script_asyncio.run()'
         ]
     }
 }
