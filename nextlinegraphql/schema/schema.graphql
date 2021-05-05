@@ -27,4 +27,5 @@ type ThreadTaskState {
   prompting: Int
   fileName: String
   lineNo: Int
+  traceEvent: String
 }

@@ -70,6 +70,7 @@ async def thread_task_state_generator(_, info, threadId, taskId):
             "prompting": y['prompting'],
             "fileName": y['file_name'],
             "lineNo": y['line_no'],
+            "traceEvent": y['trace_event'],
         }
         yield y
 
