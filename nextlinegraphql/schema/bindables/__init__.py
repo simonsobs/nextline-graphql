@@ -66,6 +66,9 @@ async def thread_task_state_generator(_, info, threadId, taskId):
     thread_asynctask_id = (threadId, taskId)
     nextline = get_nextline()
     async for y in nextline.subscribe_thread_asynctask_state(thread_asynctask_id):
+        # if y['prompting'] and y['trace_event'] == 'return':
+        #     nextline.send_pdb_command(thread_asynctask_id, 'return')
+        #     continue
         y = {
             "prompting": y['prompting'],
             "fileName": y['file_name'],
