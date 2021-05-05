@@ -10,12 +10,12 @@ def run():
     return
 
 def f1():
-    for _ in range(1000):
+    for _ in range(5):
         pass
     return
 
 def f2():
-    for _ in range(1000):
+    for _ in range(5):
         pass
     return
 

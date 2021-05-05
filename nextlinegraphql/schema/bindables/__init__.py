@@ -199,7 +199,7 @@ import time
 time.sleep(0.3)
 
 def f():
-    for _ in range(1000):
+    for _ in range(10):
         pass
     return
 
@@ -208,11 +208,12 @@ f()
 
 print('here!')
 
-import scriptone
-scriptone.run()
+import script_threading
+script_threading.run()
 
-import scripttwo
-scripttwo.run()
+
+import script_asyncio
+script_asyncio.run()
 """.strip()
 
 nextline_holder = []
