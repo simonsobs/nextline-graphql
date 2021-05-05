@@ -349,10 +349,23 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                             'type': {
                                 'name': None
                             }
+                        },
+                        {
+                            'description': None,
+                            'name': 'sourceLine',
+                            'type': {
+                                'name': 'String'
+                            }
                         }
                     ],
                     'inputFields': None,
                     'name': 'Query'
+                },
+                {
+                    'description': 'The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.',
+                    'fields': None,
+                    'inputFields': None,
+                    'name': 'Int'
                 },
                 {
                     'description': None,
@@ -395,12 +408,6 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                     ],
                     'inputFields': None,
                     'name': 'Subscription'
-                },
-                {
-                    'description': 'The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.',
-                    'fields': None,
-                    'inputFields': None,
-                    'name': 'Int'
                 },
                 {
                     'description': None,
@@ -473,6 +480,13 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                             'name': 'lineNo',
                             'type': {
                                 'name': 'Int'
+                            }
+                        },
+                        {
+                            'description': None,
+                            'name': 'traceEvent',
+                            'type': {
+                                'name': 'String'
                             }
                         }
                     ],
