@@ -7,6 +7,15 @@ import pytest
 from nextlinegraphql import app
 
 ##__________________________________________________________________||
+QUERY_SOURCE_LINE = '''
+query SourceLine(
+  $lineNo: Int!
+  $fileName: String
+) {
+  sourceLine(lineNo: $lineNo, fileName: $fileName)
+}
+'''.strip()
+
 MUTATE_EXEC = '''
 mutation Exec {
   exec
@@ -54,6 +63,7 @@ subscription ThreadTaskState(
     prompting
     fileName
     lineNo
+    traceEvent
   }
 }
 '''.strip()
@@ -61,6 +71,8 @@ subscription ThreadTaskState(
 ##__________________________________________________________________||
 async def control_thread_task(client, thread_task_id):
     print(f'control_thread_task({thread_task_id})')
+
+    to_step = ['script_threading.run()', 'script_asyncio.run()']
 
     subscribe_thread_task_state = {
         'id': '1',
@@ -71,6 +83,10 @@ async def control_thread_task(client, thread_task_id):
             'operationName': None,
             'query': SUBSCRIBE_THREAD_TASK_STATE
         }
+    }
+
+    query_source_line = {
+        'query': QUERY_SOURCE_LINE
     }
 
     mutate_send_pdb_command = {
@@ -88,11 +104,25 @@ async def control_thread_task(client, thread_task_id):
             if resp_json['type'] == 'complete':
                 break
             state = resp_json['payload']['data']['threadTaskState']
-
+            print(state)
             if state['prompting']:
+                command = 'next'
+                if state['traceEvent'] == 'line':
+                    query_source_line['variables'] = {
+                        'lineNo': state['lineNo'],
+                        'fileName': state['fileName'],
+                    }
+                    resp = await client.post("/", json=query_source_line, headers=headers)
+                    source_line = resp.json()['data']['sourceLine']
+
+                    print(source_line)
+                    print(source_line in to_step)
+                    if source_line in to_step:
+                        command = 'step'
+
                 mutate_send_pdb_command['variables'] = {
                     **thread_task_id,
-                    'command': 'continue'
+                    'command': command
                 }
                 resp = await client.post("/", json=mutate_send_pdb_command, headers=headers)
 
@@ -116,16 +146,20 @@ async def control_execution(client):
             resp_json = await ws.receive_json()
             if resp_json['type'] == 'complete':
                 break
+            print(1)
+            print(resp_json)
             ids = resp_json['payload']['data']['threadTaskIds']
             ids = [tuple(id_.items()) for id_ in ids] # because a dict cannot be a key of a dict
             prev_ids = list(controllers.keys())
             new_ids = [id_ for id_ in ids if id_ not in prev_ids]
             ended_ids = [id_ for id_ in prev_ids if id_ not in ids]
+            print(2)
             for id_ in new_ids:
                 task = asyncio.create_task(control_thread_task(client, dict(id_)))
                 controllers[id_] = task
             for id_ in ended_ids:
                 del controllers[id_]
+            print(3)
 
 async def monitor_global_state(client):
 
