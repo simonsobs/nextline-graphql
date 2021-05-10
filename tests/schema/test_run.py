@@ -103,6 +103,7 @@ async def control_thread_task(client, thread_task_id):
             resp_json = await ws.receive_json()
             if resp_json['type'] == 'complete':
                 break
+            assert 'errors' not in resp_json['payload']
             state = resp_json['payload']['data']['threadTaskState']
             print(state)
             if state['prompting']:
@@ -141,25 +142,28 @@ async def control_execution(client):
 
     async with client.websocket_connect("/") as ws:
         await ws.send_json(subscribe_thread_task_ids)
-        controllers = {}
+        prev_ids = set()
+        tasks_control_thread_task = set()
+        task_receive_json = asyncio.create_task(ws.receive_json())
         while True:
-            resp_json = await ws.receive_json()
+            aws = {task_receive_json, *tasks_control_thread_task}
+            done, pending = await asyncio.wait(aws, return_when=asyncio.FIRST_COMPLETED)
+            results = [t.result() for t in tasks_control_thread_task & done] # raise exception
+            tasks_control_thread_task = tasks_control_thread_task & pending
+            if not task_receive_json in done:
+                continue
+            resp_json = task_receive_json.result()
+            task_receive_json = asyncio.create_task(ws.receive_json())
+            print(resp_json)
             if resp_json['type'] == 'complete':
                 break
-            print(1)
-            print(resp_json)
-            ids = resp_json['payload']['data']['threadTaskIds']
-            ids = [tuple(id_.items()) for id_ in ids] # because a dict cannot be a key of a dict
-            prev_ids = list(controllers.keys())
-            new_ids = [id_ for id_ in ids if id_ not in prev_ids]
-            ended_ids = [id_ for id_ in prev_ids if id_ not in ids]
-            print(2)
+            ids = resp_json['payload']['data']['threadTaskIds'] # a list of dicts
+            ids = {tuple(id_.items()) for id_ in ids} # a set of tuples. note: a dict is unhashable
+            new_ids = ids - prev_ids
             for id_ in new_ids:
                 task = asyncio.create_task(control_thread_task(client, dict(id_)))
-                controllers[id_] = task
-            for id_ in ended_ids:
-                del controllers[id_]
-            print(3)
+                tasks_control_thread_task.add(task)
+            prev_ids = ids
 
 async def monitor_global_state(client):
 
@@ -206,7 +210,9 @@ async def test_run(snapshot):
 
         task_control_execution = asyncio.create_task(control_execution(client))
 
-        await task_monitor_global_state
+        aws = {task_monitor_global_state, task_control_execution}
+        done, pending = await asyncio.wait(aws, return_when=asyncio.FIRST_COMPLETED)
+        results = [t.result() for t in done] # re-raise exception
 
         resp = await client.post("/", json=query_global_state, headers=headers)
         assert 'finished' == resp.json()['data']['globalState']
