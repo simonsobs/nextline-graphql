@@ -5,6 +5,7 @@ import pytest
 from nextlinegraphql import schema
 
 ##__________________________________________________________________||
+@pytest.mark.xfail()
 @pytest.mark.asyncio
 async def test_schema(snapshot):
 
