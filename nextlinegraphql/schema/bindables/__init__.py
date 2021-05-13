@@ -228,7 +228,11 @@ async def run_nextline():
     # print(nextline.global_state)
     if nextline.global_state == 'initialized':
         nextline.run()
+        asyncio.create_task(_wait(nextline))
     return
+
+async def _wait(nextline):
+    await nextline.wait()
 
 def reset_nextline():
     nextline_holder[:] = []
