@@ -232,7 +232,7 @@ async def run_nextline():
     return
 
 async def _wait(nextline):
-    await nextline.wait()
+    await nextline.finish()
     await nextline.close()
 
 def reset_nextline():
