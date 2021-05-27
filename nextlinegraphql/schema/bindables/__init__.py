@@ -233,7 +233,6 @@ async def run_nextline():
 
 async def _wait(nextline):
     await nextline.finish()
-    await nextline.close()
 
 def reset_nextline():
     nextline_holder[:] = []
