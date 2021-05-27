@@ -235,8 +235,8 @@ async def _wait(nextline):
     await nextline.finish()
 
 def reset_nextline():
-    nextline_holder[:] = []
-    get_nextline()
+    nextline = get_nextline()
+    nextline.reset()
 
 ##__________________________________________________________________||
 bindables = [query, mutation, subscription]
