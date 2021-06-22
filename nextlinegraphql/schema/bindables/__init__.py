@@ -112,8 +112,13 @@ async def resolve_exec(_, info):
     return True
 
 @mutation.field("reset")
+async def resolve_reset(_, info, statement=None):
+    reset_nextline(statement=statement)
+    return True
+
+@mutation.field("close")
 async def resolve_reset(_, info):
-    reset_nextline()
+    await close_nextline()
     return True
 
 @mutation.field("sendPdbCommand")
@@ -223,6 +228,11 @@ def get_nextline():
         nextline_holder.append(Nextline(statement))
     return nextline_holder[0]
 
+def pop_nextline():
+    nextline = get_nextline()
+    nextline_holder.clear()
+    return nextline
+
 async def run_nextline():
     nextline = get_nextline()
     # print(nextline.global_state)
@@ -234,9 +244,13 @@ async def run_nextline():
 async def _wait(nextline):
     await nextline.finish()
 
-def reset_nextline():
+def reset_nextline(statement=None):
     nextline = get_nextline()
-    nextline.reset()
+    nextline.reset(statement=statement)
+
+async def close_nextline():
+    nextline = pop_nextline()
+    await nextline.close()
 
 ##__________________________________________________________________||
 bindables = [query, mutation, subscription]

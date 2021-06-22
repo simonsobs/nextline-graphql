@@ -15,7 +15,8 @@ type Subscription {
 
 type Mutation {
   exec: Boolean!
-  reset: Boolean!
+  reset(statement: String): Boolean!
+  close: Boolean!
   sendPdbCommand(threadId: String!, taskId: String, command: String!): Boolean!
 }
 

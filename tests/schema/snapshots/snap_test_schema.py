@@ -428,6 +428,13 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                         },
                         {
                             'description': None,
+                            'name': 'close',
+                            'type': {
+                                'name': None
+                            }
+                        },
+                        {
+                            'description': None,
                             'name': 'sendPdbCommand',
                             'type': {
                                 'name': None
