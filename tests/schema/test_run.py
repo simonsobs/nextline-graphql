@@ -185,7 +185,7 @@ async def monitor_global_state(client):
             if resp_json['type'] == 'complete':
                 break
             print(resp_json['payload']['data']['globalState'])
-            if resp_json['payload']['data']['globalState'] == 'closed':
+            if resp_json['payload']['data']['globalState'] == 'finished':
                 return
 
 @pytest.mark.asyncio
@@ -218,6 +218,6 @@ async def test_run(snapshot):
             break # to be removed
 
         resp = await client.post("/", json=query_global_state, headers=headers)
-        assert 'closed' == resp.json()['data']['globalState']
+        assert 'finished' == resp.json()['data']['globalState']
 
 ##__________________________________________________________________||
