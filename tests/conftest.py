@@ -11,3 +11,10 @@ def recover_trace(monkeypatch):
     threading.settrace(trace_org)
 
 ##__________________________________________________________________||
+@pytest.fixture(autouse=True)
+async def close_nextline():
+    yield
+    from nextlinegraphql.schema.bindables import close_nextline as close
+    await close()
+
+##__________________________________________________________________||
