@@ -117,7 +117,7 @@ async def resolve_reset(_, info, statement=None):
     return True
 
 @mutation.field("close")
-async def resolve_reset(_, info):
+async def resolve_close(_, info):
     await close_nextline()
     return True
 
