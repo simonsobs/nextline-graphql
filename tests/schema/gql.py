@@ -6,6 +6,12 @@ query GlobalState {
 }
 '''.strip()
 
+QUERY_SOURCE = '''
+query Source($fileName: String) {
+  source(fileName: $fileName)
+}
+'''.strip()
+
 QUERY_SOURCE_LINE = '''
 query SourceLine(
   $lineNo: Int!

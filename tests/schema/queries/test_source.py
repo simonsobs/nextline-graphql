@@ -8,12 +8,9 @@ from async_asgi_testclient import TestClient
 
 from nextlinegraphql import app
 
-##__________________________________________________________________||
-QUERY_SOURCE = '''
-query Source($fileName: String) {
-  source(fileName: $fileName)
-}
-'''.strip()
+from ..gql import (
+    QUERY_SOURCE
+)
 
 ##__________________________________________________________________||
 THIS_DIR = Path(__file__).resolve().parent
