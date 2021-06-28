@@ -8,18 +8,10 @@ from async_asgi_testclient import TestClient
 
 from nextlinegraphql import app
 
-##__________________________________________________________________||
-MUTATION_RESET = '''
-mutation Reset($statement: String) {
-  reset(statement: $statement)
-}
-'''.strip()
-
-QUERY_SOURCE = '''
-query Source($fileName: String) {
-  source(fileName: $fileName)
-}
-'''.strip()
+from ..gql import (
+    QUERY_SOURCE,
+    MUTATION_RESET
+)
 
 ##__________________________________________________________________||
 SOURCE_ONE = """

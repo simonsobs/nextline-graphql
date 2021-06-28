@@ -59,6 +59,12 @@ mutation Exec {
 '''.strip()
 
 
+MUTATION_RESET = '''
+mutation Reset($statement: String) {
+  reset(statement: $statement)
+}
+'''.strip()
+
 MUTATE_SEND_PDB_COMMAND = '''
 mutation SendPdbCommand(
   $threadId: String!
