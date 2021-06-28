@@ -132,9 +132,9 @@ async def monitor_global_state(client):
             resp_json = await ws.receive_json()
             if resp_json['type'] == 'complete':
                 break
-            print(resp_json['payload']['data']['globalState'])
+            # print(resp_json['payload']['data']['globalState'])
             if resp_json['payload']['data']['globalState'] == 'finished':
-                return
+                break
 
 @pytest.mark.asyncio
 async def test_run(snapshot):
