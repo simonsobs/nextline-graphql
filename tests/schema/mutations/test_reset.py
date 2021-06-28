@@ -28,10 +28,6 @@ time.sleep(0.1)
 """.strip()
 
 ##__________________________________________________________________||
-THIS_DIR = Path(__file__).resolve().parent
-PACKAGE_TOP = THIS_DIR.parent.parent.parent
-SCRIPT_PATH = str(PACKAGE_TOP.joinpath('nextlinegraphql', 'schema', 'bindables', 'script_threading.py'))
-
 params = [
     pytest.param(None, id='no-statement'),
     pytest.param(SOURCE_ONE, id='statement'),
