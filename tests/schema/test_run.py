@@ -6,67 +6,15 @@ import pytest
 
 from nextlinegraphql import app
 
-##__________________________________________________________________||
-QUERY_SOURCE_LINE = '''
-query SourceLine(
-  $lineNo: Int!
-  $fileName: String
-) {
-  sourceLine(lineNo: $lineNo, fileName: $fileName)
-}
-'''.strip()
-
-MUTATE_EXEC = '''
-mutation Exec {
-  exec
-}
-'''.strip()
-
-
-MUTATE_SEND_PDB_COMMAND = '''
-mutation SendPdbCommand(
-  $threadId: String!
-  $taskId: String
-  $command: String!
-) {
-  sendPdbCommand(threadId: $threadId, taskId: $taskId, command: $command)
-}
-'''.strip()
-
-QUERY_GLOBAL_STATE = '''
-query GlobalState {
-  globalState
-}
-'''.strip()
-
-SUBSCRIBE_GLOBAL_STATE = '''
-subscription GlobalState {
-  globalState
-}
-'''.strip()
-
-SUBSCRIBE_THREAD_TASK_IDS = '''
-subscription ThreadTaskIds {
-  threadTaskIds {
-    threadId
-    taskId
-  }
-}
-'''.strip()
-
-SUBSCRIBE_THREAD_TASK_STATE = '''
-subscription ThreadTaskState(
-  $threadId: String!
-  $taskId: String
-) {
-  threadTaskState(threadId: $threadId, taskId: $taskId) {
-    prompting
-    fileName
-    lineNo
-    traceEvent
-  }
-}
-'''.strip()
+from .gql import (
+    QUERY_GLOBAL_STATE,
+    QUERY_SOURCE_LINE,
+    SUBSCRIBE_GLOBAL_STATE,
+    SUBSCRIBE_THREAD_TASK_IDS,
+    SUBSCRIBE_THREAD_TASK_STATE,
+    MUTATE_EXEC,
+    MUTATE_SEND_PDB_COMMAND,
+)
 
 ##__________________________________________________________________||
 async def control_thread_task(client, thread_task_id):
