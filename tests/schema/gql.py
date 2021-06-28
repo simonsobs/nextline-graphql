@@ -21,6 +21,12 @@ query SourceLine(
 }
 '''.strip()
 
+QUERY_EXCEPTION = '''
+query Exception {
+  exception
+}
+'''.strip()
+
 ##__________________________________________________________________||
 SUBSCRIBE_GLOBAL_STATE = '''
 subscription GlobalState {

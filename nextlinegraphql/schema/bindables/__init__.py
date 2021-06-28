@@ -2,6 +2,7 @@ from collections import deque
 from pathlib import Path
 import asyncio
 import threading
+import traceback
 import janus
 from ariadne import QueryType, MutationType, SubscriptionType, ObjectType
 
@@ -30,6 +31,15 @@ async def resolve_source(_, info, fileName=None):
 async def resolve_source_line(_, info, lineNo, fileName=None):
     nextline = get_nextline()
     return nextline.get_source_line(lineNo, fileName)
+
+@query.field("exception")
+async def resolve_exception(_, info):
+    nextline = get_nextline()
+    exc = nextline.exception()
+    if not exc:
+        return
+    ret = ''.join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+    return ret
 
 ##__________________________________________________________________||
 subscription = SubscriptionType()

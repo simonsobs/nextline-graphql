@@ -3,6 +3,7 @@ type Query {
   globalState: String!
   source(fileName: String): [String]
   sourceLine(lineNo: Int!, fileName: String): String
+  exception: String
 }
 
 type Subscription {

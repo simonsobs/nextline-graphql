@@ -356,6 +356,13 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
                             'type': {
                                 'name': 'String'
                             }
+                        },
+                        {
+                            'description': None,
+                            'name': 'exception',
+                            'type': {
+                                'name': 'String'
+                            }
                         }
                     ],
                     'inputFields': None,
