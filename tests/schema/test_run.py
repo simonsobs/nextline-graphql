@@ -106,6 +106,8 @@ async def control_execution(client):
             if resp_json['type'] == 'complete':
                 break
             ids = resp_json['payload']['data']['threadTaskIds'] # a list of dicts
+            if not ids:
+                break
             ids = {tuple(id_.items()) for id_ in ids} # a set of tuples. note: a dict is unhashable
             new_ids = ids - prev_ids
             for id_ in new_ids:
@@ -163,7 +165,7 @@ async def test_run(snapshot):
             done, pending = await asyncio.wait(aws, return_when=asyncio.FIRST_COMPLETED)
             results = [t.result() for t in done] # re-raise exception
             aws = pending
-            break # to be removed
+            # break # to be removed
 
         resp = await client.post("/", json=query_global_state, headers=headers)
         assert 'finished' == resp.json()['data']['globalState']
