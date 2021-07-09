@@ -1,35 +1,34 @@
 type Query {
-    hello: String!
-    state: State!
+  hello: String!
+  globalState: String!
+  source(fileName: String): [String]
+  sourceLine(lineNo: Int!, fileName: String): String
+  exception: String
 }
 
 type Subscription {
-    counter: Int!
-    state: State!
-    stdout: String
+  counter: Int!
+  globalState: String!
+  threadTaskIds: [ThreadTaskId!]!
+  threadTaskState(threadId: String!, taskId: String): ThreadTaskState
+  stdout: String
 }
 
 type Mutation {
-    exec: Boolean!
-    reset: Boolean!
-    sendPdbCommand(threadId: String!, taskId: String, command: String!): Boolean!
+  exec: Boolean!
+  reset(statement: String): Boolean!
+  close: Boolean!
+  sendPdbCommand(threadId: String!, taskId: String, command: String!): Boolean!
 }
 
-type Task {
-    taskId: String,
-    prompting: Int,
-    fileName: String,
-    lineNo: Int,
-    fileLines: [String]
+type ThreadTaskId {
+  threadId: String!
+  taskId: String
 }
 
-type Thread {
-    threadId: String!
-    tasks: [Task]
-}
-
-type State {
-    state: String!
-    nthreads: Int
-    threads: [Thread]
+type ThreadTaskState {
+  prompting: Int
+  fileName: String
+  lineNo: Int
+  traceEvent: String
 }
