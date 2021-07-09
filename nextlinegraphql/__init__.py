@@ -46,9 +46,6 @@ app.mount("/", app_)
 import sys
 sys.argv[1:] = []
 
-import sys
-sys.argv[1:] = []
-
 ##__________________________________________________________________||
 from ._version import get_versions
 __version__ = get_versions()['version']
