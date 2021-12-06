@@ -1,8 +1,11 @@
 name: Upload Python Package
 
 on:
-  release:
-    types: [created]
+  # release:
+  #   types: [created]
+  push:
+    tags:
+      - 'v*.*.*'
 
 jobs:
   deploy:
@@ -11,6 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
