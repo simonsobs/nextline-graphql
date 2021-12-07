@@ -1,0 +1,15 @@
+{
+    "python.linting.pylintEnabled": false,
+    "python.formatting.provider": "black",
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": [
+        "--ignore=E265, E266, E501, W503",
+        "--max-line-length=150",
+        "--max-complexity=20"
+    ],
+    "python.linting.enabled": true,
+    "python.formatting.blackArgs": [
+        "--line-length",
+        "79"
+    ]
+}
