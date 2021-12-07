@@ -39,6 +39,12 @@ setup(
             'pytest-asyncio>=0.14',
             'snapshottest>0.5',
             'async-asgi-testclient>=1.4.6'
-        ]
+        ],
+        "dev": [
+            "uvicorn",
+            "twine",
+            "flake8",
+            "black",
+        ],
     }
 )
