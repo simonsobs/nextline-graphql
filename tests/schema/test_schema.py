@@ -4,12 +4,13 @@ import pytest
 
 from nextlinegraphql import schema
 
+
 ##__________________________________________________________________||
 @pytest.mark.xfail()
 @pytest.mark.asyncio
 async def test_schema(snapshot):
 
-    query = '''
+    query = """
       {
         __schema {
           types {
@@ -30,12 +31,13 @@ async def test_schema(snapshot):
           }
         }
       }
-    '''
+    """
 
-    data = { 'query': query }
+    data = {"query": query}
     success, response = await graphql(schema, data)
     assert success
-    assert 'errors' not in response
+    assert "errors" not in response
     snapshot.assert_match(response)
+
 
 ##__________________________________________________________________||

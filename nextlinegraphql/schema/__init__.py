@@ -9,7 +9,7 @@ type_defs = load_schema_from_path(_THISDIR)
 del _THISDIR
 
 ##__________________________________________________________________||
-from .bindables import bindables
+from .bindables import bindables  # noqa: E402
 
 ##__________________________________________________________________||
 schema = make_executable_schema(type_defs, *bindables)
