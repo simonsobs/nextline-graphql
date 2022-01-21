@@ -51,6 +51,11 @@ middleware = [
 app = Starlette(debug=True, middleware=middleware)
 app.mount("/", app_)
 
+
+def create_app():
+    return app
+
+
 ##__________________________________________________________________||
 # remove args so that they won't be processed in the executing script
 # TODO This should be properly handled and tested

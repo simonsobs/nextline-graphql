@@ -1,5 +1,6 @@
 type Query {
   hello: String!
+  helloDb: String
   globalState: String!
   source(fileName: String): [String]
   sourceLine(lineNo: Int!, fileName: String): String
@@ -19,6 +20,7 @@ type Mutation {
   reset(statement: String): Boolean!
   close: Boolean!
   sendPdbCommand(threadId: String!, taskId: String, command: String!): Boolean!
+  updateHelloDbMessage(message: String!): Boolean!
 }
 
 type ThreadTaskId {
