@@ -4,7 +4,7 @@ import pytest
 
 from async_asgi_testclient import TestClient
 
-from nextlinegraphql import app
+from nextlinegraphql import create_app
 
 from ..gql import (
     QUERY_GLOBAL_STATE,
@@ -186,7 +186,7 @@ async def test_reset(snapshot, statement):
 
     mutate_exec = {"query": MUTATE_EXEC}
 
-    async with TestClient(app) as client:
+    async with TestClient(create_app()) as client:
         resp = await client.post("/", json=mutate_reset, headers=headers)
         assert resp.status_code == 200
         assert {"data": {"reset": True}} == resp.json()

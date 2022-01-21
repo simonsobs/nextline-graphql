@@ -1,9 +1,8 @@
 """
-uvicorn nextlinegraphql:app
-uvicorn --reload --reload-dir nextline-graphql nextlinegraphql:app
+uvicorn --factory --reload --reload-dir nextline-graphql --reload-dir nextline nextlinegraphql:create_app
 """
 
-__all__ = ["app"]
+__all__ = ["create_app"]
 
 from ariadne.asgi import GraphQL
 
@@ -35,24 +34,23 @@ class WGraphQL(GraphQL):
         )
 
 
-# app_ = GraphQL(schema, debug=True)
-app_ = WGraphQL(schema, debug=True)
-
-##__________________________________________________________________||
-middleware = [
-    Middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-]
-
-app = Starlette(debug=True, middleware=middleware)
-app.mount("/", app_)
-
-
 def create_app():
+
+    # app_ = GraphQL(schema, debug=True)
+    app_ = WGraphQL(schema, debug=True)
+
+    middleware = [
+        Middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+    ]
+
+    app = Starlette(debug=True, middleware=middleware)
+    app.mount("/", app_)
+
     return app
 
 

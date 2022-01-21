@@ -4,7 +4,7 @@ from async_asgi_testclient import TestClient
 import pytest
 from unittest.mock import AsyncMock, Mock
 
-from nextlinegraphql import app
+from nextlinegraphql import create_app
 
 
 ##__________________________________________________________________||
@@ -33,7 +33,7 @@ async def test_query():
         "Content-Type:": "application/json",
     }
 
-    async with TestClient(app) as client:
+    async with TestClient(create_app()) as client:
         resp = await client.post("/", json=data, headers=headers)
         assert resp.status_code == 200
         expect = {"data": {"hello": "Hello, Mozilla/5.0!"}}
@@ -61,7 +61,7 @@ async def test_subscription():
         },
     }
 
-    async with TestClient(app) as client:
+    async with TestClient(create_app()) as client:
         async with client.websocket_connect("/") as ws:
             await ws.send_json(data)
 

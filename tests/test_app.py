@@ -10,7 +10,7 @@ from async_asgi_testclient import TestClient
 
 import pytest
 
-from nextlinegraphql import app
+from nextlinegraphql import create_app
 
 
 ##__________________________________________________________________||
@@ -31,7 +31,7 @@ async def test_cors_get():
     headers = {
         "ORIGIN": "https://foo.example",
     }
-    async with TestClient(app) as client:
+    async with TestClient(create_app()) as client:
         resp = await client.get("/", headers=headers)
         assert "*" == resp.headers["access-control-allow-origin"]
         assert resp.status_code == 200
@@ -50,7 +50,7 @@ async def test_cors_preflight():
         "Access-Control-Request-Method": "POST",
         "Access-Control-Request-Headers": "X-PINGOTHER, Content-Type",
     }
-    async with TestClient(app) as client:
+    async with TestClient(create_app()) as client:
         resp = await client.options("/", headers=headers)
         assert "*" == resp.headers["access-control-allow-origin"]
         assert resp.status_code == 200
@@ -60,7 +60,7 @@ async def test_cors_preflight():
 @pytest.mark.asyncio
 async def test_playground():
     """test if the playground is returned for the get request"""
-    async with TestClient(app) as client:
+    async with TestClient(create_app()) as client:
         resp = await client.get("/")
         assert resp.status_code == 200
         assert "text/html" in (resp.headers["content-type"].lower())
