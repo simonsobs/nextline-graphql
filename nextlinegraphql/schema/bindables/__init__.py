@@ -22,7 +22,8 @@ async def resolve_hello(_, info):
 
 @query.field("helloDb")
 async def resolve_hello_db(_, info):
-    with db.Session.begin() as session:
+    Session = info.context["dbsession"]
+    with Session.begin() as session:
         model = session.query(db.models.Hello).one_or_none()
         if model is None:
             return None
@@ -181,7 +182,8 @@ async def resolve_send_pdb_command(_, info, threadId, taskId, command):
 
 @mutation.field("updateHelloDbMessage")
 async def resolve_update_hello_db_message(_, info, message):
-    with db.Session.begin() as session:
+    Session = info.context["dbsession"]
+    with Session.begin() as session:
         model = session.query(db.models.Hello).one_or_none()
         if model is None:
             model = db.models.Hello(message=message)

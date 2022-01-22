@@ -28,10 +28,17 @@ class WGraphQL(GraphQL):
         )
 
 
+from . import db
+
+
+def get_context_value(request):
+    # https://stackoverflow.com/a/60899736/7309855
+    return {"request": request, "dbsession": db.Session}
+
+
 def create_app():
 
-    # app_ = GraphQL(schema, debug=True)
-    app_ = WGraphQL(schema, debug=True)
+    app_ = WGraphQL(schema, context_value=get_context_value, debug=True)
 
     middleware = [
         Middleware(
