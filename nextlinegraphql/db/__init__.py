@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 from . import models
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./db.sqlite3"
+SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 
 
 class Db:
