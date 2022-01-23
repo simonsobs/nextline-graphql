@@ -3,7 +3,7 @@ from async_asgi_testclient import TestClient
 
 import pytest
 
-from nextlinegraphql import app
+from nextlinegraphql import create_app
 
 from .gql import (
     QUERY_GLOBAL_STATE,
@@ -158,7 +158,7 @@ async def test_run(snapshot):
 
     headers = {"Content-Type:": "application/json"}
 
-    async with TestClient(app) as client:
+    async with TestClient(create_app()) as client:
         resp = await client.post("/", json=query_global_state, headers=headers)
         assert "initialized" == resp.json()["data"]["globalState"]
 

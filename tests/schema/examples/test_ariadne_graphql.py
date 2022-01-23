@@ -4,7 +4,7 @@ from ariadne import graphql, subscribe
 import pytest
 from unittest.mock import AsyncMock, Mock
 
-from nextlinegraphql import schema
+from nextlinegraphql.schema import schema
 
 
 ##__________________________________________________________________||

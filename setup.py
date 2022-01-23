@@ -31,6 +31,7 @@ setup(
         "uvicorn>=0.12.2",
         "websockets>=8.1",
         "janus>=0.6",
+        "SQLAlchemy>=1.4",
     ],
     extras_require={
         "tests": [

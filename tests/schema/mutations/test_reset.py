@@ -2,7 +2,7 @@ import pytest
 
 from async_asgi_testclient import TestClient
 
-from nextlinegraphql import app
+from nextlinegraphql import create_app
 
 from ..gql import QUERY_SOURCE, MUTATION_RESET
 
@@ -29,14 +29,14 @@ async def test_reset(snapshot, statement):
     if statement:
         data["variables"] = {"statement": statement}
 
-    async with TestClient(app) as client:
+    async with TestClient(create_app()) as client:
         resp = await client.post("/", json=data, headers=headers)
         assert resp.status_code == 200
         assert {"data": {"reset": True}} == resp.json()
 
     data = {"query": QUERY_SOURCE}
 
-    async with TestClient(app) as client:
+    async with TestClient(create_app()) as client:
         resp = await client.post("/", json=data, headers=headers)
         assert resp.status_code == 200
         snapshot.assert_match(resp.json())
