@@ -5,6 +5,7 @@ from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
 from .schema import schema
+from .db import Db
 
 
 ##__________________________________________________________________||
@@ -28,17 +29,15 @@ class WGraphQL(GraphQL):
         )
 
 
-from . import db
-
-
-def get_context_value(request):
-    # https://stackoverflow.com/a/60899736/7309855
-    return {"request": request, "dbsession": db.Session}
-
-
 def create_app():
 
-    app_ = WGraphQL(schema, context_value=get_context_value, debug=True)
+    db = Db()
+
+    app_ = WGraphQL(
+        schema,
+        context_value=lambda request: {"request": request, "db": db},
+        debug=True,
+    )
 
     middleware = [
         Middleware(

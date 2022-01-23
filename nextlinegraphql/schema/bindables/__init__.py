@@ -7,7 +7,7 @@ from ariadne import QueryType, MutationType, SubscriptionType
 
 from nextline import Nextline
 
-from ... import db
+# from ... import db
 
 ##__________________________________________________________________||
 query = QueryType()
@@ -22,8 +22,8 @@ async def resolve_hello(_, info):
 
 @query.field("helloDb")
 async def resolve_hello_db(_, info):
-    Session = info.context["dbsession"]
-    with Session.begin() as session:
+    db = info.context["db"]
+    with db.Session.begin() as session:
         model = session.query(db.models.Hello).one_or_none()
         if model is None:
             return None
@@ -182,8 +182,8 @@ async def resolve_send_pdb_command(_, info, threadId, taskId, command):
 
 @mutation.field("updateHelloDbMessage")
 async def resolve_update_hello_db_message(_, info, message):
-    Session = info.context["dbsession"]
-    with Session.begin() as session:
+    db = info.context["db"]
+    with db.Session.begin() as session:
         model = session.query(db.models.Hello).one_or_none()
         if model is None:
             model = db.models.Hello(message=message)
