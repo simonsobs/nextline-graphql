@@ -5,7 +5,7 @@ import traceback
 import janus
 from ariadne import QueryType, MutationType, SubscriptionType
 
-from ...nl import get_nextline, run_nextline, reset_nextline, close_nextline
+from ...nl import run_nextline, reset_nextline, close_nextline
 
 ##__________________________________________________________________||
 query = QueryType()
@@ -30,25 +30,25 @@ async def resolve_hello_db(_, info):
 
 @query.field("globalState")
 async def resolve_global_state(_, info):
-    nextline = get_nextline()
+    nextline = info.context["nextline"]
     return nextline.global_state
 
 
 @query.field("source")
 async def resolve_source(_, info, fileName=None):
-    nextline = get_nextline()
+    nextline = info.context["nextline"]
     return nextline.get_source(fileName)
 
 
 @query.field("sourceLine")
 async def resolve_source_line(_, info, lineNo, fileName=None):
-    nextline = get_nextline()
+    nextline = info.context["nextline"]
     return nextline.get_source_line(lineNo, fileName)
 
 
 @query.field("exception")
 async def resolve_exception(_, info):
-    nextline = get_nextline()
+    nextline = info.context["nextline"]
     exc = nextline.exception()
     if not exc:
         return
@@ -76,7 +76,7 @@ def counter_resolver(count, info):
 
 @subscription.source("globalState")
 async def global_state_generator(_, info):
-    nextline = get_nextline()
+    nextline = info.context["nextline"]
     async for s in nextline.subscribe_global_state():
         # if s == 'finished':
         #     print('finished', nextline.exception())
@@ -91,7 +91,7 @@ def global_state_resolver(global_state, info):
 
 @subscription.source("threadTaskIds")
 async def thread_task_ids_generator(_, info):
-    nextline = get_nextline()
+    nextline = info.context["nextline"]
     async for y in nextline.subscribe_thread_asynctask_ids():
         yield [{"threadId": e[0], "taskId": e[1]} for e in y]
 
@@ -106,7 +106,7 @@ async def thread_task_state_generator(_, info, threadId, taskId):
     threadId = int(threadId)
     taskId = int(taskId) if taskId else None
     thread_asynctask_id = (threadId, taskId)
-    nextline = get_nextline()
+    nextline = info.context["nextline"]
     async for y in nextline.subscribe_thread_asynctask_state(
         thread_asynctask_id
     ):
@@ -131,7 +131,7 @@ def thread_task_state_resolver(obj, info, threadId, taskId):
 async def stdout_generator(_, info):
     stdout_queue = await get_stdout_queue()
     queue = stdout_queue.subscribe()
-    nextline = get_nextline()
+    nextline = info.context["nextline"]
     while True:
         v = await queue.async_q.get()
         if nextline.global_state == "running":
@@ -173,7 +173,7 @@ async def resolve_send_pdb_command(_, info, threadId, taskId, command):
     threadId = int(threadId)
     taskId = int(taskId) if taskId else None
     thread_asynctask_id = (threadId, taskId)
-    nextline = get_nextline()
+    nextline = info.context["nextline"]
     nextline.send_pdb_command(thread_asynctask_id, command)
     return True
 
