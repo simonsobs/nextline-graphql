@@ -8,6 +8,7 @@ from .schema import schema
 from .db import Db
 from .nl import get_nextline
 
+
 ##__________________________________________________________________||
 class WGraphQL(GraphQL):
     """Wrap GraphQL for introspection"""
