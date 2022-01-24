@@ -7,7 +7,6 @@ from ariadne import QueryType, MutationType, SubscriptionType
 
 from nextline import Nextline
 
-# from ... import db
 
 ##__________________________________________________________________||
 query = QueryType()
