@@ -6,7 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from .schema import schema
 from .db import Db
-
+from .nl import get_nextline
 
 ##__________________________________________________________________||
 class WGraphQL(GraphQL):
@@ -35,7 +35,11 @@ def create_app():
 
     app_ = WGraphQL(
         schema,
-        context_value=lambda request: {"request": request, "db": db},
+        context_value=lambda request: {
+            "request": request,
+            "db": db,
+            "nextline": get_nextline(),
+        },
         debug=True,
     )
 
