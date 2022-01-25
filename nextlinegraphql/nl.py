@@ -40,12 +40,6 @@ def get_nextline():
     return nextline_holder[0]
 
 
-def pop_nextline():
-    nextline = get_nextline()
-    nextline_holder.clear()
-    return nextline
-
-
 async def run_nextline():
     nextline = get_nextline()
     # print(nextline.global_state)
@@ -62,6 +56,12 @@ async def _wait(nextline):
 def reset_nextline(statement=None):
     nextline = get_nextline()
     nextline.reset(statement=statement)
+
+
+def pop_nextline():
+    nextline = get_nextline()
+    nextline_holder.clear()
+    return nextline
 
 
 async def close_nextline():
