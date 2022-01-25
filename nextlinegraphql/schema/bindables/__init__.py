@@ -3,9 +3,20 @@ import asyncio
 import threading
 import traceback
 import janus
-from ariadne import QueryType, MutationType, SubscriptionType
+from ariadne import ScalarType, QueryType, MutationType, SubscriptionType
 
 from ...nl import run_nextline, reset_nextline, close_nextline
+
+
+##__________________________________________________________________||
+datetime_scalar = ScalarType("Datetime")
+
+
+@datetime_scalar.serializer
+def serialize_datetime(value):
+    print(value)
+    return value.isoformat()
+
 
 ##__________________________________________________________________||
 query = QueryType()
@@ -26,6 +37,14 @@ async def resolve_hello_db(_, info):
         if model is None:
             return None
         return model.message
+
+
+@query.field("stateChanges")
+async def resolve_state_changes(_, info):
+    db = info.context["db"]
+    with db.Session.begin() as session:
+        models = session.query(db.models.StateChange).all()
+        return [{"name": m.name, "time": m.time} for m in models]
 
 
 @query.field("globalState")
@@ -263,6 +282,6 @@ async def get_stdout_queue():
 
 
 ##__________________________________________________________________||
-bindables = [query, mutation, subscription]
+bindables = [query, mutation, subscription, datetime_scalar]
 
 ##__________________________________________________________________||

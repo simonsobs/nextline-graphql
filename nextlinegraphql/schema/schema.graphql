@@ -1,6 +1,9 @@
+scalar Datetime
+
 type Query {
   hello: String!
   helloDb: String
+  stateChanges: [StateChange!]
   globalState: String!
   source(fileName: String): [String]
   sourceLine(lineNo: Int!, fileName: String): String
@@ -33,4 +36,9 @@ type ThreadTaskState {
   fileName: String
   lineNo: Int
   traceEvent: String
+}
+
+type StateChange {
+  name: String
+  time: Datetime
 }
