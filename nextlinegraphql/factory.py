@@ -1,3 +1,4 @@
+import asyncio
 from ariadne.asgi import GraphQL
 
 from starlette.applications import Starlette
@@ -30,9 +31,20 @@ class WGraphQL(GraphQL):
         )
 
 
+async def monitor_state(db):
+    nextline = get_nextline()
+    async for s in nextline.subscribe_global_state():
+        with db.Session.begin() as session:
+            model = db.models.StateChange(name=s)
+            session.add(model)
+            session.commit()
+
+
 def create_app():
 
     db = Db()
+
+    asyncio.create_task(monitor_state(db))
 
     app_ = WGraphQL(
         schema,
