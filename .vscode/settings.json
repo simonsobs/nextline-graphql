@@ -8,5 +8,9 @@
     "--max-complexity=20"
   ],
   "python.linting.enabled": true,
-  "python.formatting.blackArgs": ["--line-length", "79"]
+  "python.formatting.blackArgs": ["--line-length", "79"],
+  "markdownlint.config": {
+    "MD033": { "allowed_elements": ["i", "span", "a", "img"] },
+    "MD041": false
+  }
 }
