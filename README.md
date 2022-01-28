@@ -6,21 +6,75 @@
 
 A GraphQL API for Nextline
 
-_Nextline_ allows line-by-line execution of concurrent Python scripts by multiple users simultaneously from web browsers. Nextline is being developed as a DAQ sequencer of the [Observatory Control System (OCS)](https://github.com/simonsobs/ocs/).
+_Nextline_ allows line-by-line execution of concurrent Python scripts by
+multiple users simultaneously from web browsers. Nextline is being developed as
+a DAQ sequencer of the [Observatory Control System
+(OCS)](https://github.com/simonsobs/ocs/).
 
 ## Packages
 
-- [**nextline:**](https://github.com/simonsobs/nextline) the core functionality.
-- [**nextline-graphql:**](https://github.com/simonsobs/nextline-graphql) this package. the GraphQL API
-- [**nextline-web:**](https://github.com/simonsobs/nextline-web) the web interface
+- [**nextline:**](https://github.com/simonsobs/nextline) (Python) the core functionality. imported in _nextline-graphql._
+- [**nextline-graphql:**](https://github.com/simonsobs/nextline-graphql) (Python) this package. the GraphQL API
+- [**nextline-web:**](https://github.com/simonsobs/nextline-web) (JavaScript) the client website
 
-*****
+## How to run the Nextline GraphQL API
+
+The section shows how to run the Nextline GraphQL API server. How to run the
+client website will be described elsewhere.
+
+### As a Docker container
+
+Docker images of the Nextline GraphQL API server are created as
+[ghcr.io/simonsobs/nextline-graphql](https://github.com/simonsobs/nextline-graphql/pkgs/container/nextline-graphql).
+These images are created by the
+[Dockerfile](https://github.com/simonsobs/nextline-graphql/blob/main/Dockerfile)
+and are based from [simonsobs/ocs](https://hub.docker.com/r/simonsobs/ocs).
+
+Use, for example, the following comand to run as a Docker container.
+
+```bash
+docker run -p 8080:8000 ghcr.io/simonsobs/nextline-graphql
+```
+
+If you access to the API server with a web browser, you will see the GraphQL playground: <http://localhost:8080/>.
+
+### from PyPI
+
+It is also possible to install with pip and run.
+
+```bash
+pip install nextline-graphql
+uvicorn --factory --port 8080 nextlinegraphql:create_app
+```
+
+Check with a web browser at <http://localhost:8080/>.
+
+## Check out code for development
+
+This section shows an example way to check out code from GitHub for development.
+
+```bash
+python -m venv venv
+source venv/bin/activate
+git clone git@github.com:simonsobs/nextline.git
+git clone git@github.com:simonsobs/nextline-graphql.git
+pip install -e ./nextline/"[tests,dev]"
+pip install -e ./nextline-graphql/"[tests,dev]"
+```
+
+To run
+
+```bash
+uvicorn --port 8080 --factory --reload --reload-dir nextline-graphql --reload-dir nextline nextlinegraphql:create_app
+```
+
+---
 
 ## License
 
 - _Nextline_ is licensed under the MIT license.
 
-*****
+---
 
 ## Contact
 
