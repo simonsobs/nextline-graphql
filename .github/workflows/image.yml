@@ -1,8 +1,11 @@
 name: Docker image in GitHub Container registry
 
 on:
+  # push:
+  #   branches: ['release']
   push:
-    branches: ['release']
+    tags:
+      - 'v*.*.*'
   workflow_dispatch:
 
 env:
