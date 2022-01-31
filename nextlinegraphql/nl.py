@@ -5,15 +5,18 @@ from pathlib import Path
 
 from nextline import Nextline
 
-_THIS_DIR = Path(__file__).resolve().parent
-sys.path.insert(0, str(_THIS_DIR))
+THIS_DIR = Path(__file__).resolve().parent
+SCRIPT_DIR = THIS_DIR.joinpath("example_script")
+SCRIPT_PATH = SCRIPT_DIR.joinpath("script.py")
 
+sys.path.insert(0, str(SCRIPT_DIR))
 
-SCRIPT_PATH = _THIS_DIR.joinpath("script.py")
 with open(SCRIPT_PATH) as f:
     statement = f.read()
 
-del _THIS_DIR
+del SCRIPT_PATH
+del SCRIPT_DIR
+del THIS_DIR
 
 
 nextline_holder = []

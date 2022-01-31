@@ -13,7 +13,7 @@ THIS_DIR = Path(__file__).resolve().parent
 PACKAGE_TOP = THIS_DIR.parent.parent.parent
 SCRIPT_PATH = str(
     PACKAGE_TOP.joinpath(
-        "nextlinegraphql", "script_threading.py"
+        "nextlinegraphql", "example_script", "script_threading.py"
     )
 )
 
