@@ -7,29 +7,14 @@ from nextline import Nextline
 
 _THIS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(_THIS_DIR))
+
+
+SCRIPT_PATH = _THIS_DIR.joinpath("script.py")
+with open(SCRIPT_PATH) as f:
+    statement = f.read()
+
 del _THIS_DIR
 
-statement = """
-import time
-time.sleep(0.3)
-
-def f():
-    for _ in range(10):
-        pass
-    return
-
-f()
-f()
-
-print('here!')
-
-import script_threading
-script_threading.run()
-
-
-import script_asyncio
-script_asyncio.run()
-""".strip()
 
 nextline_holder = []
 
