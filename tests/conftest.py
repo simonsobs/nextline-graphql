@@ -18,7 +18,7 @@ def recover_trace():
 async def close_nextline():
     """Close nextline after each test"""
     yield
-    from nextlinegraphql.schema.bindables import close_nextline as close
+    from nextlinegraphql.nl import close_nextline as close
 
     await close()
 
