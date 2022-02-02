@@ -1,4 +1,4 @@
-FROM simonsobs/ocs:v0.9.0
+FROM ubuntu:20.04
 
 WORKDIR /app
 
