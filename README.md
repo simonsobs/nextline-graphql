@@ -27,8 +27,8 @@ client website will be described elsewhere.
 Docker images of the Nextline GraphQL API server are created as
 [ghcr.io/simonsobs/nextline-graphql](https://github.com/simonsobs/nextline-graphql/pkgs/container/nextline-graphql).
 These images are created by the
-[Dockerfile](https://github.com/simonsobs/nextline-graphql/blob/main/Dockerfile)
-and are based from [simonsobs/ocs](https://hub.docker.com/r/simonsobs/ocs).
+[Dockerfile](https://github.com/simonsobs/nextline-graphql/blob/main/Dockerfile).
+
 
 Use, for example, the following comand to run as a Docker container.
 
