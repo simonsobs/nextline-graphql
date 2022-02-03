@@ -20,7 +20,8 @@ a DAQ sequencer of the [Observatory Control System
 ## How to run the Nextline GraphQL API
 
 The section shows how to run the Nextline GraphQL API server. How to run the
-client website will be described elsewhere.
+client website will be described
+[elsewhere](https://github.com/simonsobs/nextline-web).
 
 ### As a Docker container
 
