@@ -3,7 +3,7 @@
   "python.formatting.provider": "black",
   "python.linting.flake8Enabled": true,
   "python.linting.flake8Args": [
-    "--ignore=E265, E266, E501, W503",
+    "--ignore=E203, E265, E266, E501, W503",
     "--max-line-length=150",
     "--max-complexity=20"
   ],
@@ -12,5 +12,13 @@
   "markdownlint.config": {
     "MD033": { "allowed_elements": ["i", "span", "a", "img"] },
     "MD041": false
-  }
+  },
+  "prettier.printWidth": 70,
+  "rewrap.wrappingColumn": 70,
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }
+
