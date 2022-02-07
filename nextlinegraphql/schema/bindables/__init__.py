@@ -114,6 +114,18 @@ def global_state_resolver(global_state, info):
     return global_state
 
 
+@subscription.source("runNo")
+async def run_no_generator(_, info):
+    nextline = info.context["nextline"]
+    async for s in nextline.subscribe_run_no():
+        yield s
+
+
+@subscription.field("runNo")
+def run_no_resolver(run_no, info):
+    return run_no
+
+
 @subscription.source("threadTaskIds")
 async def thread_task_ids_generator(_, info):
     nextline = info.context["nextline"]
