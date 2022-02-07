@@ -5,6 +5,7 @@ type Query {
   helloDb: String
   stateChanges: [StateChange!]
   globalState: String!
+  runNo: Int
   source(fileName: String): [String]
   sourceLine(lineNo: Int!, fileName: String): String
   exception: String

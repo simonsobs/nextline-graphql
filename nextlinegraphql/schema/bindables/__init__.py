@@ -53,6 +53,12 @@ async def resolve_global_state(_, info):
     return nextline.global_state
 
 
+@query.field("runNo")
+async def resolve_run_no(_, info):
+    nextline = info.context["nextline"]
+    return nextline.run_no
+
+
 @query.field("source")
 async def resolve_source(_, info, fileName=None):
     nextline = info.context["nextline"]
