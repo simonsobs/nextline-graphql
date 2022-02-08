@@ -34,9 +34,18 @@ class WGraphQL(GraphQL):
 async def monitor_state(db):
     nextline = get_nextline()
     async for s in nextline.subscribe_global_state():
+        run_no = nextline.run_no
         with db.Session.begin() as session:
-            model = db.models.StateChange(name=s)
-            session.add(model)
+            state_change = db.models.StateChange(name=s)
+            run = (
+                session.query(db.models.Run)
+                .filter_by(run_no=run_no)
+                .one_or_none()
+            )
+            if run is None:
+                run = db.models.Run(run_no=run)
+            state_change.run = run
+            session.add(state_change)
             session.commit()
 
 
