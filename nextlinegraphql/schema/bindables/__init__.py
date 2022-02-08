@@ -44,7 +44,30 @@ async def resolve_state_changes(_, info):
     db = info.context["db"]
     with db.Session.begin() as session:
         models = session.query(db.models.StateChange).all()
-        return [{"name": m.name, "time": m.time} for m in models]
+        return [
+            {"name": m.name, "time": m.time, "runNo": m.run_no} for m in models
+        ]
+
+
+@query.field("runs")
+async def resolve_runs(_, info):
+    db = info.context["db"]
+    with db.Session.begin() as session:
+        runs = session.query(db.models.Run)
+        return [
+            {
+                "runNo": run.run_no,
+                "stateChanges": [
+                    {
+                        "name": sc.name,
+                        "time": sc.time,
+                        "runNo": sc.run_no,
+                    }
+                    for sc in run.state_changes
+                ],
+            }
+            for run in runs
+        ]
 
 
 @query.field("globalState")
