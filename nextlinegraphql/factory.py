@@ -33,10 +33,10 @@ class WGraphQL(GraphQL):
 
 async def monitor_state(db):
     nextline = get_nextline()
-    async for s in nextline.subscribe_global_state():
+    async for state_name in nextline.subscribe_global_state():
         run_no = nextline.run_no
         with db.Session.begin() as session:
-            state_change = db.models.StateChange(name=s)
+            state_change = db.models.StateChange(name=state_name)
             run = (
                 session.query(db.models.Run)
                 .filter_by(run_no=run_no)
