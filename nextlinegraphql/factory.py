@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 from ariadne.asgi import GraphQL
 
 from starlette.applications import Starlette
@@ -35,8 +36,9 @@ async def monitor_state(db):
     nextline = get_nextline()
     async for state_name in nextline.subscribe_global_state():
         run_no = nextline.run_no
+        time = datetime.datetime.now()
         with db.Session.begin() as session:
-            state_change = db.models.StateChange(name=state_name)
+            state_change = db.models.StateChange(name=state_name, time=time)
             run = (
                 session.query(db.models.Run)
                 .filter_by(run_no=run_no)
