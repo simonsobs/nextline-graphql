@@ -48,6 +48,6 @@ type Run {
 
 type StateChange {
   name: String
-  time: Datetime
+  datetime: Datetime
   runNo: Int
 }

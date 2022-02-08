@@ -18,7 +18,7 @@ class StateChange(Base):
     __tablename__ = "state_change_log"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
-    time = Column(DateTime(), default=lambda: datetime.datetime.now())
+    datetime = Column(DateTime(), default=lambda: datetime.datetime.now())
     run_no = Column(ForeignKey("run.run_no"))
 
 

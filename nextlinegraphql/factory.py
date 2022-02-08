@@ -36,9 +36,9 @@ async def monitor_state(db):
     nextline = get_nextline()
     async for state_name in nextline.subscribe_global_state():
         run_no = nextline.run_no
-        time = datetime.datetime.now()
+        now = datetime.datetime.now()
         with db.Session.begin() as session:
-            state_change = db.models.StateChange(name=state_name, time=time)
+            state_change = db.models.StateChange(name=state_name, datetime=now)
             run = (
                 session.query(db.models.Run)
                 .filter_by(run_no=run_no)
