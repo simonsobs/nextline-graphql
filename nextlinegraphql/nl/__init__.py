@@ -8,7 +8,7 @@ from .example_script import statement
 nextline_holder = []
 
 
-def get_nextline():
+def get_nextline() -> Nextline:
     if not nextline_holder:
         nextline_holder.append(Nextline(statement))
     return nextline_holder[0]
