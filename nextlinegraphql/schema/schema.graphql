@@ -43,7 +43,11 @@ type ThreadTaskState {
 
 type Run {
   runNo: Int!
-  stateChanges: [StateChange!]
+  state: String
+  startedAt: Datetime
+  endedAt: Datetime
+  script: String
+  exception: String
 }
 
 type StateChange {

@@ -1,8 +1,7 @@
 import datetime
 from sqlalchemy.ext.declarative import declarative_base
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 
 
 Base = declarative_base()
@@ -25,4 +24,8 @@ class StateChange(Base):
 class Run(Base):
     __tablename__ = "run"
     run_no = Column(Integer, primary_key=True, index=True)
-    state_changes = relationship("StateChange", backref="run")
+    state = Column(String)
+    started_at = Column(DateTime)
+    ended_at = Column(DateTime)
+    script = Column(Text)
+    exception = Column(Text)

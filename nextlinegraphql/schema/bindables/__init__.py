@@ -57,14 +57,11 @@ async def resolve_runs(_, info):
         return [
             {
                 "runNo": run.run_no,
-                "stateChanges": [
-                    {
-                        "name": sc.name,
-                        "datetime": sc.datetime,
-                        "runNo": sc.run_no,
-                    }
-                    for sc in run.state_changes
-                ],
+                "state": run.state,
+                "startedAt": run.started_at,
+                "endedAt": run.ended_at,
+                "script": run.script,
+                "exception": run.exception,
             }
             for run in runs
         ]
