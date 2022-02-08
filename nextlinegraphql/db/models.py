@@ -1,7 +1,8 @@
 import datetime
 from sqlalchemy.ext.declarative import declarative_base
 
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 
 
 Base = declarative_base()
@@ -18,3 +19,10 @@ class StateChange(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     time = Column(DateTime(), default=lambda: datetime.datetime.now())
+    run_no = Column(ForeignKey("run.run_no"))
+
+
+class Run(Base):
+    __tablename__ = "run"
+    run_no = Column(Integer, primary_key=True, index=True)
+    state_changes = relationship("StateChange", backref="run")
