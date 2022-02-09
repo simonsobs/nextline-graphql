@@ -5,8 +5,10 @@ import traceback
 import janus
 from ariadne import ScalarType, QueryType, MutationType, SubscriptionType
 
-from ...nl import run_nextline, reset_nextline, close_nextline
+from typing import Iterable
 
+from ...nl import run_nextline, reset_nextline, close_nextline
+from ...db import Db
 
 ##__________________________________________________________________||
 datetime_scalar = ScalarType("Datetime")
@@ -51,9 +53,9 @@ async def resolve_state_changes(_, info):
 
 @query.field("runs")
 async def resolve_runs(_, info):
-    db = info.context["db"]
+    db: Db = info.context["db"]
     with db.Session.begin() as session:
-        runs = session.query(db.models.Run)
+        runs: Iterable[db.models.Run] = session.query(db.models.Run)
         return [
             {
                 "runNo": run.run_no,
