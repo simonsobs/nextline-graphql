@@ -47,7 +47,8 @@ async def resolve_state_changes(_, info):
     with db.Session.begin() as session:
         models = session.query(db.models.StateChange).all()
         return [
-            {"name": m.name, "datetime": m.datetime, "runNo": m.run_no} for m in models
+            {"name": m.name, "datetime": m.datetime, "runNo": m.run_no}
+            for m in models
         ]
 
 
