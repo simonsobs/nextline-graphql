@@ -6,6 +6,7 @@ type Query {
   stateChanges: [StateChange!]
   globalState: String!
   runNo: Int
+  runs: [Run!]
   source(fileName: String): [String]
   sourceLine(lineNo: Int!, fileName: String): String
   exception: String
@@ -40,7 +41,17 @@ type ThreadTaskState {
   traceEvent: String
 }
 
+type Run {
+  runNo: Int!
+  state: String
+  startedAt: Datetime
+  endedAt: Datetime
+  script: String
+  exception: String
+}
+
 type StateChange {
   name: String
-  time: Datetime
+  datetime: Datetime
+  runNo: Int
 }
