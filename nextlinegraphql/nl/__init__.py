@@ -16,8 +16,8 @@ def get_nextline() -> Nextline:
 
 async def run_nextline():
     nextline = get_nextline()
-    # print(nextline.global_state)
-    if nextline.global_state == "initialized":
+    # print(nextline.state)
+    if nextline.state == "initialized":
         nextline.run()
         asyncio.create_task(_wait(nextline))
     return

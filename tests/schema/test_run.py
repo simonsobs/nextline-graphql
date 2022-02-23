@@ -125,9 +125,9 @@ async def control_execution(client):
             prev_ids = ids
 
 
-async def monitor_global_state(client):
+async def monitor_state(client):
 
-    subscribe_global_state = {
+    subscribe_state = {
         "id": "1",
         "type": "start",
         "payload": {
@@ -139,7 +139,7 @@ async def monitor_global_state(client):
     }
 
     async with client.websocket_connect("/") as ws:
-        await ws.send_json(subscribe_global_state)
+        await ws.send_json(subscribe_state)
         while True:
             resp_json = await ws.receive_json()
             if resp_json["type"] == "complete":
@@ -152,18 +152,18 @@ async def monitor_global_state(client):
 @pytest.mark.asyncio
 async def test_run(snapshot):
 
-    query_global_state = {"query": QUERY_GLOBAL_STATE}
+    query_state = {"query": QUERY_GLOBAL_STATE}
 
     mutate_exec = {"query": MUTATE_EXEC}
 
     headers = {"Content-Type:": "application/json"}
 
     async with TestClient(create_app()) as client:
-        resp = await client.post("/", json=query_global_state, headers=headers)
+        resp = await client.post("/", json=query_state, headers=headers)
         assert "initialized" == resp.json()["data"]["globalState"]
 
-        task_monitor_global_state = asyncio.create_task(
-            monitor_global_state(client)
+        task_monitor_state = asyncio.create_task(
+            monitor_state(client)
         )
 
         resp = await client.post("/", json=mutate_exec, headers=headers)
@@ -171,7 +171,7 @@ async def test_run(snapshot):
 
         task_control_execution = asyncio.create_task(control_execution(client))
 
-        aws = {task_monitor_global_state, task_control_execution}
+        aws = {task_monitor_state, task_control_execution}
         while aws:
             done, pending = await asyncio.wait(
                 aws, return_when=asyncio.FIRST_COMPLETED
@@ -180,7 +180,7 @@ async def test_run(snapshot):
             aws = pending
             # break # to be removed
 
-        resp = await client.post("/", json=query_global_state, headers=headers)
+        resp = await client.post("/", json=query_state, headers=headers)
         assert "finished" == resp.json()["data"]["globalState"]
 
 

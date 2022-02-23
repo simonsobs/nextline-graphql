@@ -77,9 +77,9 @@ async def resolve_runs(_, info):
 
 
 @query.field("globalState")
-async def resolve_global_state(_, info):
+async def resolve_state(_, info):
     nextline: Nextline = info.context["nextline"]
-    return nextline.global_state
+    return nextline.state
 
 
 @query.field("runNo")
@@ -129,9 +129,9 @@ def counter_resolver(count, info):
 
 
 @subscription.source("globalState")
-async def global_state_generator(_, info):
+async def state_generator(_, info):
     nextline: Nextline = info.context["nextline"]
-    async for s in nextline.subscribe_global_state():
+    async for s in nextline.subscribe_state():
         # if s == 'finished':
         #     print('finished', nextline.exception())
         #     nextline.result()
@@ -139,8 +139,8 @@ async def global_state_generator(_, info):
 
 
 @subscription.field("globalState")
-def global_state_resolver(global_state, info):
-    return global_state
+def state_resolver(state, info):
+    return state
 
 
 @subscription.source("runNo")
@@ -200,7 +200,7 @@ async def stdout_generator(_, info):
     nextline: Nextline = info.context["nextline"]
     while True:
         v = await queue.async_q.get()
-        if nextline.global_state == "running":
+        if nextline.state == "running":
             yield v
     await stdout_queue.unsubscribe(queue)
 
