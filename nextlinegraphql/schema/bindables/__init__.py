@@ -158,7 +158,7 @@ def run_no_resolver(run_no, info):
 @subscription.source("threadTaskIds")
 async def thread_task_ids_generator(_, info):
     nextline: Nextline = info.context["nextline"]
-    async for y in nextline.subscribe_thread_asynctask_ids():
+    async for y in nextline.subscribe_trace_ids():
         yield [{"threadId": e[0], "taskId": e[1]} for e in y]
 
 
