@@ -173,7 +173,7 @@ async def thread_task_state_generator(_, info, threadId, taskId):
     taskId = int(taskId) if taskId else None
     thread_asynctask_id = (threadId, taskId)
     nextline: Nextline = info.context["nextline"]
-    async for y in nextline.subscribe_thread_asynctask_state(
+    async for y in nextline.subscribe_trace_state(
         thread_asynctask_id
     ):
         # if y['prompting'] and y['trace_event'] == 'return':
