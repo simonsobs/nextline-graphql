@@ -156,19 +156,19 @@ def run_no_resolver(run_no, info):
 
 
 @subscription.source("threadTaskIds")
-async def thread_task_ids_generator(_, info):
+async def trace_ids_generator(_, info):
     nextline: Nextline = info.context["nextline"]
     async for y in nextline.subscribe_trace_ids():
         yield [{"threadId": e[0], "taskId": e[1]} for e in y]
 
 
 @subscription.field("threadTaskIds")
-def thread_task_ids_resolver(obj, info):
+def trace_ids_resolver(obj, info):
     return obj
 
 
 @subscription.source("threadTaskState")
-async def thread_task_state_generator(_, info, threadId, taskId):
+async def trace_state_generator(_, info, threadId, taskId):
     threadId = int(threadId)
     taskId = int(taskId) if taskId else None
     thread_asynctask_id = (threadId, taskId)
@@ -189,7 +189,7 @@ async def thread_task_state_generator(_, info, threadId, taskId):
 
 
 @subscription.field("threadTaskState")
-def thread_task_state_resolver(obj, info, threadId, taskId):
+def trace_state_resolver(obj, info, threadId, taskId):
     return obj
 
 
