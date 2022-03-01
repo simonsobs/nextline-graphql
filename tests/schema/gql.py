@@ -1,46 +1,43 @@
-
-##__________________________________________________________________||
-QUERY_GLOBAL_STATE = '''
+QUERY_GLOBAL_STATE = """
 query GlobalState {
   globalState
 }
-'''.strip()
+""".strip()
 
-QUERY_SOURCE = '''
+QUERY_SOURCE = """
 query Source($fileName: String) {
   source(fileName: $fileName)
 }
-'''.strip()
+""".strip()
 
-QUERY_SOURCE_LINE = '''
+QUERY_SOURCE_LINE = """
 query SourceLine(
   $lineNo: Int!
   $fileName: String
 ) {
   sourceLine(lineNo: $lineNo, fileName: $fileName)
 }
-'''.strip()
+""".strip()
 
-QUERY_EXCEPTION = '''
+QUERY_EXCEPTION = """
 query Exception {
   exception
 }
-'''.strip()
+""".strip()
 
-##__________________________________________________________________||
-SUBSCRIBE_GLOBAL_STATE = '''
+SUBSCRIBE_GLOBAL_STATE = """
 subscription GlobalState {
   globalState
 }
-'''.strip()
+""".strip()
 
-SUBSCRIBE_TRACE_IDS = '''
+SUBSCRIBE_TRACE_IDS = """
 subscription TraceIds {
   traceIds
 }
-'''.strip()
+""".strip()
 
-SUBSCRIBE_TRACE_STATE = '''
+SUBSCRIBE_TRACE_STATE = """
 subscription TraceState(
   $traceId: Int!
 ) {
@@ -51,28 +48,26 @@ subscription TraceState(
     traceEvent
   }
 }
-'''.strip()
+""".strip()
 
-##__________________________________________________________________||
-MUTATE_EXEC = '''
+MUTATE_EXEC = """
 mutation Exec {
   exec
 }
-'''.strip()
+""".strip()
 
 
-MUTATION_RESET = '''
+MUTATION_RESET = """
 mutation Reset($statement: String) {
   reset(statement: $statement)
 }
-'''.strip()
+""".strip()
 
-MUTATE_SEND_PDB_COMMAND = '''
+MUTATE_SEND_PDB_COMMAND = """
 mutation SendPdbCommand(
   $traceId: Int!
   $command: String!
 ) {
   sendPdbCommand(traceId: $traceId, command: $command)
 }
-'''.strip()
-
+""".strip()
