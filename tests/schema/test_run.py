@@ -1,4 +1,5 @@
 import asyncio
+from typing import Set
 from async_asgi_testclient import TestClient
 
 import pytest
@@ -16,8 +17,7 @@ from .gql import (
 )
 
 
-##__________________________________________________________________||
-async def control_trace(client, trace_id):
+async def control_trace(client: TestClient, trace_id: int) -> None:
     # print(f'control_trace({trace_id})')
 
     to_step = ["script_threading.run()", "script_asyncio.run()"]
@@ -72,10 +72,10 @@ async def control_trace(client, trace_id):
                 resp = await client.post(
                     "/", json=mutate_send_pdb_command, headers=headers
                 )
-                print(resp.json())
+                # print(resp.json())
 
 
-async def control_execution(client):
+async def control_execution(client: TestClient):
 
     subscribe_trace_ids = {
         "id": "1",
@@ -90,18 +90,18 @@ async def control_execution(client):
 
     async with client.websocket_connect("/") as ws:
         await ws.send_json(subscribe_trace_ids)
-        prev_ids = set()
-        tasks_control_thread_task = set()
+        prev_ids: Set[int] = set()
+        tasks_control_trace: Set[asyncio.Task] = set()
         task_receive_json = asyncio.create_task(ws.receive_json())
         while True:
-            aws = {task_receive_json, *tasks_control_thread_task}
+            aws = {task_receive_json, *tasks_control_trace}
             done, pending = await asyncio.wait(
                 aws, return_when=asyncio.FIRST_COMPLETED
             )
-            results = [
-                t.result() for t in tasks_control_thread_task & done
+            _ = [
+                t.result() for t in tasks_control_trace & done
             ]  # raise exception
-            tasks_control_thread_task = tasks_control_thread_task & pending
+            tasks_control_trace = tasks_control_trace & pending
             if task_receive_json not in done:
                 continue
             resp_json = task_receive_json.result()
@@ -116,11 +116,11 @@ async def control_execution(client):
             new_ids = ids - prev_ids
             for id_ in new_ids:
                 task = asyncio.create_task(control_trace(client, id_))
-                tasks_control_thread_task.add(task)
+                tasks_control_trace.add(task)
             prev_ids = ids
 
 
-async def monitor_state(client):
+async def monitor_state(client: TestClient) -> None:
 
     subscribe_state = {
         "id": "1",
@@ -145,7 +145,7 @@ async def monitor_state(client):
 
 
 @pytest.mark.asyncio
-async def test_run(snapshot):
+async def test_run():
 
     query_state = {"query": QUERY_GLOBAL_STATE}
 
@@ -169,7 +169,7 @@ async def test_run(snapshot):
             done, pending = await asyncio.wait(
                 aws, return_when=asyncio.FIRST_COMPLETED
             )
-            results = [t.result() for t in done]  # re-raise exception
+            _ = [t.result() for t in done]  # re-raise exception
             aws = pending
             # break # to be removed
 
