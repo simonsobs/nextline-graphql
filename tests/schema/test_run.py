@@ -196,14 +196,7 @@ async def test_run():
 
         task_control_execution = asyncio.create_task(control_execution(client))
 
-        aws = {task_monitor_state, task_control_execution}
-        while aws:
-            done, pending = await asyncio.wait(
-                aws, return_when=asyncio.FIRST_COMPLETED
-            )
-            _ = [t.result() for t in done]  # re-raise exception
-            aws = pending
-            # break # to be removed
+        await asyncio.gather(task_monitor_state, task_control_execution)
 
         resp = await client.post("/", json=query_state, headers=headers)
         assert "finished" == resp.json()["data"]["globalState"]
