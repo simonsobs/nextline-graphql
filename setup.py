@@ -27,7 +27,7 @@ setup(
     packages=find_packages(exclude=["docs", "tests"]),
     include_package_data=True,
     install_requires=[
-        "nextline>=0.1.1",
+        "nextline>=0.1.3",
         "ariadne>=0.12.0",
         "uvicorn>=0.12.2",
         "websockets>=8.1",
