@@ -207,6 +207,3 @@ async def test_run():
 
         resp = await client.post("/", json=query_state, headers=headers)
         assert "finished" == resp.json()["data"]["globalState"]
-
-
-##__________________________________________________________________||
