@@ -9,27 +9,27 @@ from .gql import (
     QUERY_GLOBAL_STATE,
     QUERY_SOURCE_LINE,
     SUBSCRIBE_GLOBAL_STATE,
-    SUBSCRIBE_THREAD_TASK_IDS,
-    SUBSCRIBE_THREAD_TASK_STATE,
+    SUBSCRIBE_TRACE_IDS,
+    SUBSCRIBE_TRACE_STATE,
     MUTATE_EXEC,
     MUTATE_SEND_PDB_COMMAND,
 )
 
 
 ##__________________________________________________________________||
-async def control_thread_task(client, thread_task_id):
-    # print(f'control_thread_task({thread_task_id})')
+async def control_trace(client, trace_id):
+    # print(f'control_trace({trace_id})')
 
     to_step = ["script_threading.run()", "script_asyncio.run()"]
 
-    subscribe_thread_task_state = {
+    subscribe_trace_state = {
         "id": "1",
         "type": "start",
         "payload": {
-            "variables": thread_task_id,
+            "variables": {"traceId": trace_id},
             "extensions": {},
             "operationName": None,
-            "query": SUBSCRIBE_THREAD_TASK_STATE,
+            "query": SUBSCRIBE_TRACE_STATE,
         },
     }
 
@@ -40,14 +40,14 @@ async def control_thread_task(client, thread_task_id):
     headers = {"Content-Type:": "application/json"}
 
     async with client.websocket_connect("/") as ws:
-        await ws.send_json(subscribe_thread_task_state)
+        await ws.send_json(subscribe_trace_state)
         while True:
             resp_json = await ws.receive_json()
             if resp_json["type"] == "complete":
                 break
             assert "errors" not in resp_json["payload"]
-            state = resp_json["payload"]["data"]["threadTaskState"]
-            # print(state)
+            state = resp_json["payload"]["data"]["traceState"]
+            print(state)
             if state["prompting"]:
                 command = "next"
                 if state["traceEvent"] == "line":
@@ -66,29 +66,30 @@ async def control_thread_task(client, thread_task_id):
                         command = "step"
 
                 mutate_send_pdb_command["variables"] = {
-                    **thread_task_id,
+                    "traceId": trace_id,
                     "command": command,
                 }
                 resp = await client.post(
                     "/", json=mutate_send_pdb_command, headers=headers
                 )
+                print(resp.json())
 
 
 async def control_execution(client):
 
-    subscribe_thread_task_ids = {
+    subscribe_trace_ids = {
         "id": "1",
         "type": "start",
         "payload": {
             "variables": {},
             "extensions": {},
             "operationName": None,
-            "query": SUBSCRIBE_THREAD_TASK_IDS,
+            "query": SUBSCRIBE_TRACE_IDS,
         },
     }
 
     async with client.websocket_connect("/") as ws:
-        await ws.send_json(subscribe_thread_task_ids)
+        await ws.send_json(subscribe_trace_ids)
         prev_ids = set()
         tasks_control_thread_task = set()
         task_receive_json = asyncio.create_task(ws.receive_json())
@@ -105,22 +106,16 @@ async def control_execution(client):
                 continue
             resp_json = task_receive_json.result()
             task_receive_json = asyncio.create_task(ws.receive_json())
-            print(resp_json)
+            # print(resp_json)
             if resp_json["type"] == "complete":
                 break
-            ids = resp_json["payload"]["data"][
-                "threadTaskIds"
-            ]  # a list of dicts
+            ids = resp_json["payload"]["data"]["traceIds"]  # a list of dicts
             if not ids:
                 break
-            ids = {
-                tuple(id_.items()) for id_ in ids
-            }  # a set of tuples. note: a dict is unhashable
+            ids = set(ids)
             new_ids = ids - prev_ids
             for id_ in new_ids:
-                task = asyncio.create_task(
-                    control_thread_task(client, dict(id_))
-                )
+                task = asyncio.create_task(control_trace(client, id_))
                 tasks_control_thread_task.add(task)
             prev_ids = ids
 
@@ -162,9 +157,7 @@ async def test_run(snapshot):
         resp = await client.post("/", json=query_state, headers=headers)
         assert "initialized" == resp.json()["data"]["globalState"]
 
-        task_monitor_state = asyncio.create_task(
-            monitor_state(client)
-        )
+        task_monitor_state = asyncio.create_task(monitor_state(client))
 
         resp = await client.post("/", json=mutate_exec, headers=headers)
         assert resp.json()["data"]["exec"]

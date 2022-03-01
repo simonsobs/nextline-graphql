@@ -16,6 +16,8 @@ type Subscription {
   counter: Int!
   globalState: String!
   runNo: Int
+  traceIds: [Int!]!
+  traceState(traceId: Int!): TraceState
   threadTaskIds: [ThreadTaskId!]!
   threadTaskState(threadId: String!, taskId: String): ThreadTaskState
   stdout: String
@@ -25,13 +27,20 @@ type Mutation {
   exec: Boolean!
   reset(statement: String): Boolean!
   close: Boolean!
-  sendPdbCommand(threadId: String!, taskId: String, command: String!): Boolean!
+  sendPdbCommand(traceId: Int!, command: String!): Boolean!
   updateHelloDbMessage(message: String!): Boolean!
 }
 
 type ThreadTaskId {
   threadId: String!
   taskId: String
+}
+
+type TraceState {
+  prompting: Int
+  fileName: String
+  lineNo: Int
+  traceEvent: String
 }
 
 type ThreadTaskState {
