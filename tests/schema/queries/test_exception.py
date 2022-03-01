@@ -11,8 +11,8 @@ from ..gql import (
     QUERY_SOURCE_LINE,
     QUERY_EXCEPTION,
     SUBSCRIBE_GLOBAL_STATE,
-    SUBSCRIBE_THREAD_TASK_IDS,
-    SUBSCRIBE_THREAD_TASK_STATE,
+    SUBSCRIBE_TRACE_IDS,
+    SUBSCRIBE_TRACE_STATE,
     MUTATE_EXEC,
     MUTATION_RESET,
     MUTATE_SEND_PDB_COMMAND,
@@ -30,8 +30,8 @@ raise Exception('foo', 'bar')
 
 
 ##__________________________________________________________________||
-async def control_thread_task(client, thread_task_id):
-    # print(f'control_thread_task({thread_task_id})')
+async def control_trace(client, trace_id):
+    # print(f'control_trace({trace_id})')
 
     to_step = []
 
@@ -39,10 +39,10 @@ async def control_thread_task(client, thread_task_id):
         "id": "1",
         "type": "start",
         "payload": {
-            "variables": thread_task_id,
+            "variables": {"traceId": trace_id},
             "extensions": {},
             "operationName": None,
-            "query": SUBSCRIBE_THREAD_TASK_STATE,
+            "query": SUBSCRIBE_TRACE_STATE,
         },
     }
 
@@ -59,7 +59,7 @@ async def control_thread_task(client, thread_task_id):
             if resp_json["type"] == "complete":
                 break
             assert "errors" not in resp_json["payload"]
-            state = resp_json["payload"]["data"]["threadTaskState"]
+            state = resp_json["payload"]["data"]["traceState"]
             # print(state)
             if state["prompting"]:
                 command = "next"
@@ -79,7 +79,7 @@ async def control_thread_task(client, thread_task_id):
                         command = "step"
 
                 mutate_send_pdb_command["variables"] = {
-                    **thread_task_id,
+                    "traceId": trace_id,
                     "command": command,
                 }
                 resp = await client.post(
@@ -96,7 +96,7 @@ async def control_execution(client):
             "variables": {},
             "extensions": {},
             "operationName": None,
-            "query": SUBSCRIBE_THREAD_TASK_IDS,
+            "query": SUBSCRIBE_TRACE_IDS,
         },
     }
 
@@ -121,19 +121,13 @@ async def control_execution(client):
             # print(resp_json)
             if resp_json["type"] == "complete":
                 break
-            ids = resp_json["payload"]["data"][
-                "threadTaskIds"
-            ]  # a list of dicts
+            ids = resp_json["payload"]["data"]["traceIds"]  # a list of dicts
             if not ids:
                 break
-            ids = {
-                tuple(id_.items()) for id_ in ids
-            }  # a set of tuples. note: a dict is unhashable
+            ids = set(ids)
             new_ids = ids - prev_ids
             for id_ in new_ids:
-                task = asyncio.create_task(
-                    control_thread_task(client, dict(id_))
-                )
+                task = asyncio.create_task(control_trace(client, id_))
                 tasks_control_thread_task.add(task)
             prev_ids = ids
 

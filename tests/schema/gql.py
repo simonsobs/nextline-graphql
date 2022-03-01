@@ -34,21 +34,17 @@ subscription GlobalState {
 }
 '''.strip()
 
-SUBSCRIBE_THREAD_TASK_IDS = '''
-subscription ThreadTaskIds {
-  threadTaskIds {
-    threadId
-    taskId
-  }
+SUBSCRIBE_TRACE_IDS = '''
+subscription TraceIds {
+  traceIds
 }
 '''.strip()
 
-SUBSCRIBE_THREAD_TASK_STATE = '''
-subscription ThreadTaskState(
-  $threadId: String!
-  $taskId: String
+SUBSCRIBE_TRACE_STATE = '''
+subscription TraceState(
+  $traceId: Int!
 ) {
-  threadTaskState(threadId: $threadId, taskId: $taskId) {
+  traceState(traceId: $traceId) {
     prompting
     fileName
     lineNo
@@ -73,11 +69,10 @@ mutation Reset($statement: String) {
 
 MUTATE_SEND_PDB_COMMAND = '''
 mutation SendPdbCommand(
-  $threadId: String!
-  $taskId: String
+  $traceId: Int!
   $command: String!
 ) {
-  sendPdbCommand(threadId: $threadId, taskId: $taskId, command: $command)
+  sendPdbCommand(traceId: $traceId, command: $command)
 }
 '''.strip()
 

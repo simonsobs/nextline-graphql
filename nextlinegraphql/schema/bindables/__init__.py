@@ -155,27 +155,23 @@ def run_no_resolver(run_no, info):
     return run_no
 
 
-@subscription.source("threadTaskIds")
+@subscription.source("traceIds")
 async def trace_ids_generator(_, info):
     nextline: Nextline = info.context["nextline"]
     async for y in nextline.subscribe_trace_ids():
-        yield [{"threadId": e[0], "taskId": e[1]} for e in y]
+        yield y
 
 
-@subscription.field("threadTaskIds")
+@subscription.field("traceIds")
 def trace_ids_resolver(obj, info):
     return obj
 
 
-@subscription.source("threadTaskState")
-async def trace_state_generator(_, info, threadId, taskId):
-    threadId = int(threadId)
-    taskId = int(taskId) if taskId else None
-    thread_asynctask_id = (threadId, taskId)
+@subscription.source("traceState")
+async def trace_state_generator(_, info, traceId):
+    trace_id = traceId
     nextline: Nextline = info.context["nextline"]
-    async for y in nextline.subscribe_trace_state(
-        thread_asynctask_id
-    ):
+    async for y in nextline.subscribe_trace_state(trace_id):
         # if y['prompting'] and y['trace_event'] == 'return':
         #     nextline.send_pdb_command(thread_asynctask_id, 'return')
         #     continue
@@ -188,8 +184,8 @@ async def trace_state_generator(_, info, threadId, taskId):
         yield y
 
 
-@subscription.field("threadTaskState")
-def trace_state_resolver(obj, info, threadId, taskId):
+@subscription.field("traceState")
+def trace_state_resolver(obj, info, traceId):
     return obj
 
 
@@ -235,12 +231,10 @@ async def resolve_close(_, info):
 
 
 @mutation.field("sendPdbCommand")
-async def resolve_send_pdb_command(_, info, threadId, taskId, command):
-    threadId = int(threadId)
-    taskId = int(taskId) if taskId else None
-    thread_asynctask_id = (threadId, taskId)
+async def resolve_send_pdb_command(_, info, traceId, command):
+    trace_id = traceId
     nextline: Nextline = info.context["nextline"]
-    nextline.send_pdb_command(thread_asynctask_id, command)
+    nextline.send_pdb_command(trace_id, command)
     return True
 
 
