@@ -1,8 +1,9 @@
 import asyncio
-from typing import Set
 from async_asgi_testclient import TestClient
 
 import pytest
+
+from typing import Set, Dict, Any, TypedDict
 
 from nextlinegraphql import create_app
 
@@ -17,25 +18,56 @@ from .gql import (
 )
 
 
+class PostRequest(TypedDict, total=False):
+    """GraphQL POST Request
+    https://graphql.org/learn/serving-over-http/#post-request
+    """
+
+    query: str
+    variables: Dict[str, Any]
+    operationName: str
+
+
+class SubscribePayload(TypedDict):
+    variables: Dict[str, Any]
+    extensions: Dict[str, Any]
+    operationName: Any
+    query: str
+
+
+class SubscribeMessage(TypedDict):
+    """GraphQL over WebSocket Protocol
+
+    The type of the payload might depend on the value of the type.
+    SubscribePayload might be only for the type "start".
+    https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md#subscribe
+    https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md
+    """
+
+    id: str
+    type: str
+    payload: SubscribePayload
+
+
 async def control_trace(client: TestClient, trace_id: int) -> None:
     # print(f'control_trace({trace_id})')
 
     to_step = ["script_threading.run()", "script_asyncio.run()"]
 
-    subscribe_trace_state = {
-        "id": "1",
-        "type": "start",
-        "payload": {
-            "variables": {"traceId": trace_id},
-            "extensions": {},
-            "operationName": None,
-            "query": SUBSCRIBE_TRACE_STATE,
-        },
-    }
+    subscribe_trace_state = SubscribeMessage(
+        id="1",
+        type="start",
+        payload=SubscribePayload(
+            variables={"traceId": trace_id},
+            extensions={},
+            operationName=None,
+            query=SUBSCRIBE_TRACE_STATE,
+        ),
+    )
 
-    query_source_line = {"query": QUERY_SOURCE_LINE}
+    query_source_line = PostRequest(query=QUERY_SOURCE_LINE)
 
-    mutate_send_pdb_command = {"query": MUTATE_SEND_PDB_COMMAND}
+    mutate_send_pdb_command = PostRequest(query=MUTATE_SEND_PDB_COMMAND)
 
     headers = {"Content-Type:": "application/json"}
 
@@ -47,7 +79,7 @@ async def control_trace(client: TestClient, trace_id: int) -> None:
                 break
             assert "errors" not in resp_json["payload"]
             state = resp_json["payload"]["data"]["traceState"]
-            print(state)
+            # print(state)
             if state["prompting"]:
                 command = "next"
                 if state["traceEvent"] == "line":
@@ -77,16 +109,16 @@ async def control_trace(client: TestClient, trace_id: int) -> None:
 
 async def control_execution(client: TestClient):
 
-    subscribe_trace_ids = {
-        "id": "1",
-        "type": "start",
-        "payload": {
-            "variables": {},
-            "extensions": {},
-            "operationName": None,
-            "query": SUBSCRIBE_TRACE_IDS,
-        },
-    }
+    subscribe_trace_ids = SubscribeMessage(
+        id="1",
+        type="start",
+        payload=SubscribePayload(
+            variables={},
+            extensions={},
+            operationName=None,
+            query=SUBSCRIBE_TRACE_IDS,
+        ),
+    )
 
     async with client.websocket_connect("/") as ws:
         await ws.send_json(subscribe_trace_ids)
@@ -122,16 +154,16 @@ async def control_execution(client: TestClient):
 
 async def monitor_state(client: TestClient) -> None:
 
-    subscribe_state = {
-        "id": "1",
-        "type": "start",
-        "payload": {
-            "variables": {},
-            "extensions": {},
-            "operationName": None,
-            "query": SUBSCRIBE_GLOBAL_STATE,
-        },
-    }
+    subscribe_state = SubscribeMessage(
+        id="1",
+        type="start",
+        payload=SubscribePayload(
+            variables={},
+            extensions={},
+            operationName=None,
+            query=SUBSCRIBE_GLOBAL_STATE,
+        ),
+    )
 
     async with client.websocket_connect("/") as ws:
         await ws.send_json(subscribe_state)
@@ -147,9 +179,9 @@ async def monitor_state(client: TestClient) -> None:
 @pytest.mark.asyncio
 async def test_run():
 
-    query_state = {"query": QUERY_GLOBAL_STATE}
+    query_state = PostRequest(query=QUERY_GLOBAL_STATE)
 
-    mutate_exec = {"query": MUTATE_EXEC}
+    mutate_exec = PostRequest(query=MUTATE_EXEC)
 
     headers = {"Content-Type:": "application/json"}
 
