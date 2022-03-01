@@ -13,7 +13,6 @@ import pytest
 from nextlinegraphql import create_app
 
 
-##__________________________________________________________________||
 @pytest.mark.asyncio
 async def test_cors_get():
     """test if CORSMiddleware is in effect
@@ -56,7 +55,6 @@ async def test_cors_preflight():
         assert resp.status_code == 200
 
 
-##__________________________________________________________________||
 @pytest.mark.asyncio
 async def test_playground():
     """test if the playground is returned for the get request"""
@@ -65,6 +63,3 @@ async def test_playground():
         assert resp.status_code == 200
         assert "text/html" in (resp.headers["content-type"].lower())
         assert "playground" in resp.text.lower()
-
-
-##__________________________________________________________________||
