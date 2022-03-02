@@ -89,7 +89,7 @@ async def agen_with_wait(
         done, pending = await asyncio.wait(
             tasks | {task_anext}, return_when=asyncio.FIRST_COMPLETED
         )
-        for t in done:
+        for t in done - {task_anext}:
             if exc := t.exception():
                 raise exc
         tasks &= pending
