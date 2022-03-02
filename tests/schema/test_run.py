@@ -140,7 +140,7 @@ async def agen_with_wait(agen: AsyncGenerator, tasks: Set[asyncio.Task]):
         for t in done:
             if exc := t.exception():
                 raise exc
-        tasks = tasks & pending
+        tasks &= pending
         if task_anext not in done:
             continue
         try:
@@ -157,7 +157,7 @@ async def control_execution(client: TestClient):
 
     prev_ids: Set[int] = set()
     tasks: Set[asyncio.Task] = set()
-    async for data, tasks in agen_with_wait(agen, tasks):
+    async for data, _ in agen_with_wait(agen, tasks):
         ids = data["traceIds"]
         if not ids:
             break
