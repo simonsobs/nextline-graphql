@@ -3,7 +3,7 @@ from async_asgi_testclient import TestClient
 
 import pytest
 
-from typing import Set, Dict, Any, TypedDict
+from typing import AsyncGenerator, Set, Dict, Any, TypedDict
 
 from nextlinegraphql import create_app
 
@@ -47,6 +47,22 @@ class SubscribeMessage(TypedDict):
     id: str
     type: str
     payload: SubscribePayload
+
+
+async def subscribe(
+    client: TestClient,
+    payload: SubscribePayload,
+) -> AsyncGenerator[Any, None]:
+
+    message = SubscribeMessage(id="1", type="start", payload=payload)
+
+    async with client.websocket_connect("/") as ws:
+        await ws.send_json(message)
+        while True:
+            resp_json = await ws.receive_json()
+            if resp_json["type"] == "complete":
+                break
+            yield resp_json["payload"]["data"]
 
 
 async def control_trace(client: TestClient, trace_id: int) -> None:
@@ -154,26 +170,17 @@ async def control_execution(client: TestClient):
 
 async def monitor_state(client: TestClient) -> None:
 
-    subscribe_state = SubscribeMessage(
-        id="1",
-        type="start",
-        payload=SubscribePayload(
-            variables={},
-            extensions={},
-            operationName=None,
-            query=SUBSCRIBE_GLOBAL_STATE,
-        ),
+    payload = SubscribePayload(
+        variables={},
+        extensions={},
+        operationName=None,
+        query=SUBSCRIBE_GLOBAL_STATE,
     )
 
-    async with client.websocket_connect("/") as ws:
-        await ws.send_json(subscribe_state)
-        while True:
-            resp_json = await ws.receive_json()
-            if resp_json["type"] == "complete":
-                break
-            # print(resp_json['payload']['data']['globalState'])
-            if resp_json["payload"]["data"]["globalState"] == "finished":
-                break
+    async for data in subscribe(client, payload):
+        # print(data)
+        if data["globalState"] == "finished":
+            break
 
 
 @pytest.mark.asyncio
