@@ -7,7 +7,7 @@ from typing import AsyncGenerator, Optional, Set, Dict, Any, TypedDict
 
 from nextlinegraphql import create_app
 
-from .gql import (
+from .gql_strs import (
     QUERY_GLOBAL_STATE,
     QUERY_SOURCE_LINE,
     SUBSCRIBE_GLOBAL_STATE,

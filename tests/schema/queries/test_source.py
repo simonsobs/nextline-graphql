@@ -6,7 +6,7 @@ from async_asgi_testclient import TestClient
 
 from nextlinegraphql import create_app
 
-from ..gql import QUERY_SOURCE
+from ..gql_strs import QUERY_SOURCE
 
 ##__________________________________________________________________||
 THIS_DIR = Path(__file__).resolve().parent

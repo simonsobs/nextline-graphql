@@ -6,7 +6,7 @@ from async_asgi_testclient import TestClient
 
 from nextlinegraphql import create_app
 
-from ..gql import (
+from ..gql_strs import (
     QUERY_GLOBAL_STATE,
     QUERY_SOURCE_LINE,
     QUERY_EXCEPTION,

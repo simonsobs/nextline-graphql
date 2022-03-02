@@ -4,7 +4,7 @@ from async_asgi_testclient import TestClient
 
 from nextlinegraphql import create_app
 
-from ..gql import QUERY_SOURCE, MUTATION_RESET
+from ..gql_strs import QUERY_SOURCE, MUTATION_RESET
 
 ##__________________________________________________________________||
 SOURCE_ONE = """
