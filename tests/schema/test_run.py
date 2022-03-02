@@ -49,7 +49,7 @@ class SubscribeMessage(TypedDict):
     payload: SubscribePayload
 
 
-async def subscribe(
+async def gql_subscribe(
     client: TestClient,
     query: str,
     variables: Optional[Dict[str, Any]] = None,
@@ -84,7 +84,7 @@ async def control_trace(client: TestClient, trace_id: int) -> None:
 
     headers = {"Content-Type:": "application/json"}
 
-    async for data in subscribe(
+    async for data in gql_subscribe(
         client,
         SUBSCRIBE_TRACE_STATE,
         variables={"traceId": trace_id},
@@ -165,7 +165,7 @@ async def control_execution(client: TestClient):
 
 async def monitor_state(client: TestClient) -> None:
 
-    async for data in subscribe(client, SUBSCRIBE_GLOBAL_STATE):
+    async for data in gql_subscribe(client, SUBSCRIBE_GLOBAL_STATE):
         # print(data)
         if data["globalState"] == "finished":
             break
