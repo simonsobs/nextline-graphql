@@ -130,12 +130,7 @@ async def control_trace(client: TestClient, trace_id: int) -> None:
             assert data["sendPdbCommand"]
 
 
-async def control_execution(client: TestClient):
-
-    agen = gql_subscribe(client, SUBSCRIBE_TRACE_IDS)
-
-    prev_ids: Set[int] = set()
-    tasks: Set[asyncio.Task] = set()
+async def agen_with_wait(agen: AsyncGenerator, tasks: Set[asyncio.Task]):
     task_anext = asyncio.create_task(agen.__anext__())
     while True:
         aws = {task_anext, *tasks}
@@ -150,6 +145,17 @@ async def control_execution(client: TestClient):
             data = task_anext.result()
         except StopAsyncIteration:
             break
+        yield data, tasks
+        task_anext = asyncio.create_task(agen.__anext__())
+
+
+async def control_execution(client: TestClient):
+
+    agen = gql_subscribe(client, SUBSCRIBE_TRACE_IDS)
+
+    prev_ids: Set[int] = set()
+    tasks: Set[asyncio.Task] = set()
+    async for data, tasks in agen_with_wait(agen, tasks):
         ids = data["traceIds"]
         if not ids:
             break
@@ -159,7 +165,6 @@ async def control_execution(client: TestClient):
             asyncio.create_task(control_trace(client, id_)) for id_ in new_ids
         }
         prev_ids = ids
-        task_anext = asyncio.create_task(agen.__anext__())
 
 
 async def monitor_state(client: TestClient) -> None:
