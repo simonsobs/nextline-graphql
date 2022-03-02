@@ -132,47 +132,34 @@ async def control_trace(client: TestClient, trace_id: int) -> None:
 
 async def control_execution(client: TestClient):
 
-    subscribe_trace_ids = SubscribeMessage(
-        id="1",
-        type="start",
-        payload=SubscribePayload(
-            variables={},
-            extensions={},
-            operationName=None,
-            query=SUBSCRIBE_TRACE_IDS,
-        ),
-    )
+    agen = gql_subscribe(client, SUBSCRIBE_TRACE_IDS)
 
-    async with client.websocket_connect("/") as ws:
-        await ws.send_json(subscribe_trace_ids)
-        prev_ids: Set[int] = set()
-        tasks_control_trace: Set[asyncio.Task] = set()
-        task_receive_json = asyncio.create_task(ws.receive_json())
-        while True:
-            aws = {task_receive_json, *tasks_control_trace}
-            done, pending = await asyncio.wait(
-                aws, return_when=asyncio.FIRST_COMPLETED
-            )
-            _ = [
-                t.result() for t in tasks_control_trace & done
-            ]  # raise exception
-            tasks_control_trace = tasks_control_trace & pending
-            if task_receive_json not in done:
-                continue
-            resp_json = task_receive_json.result()
-            task_receive_json = asyncio.create_task(ws.receive_json())
-            # print(resp_json)
-            if resp_json["type"] == "complete":
-                break
-            ids = resp_json["payload"]["data"]["traceIds"]  # a list of dicts
-            if not ids:
-                break
-            ids = set(ids)
-            new_ids = ids - prev_ids
-            for id_ in new_ids:
-                task = asyncio.create_task(control_trace(client, id_))
-                tasks_control_trace.add(task)
-            prev_ids = ids
+    prev_ids: Set[int] = set()
+    tasks: Set[asyncio.Task] = set()
+    task_anext = asyncio.create_task(agen.__anext__())
+    while True:
+        aws = {task_anext, *tasks}
+        done, pending = await asyncio.wait(
+            aws, return_when=asyncio.FIRST_COMPLETED
+        )
+        _ = [t.result() for t in tasks & done]  # raise exception
+        tasks = tasks & pending
+        if task_anext not in done:
+            continue
+        try:
+            data = task_anext.result()
+        except StopAsyncIteration:
+            break
+        ids = data["traceIds"]
+        if not ids:
+            break
+        ids = set(ids)
+        new_ids = ids - prev_ids
+        for id_ in new_ids:
+            task = asyncio.create_task(control_trace(client, id_))
+            tasks.add(task)
+        prev_ids = ids
+        task_anext = asyncio.create_task(agen.__anext__())
 
 
 async def monitor_state(client: TestClient) -> None:
@@ -194,6 +181,8 @@ async def test_run():
 
         data = await gql_request(client, MUTATE_EXEC)
         assert data["exec"]
+
+        await asyncio.sleep(0.01)
 
         task_control_execution = asyncio.create_task(control_execution(client))
 
