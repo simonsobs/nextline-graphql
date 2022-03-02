@@ -49,6 +49,22 @@ class SubscribeMessage(TypedDict):
     payload: SubscribePayload
 
 
+async def gql_request(
+    client: TestClient,
+    query: str,
+    variables: Optional[Dict[str, Any]] = None,
+) -> Any:
+
+    request = PostRequest(query=query)
+    if variables:
+        request["variables"] = variables
+
+    headers = {"Content-Type:": "application/json"}
+
+    resp = await client.post("/", json=request, headers=headers)
+    return resp.json()["data"]
+
+
 async def gql_subscribe(
     client: TestClient,
     query: str,
@@ -78,12 +94,6 @@ async def control_trace(client: TestClient, trace_id: int) -> None:
 
     to_step = ["script_threading.run()", "script_asyncio.run()"]
 
-    query_source_line = PostRequest(query=QUERY_SOURCE_LINE)
-
-    mutate_send_pdb_command = PostRequest(query=MUTATE_SEND_PDB_COMMAND)
-
-    headers = {"Content-Type:": "application/json"}
-
     async for data in gql_subscribe(
         client,
         SUBSCRIBE_TRACE_STATE,
@@ -94,28 +104,30 @@ async def control_trace(client: TestClient, trace_id: int) -> None:
         if state["prompting"]:
             command = "next"
             if state["traceEvent"] == "line":
-                query_source_line["variables"] = {
-                    "lineNo": state["lineNo"],
-                    "fileName": state["fileName"],
-                }
-                resp = await client.post(
-                    "/", json=query_source_line, headers=headers
+                data = await gql_request(
+                    client,
+                    QUERY_SOURCE_LINE,
+                    variables={
+                        "lineNo": state["lineNo"],
+                        "fileName": state["fileName"],
+                    },
                 )
-                source_line = resp.json()["data"]["sourceLine"]
+                source_line = data["sourceLine"]
 
                 # print(source_line)
                 # print(source_line in to_step)
                 if source_line in to_step:
                     command = "step"
 
-            mutate_send_pdb_command["variables"] = {
-                "traceId": trace_id,
-                "command": command,
-            }
-            resp = await client.post(
-                "/", json=mutate_send_pdb_command, headers=headers
+            data = await gql_request(
+                client,
+                MUTATE_SEND_PDB_COMMAND,
+                variables={
+                    "traceId": trace_id,
+                    "command": command,
+                },
             )
-            # print(resp.json())
+            assert data["sendPdbCommand"]
 
 
 async def control_execution(client: TestClient):
@@ -174,24 +186,18 @@ async def monitor_state(client: TestClient) -> None:
 @pytest.mark.asyncio
 async def test_run():
 
-    query_state = PostRequest(query=QUERY_GLOBAL_STATE)
-
-    mutate_exec = PostRequest(query=MUTATE_EXEC)
-
-    headers = {"Content-Type:": "application/json"}
-
     async with TestClient(create_app()) as client:
-        resp = await client.post("/", json=query_state, headers=headers)
-        assert "initialized" == resp.json()["data"]["globalState"]
+        data = await gql_request(client, QUERY_GLOBAL_STATE)
+        assert "initialized" == data["globalState"]
 
         task_monitor_state = asyncio.create_task(monitor_state(client))
 
-        resp = await client.post("/", json=mutate_exec, headers=headers)
-        assert resp.json()["data"]["exec"]
+        data = await gql_request(client, MUTATE_EXEC)
+        assert data["exec"]
 
         task_control_execution = asyncio.create_task(control_execution(client))
 
         await asyncio.gather(task_monitor_state, task_control_execution)
 
-        resp = await client.post("/", json=query_state, headers=headers)
-        assert "finished" == resp.json()["data"]["globalState"]
+        data = await gql_request(client, QUERY_GLOBAL_STATE)
+        assert "finished" == data["globalState"]
