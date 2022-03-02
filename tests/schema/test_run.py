@@ -78,57 +78,44 @@ async def control_trace(client: TestClient, trace_id: int) -> None:
 
     to_step = ["script_threading.run()", "script_asyncio.run()"]
 
-    subscribe_trace_state = SubscribeMessage(
-        id="1",
-        type="start",
-        payload=SubscribePayload(
-            variables={"traceId": trace_id},
-            extensions={},
-            operationName=None,
-            query=SUBSCRIBE_TRACE_STATE,
-        ),
-    )
-
     query_source_line = PostRequest(query=QUERY_SOURCE_LINE)
 
     mutate_send_pdb_command = PostRequest(query=MUTATE_SEND_PDB_COMMAND)
 
     headers = {"Content-Type:": "application/json"}
 
-    async with client.websocket_connect("/") as ws:
-        await ws.send_json(subscribe_trace_state)
-        while True:
-            resp_json = await ws.receive_json()
-            if resp_json["type"] == "complete":
-                break
-            assert "errors" not in resp_json["payload"]
-            state = resp_json["payload"]["data"]["traceState"]
-            # print(state)
-            if state["prompting"]:
-                command = "next"
-                if state["traceEvent"] == "line":
-                    query_source_line["variables"] = {
-                        "lineNo": state["lineNo"],
-                        "fileName": state["fileName"],
-                    }
-                    resp = await client.post(
-                        "/", json=query_source_line, headers=headers
-                    )
-                    source_line = resp.json()["data"]["sourceLine"]
-
-                    # print(source_line)
-                    # print(source_line in to_step)
-                    if source_line in to_step:
-                        command = "step"
-
-                mutate_send_pdb_command["variables"] = {
-                    "traceId": trace_id,
-                    "command": command,
+    async for data in subscribe(
+        client,
+        SUBSCRIBE_TRACE_STATE,
+        variables={"traceId": trace_id},
+    ):
+        state = data["traceState"]
+        # print(state)
+        if state["prompting"]:
+            command = "next"
+            if state["traceEvent"] == "line":
+                query_source_line["variables"] = {
+                    "lineNo": state["lineNo"],
+                    "fileName": state["fileName"],
                 }
                 resp = await client.post(
-                    "/", json=mutate_send_pdb_command, headers=headers
+                    "/", json=query_source_line, headers=headers
                 )
-                # print(resp.json())
+                source_line = resp.json()["data"]["sourceLine"]
+
+                # print(source_line)
+                # print(source_line in to_step)
+                if source_line in to_step:
+                    command = "step"
+
+            mutate_send_pdb_command["variables"] = {
+                "traceId": trace_id,
+                "command": command,
+            }
+            resp = await client.post(
+                "/", json=mutate_send_pdb_command, headers=headers
+            )
+            # print(resp.json())
 
 
 async def control_execution(client: TestClient):
