@@ -130,7 +130,14 @@ async def control_trace(client: TestClient, trace_id: int) -> None:
             assert data["sendPdbCommand"]
 
 
-async def agen_with_wait(agen: AsyncGenerator, tasks: Set[asyncio.Task]):
+async def agen_with_wait(
+    agen: AsyncGenerator,
+) -> AsyncGenerator[Any, Set[asyncio.Task]]:
+    """Yield from the agen while waiting for received tasks
+
+    Used to raise an exception from tasks
+    """
+    tasks: Set[asyncio.Task] = set()
     task_anext = asyncio.create_task(agen.__anext__())
     while True:
         aws = {task_anext, *tasks}
@@ -147,26 +154,27 @@ async def agen_with_wait(agen: AsyncGenerator, tasks: Set[asyncio.Task]):
             data = task_anext.result()
         except StopAsyncIteration:
             break
-        yield data, tasks
+        tasks |= yield data
+        yield
         task_anext = asyncio.create_task(agen.__anext__())
 
 
 async def control_execution(client: TestClient):
 
-    agen = gql_subscribe(client, SUBSCRIBE_TRACE_IDS)
+    agen = agen_with_wait(gql_subscribe(client, SUBSCRIBE_TRACE_IDS))
 
     prev_ids: Set[int] = set()
-    tasks: Set[asyncio.Task] = set()
-    async for data, _ in agen_with_wait(agen, tasks):
+    async for data in agen:
         ids = data["traceIds"]
         if not ids:
             break
         ids = set(ids)
         new_ids = ids - prev_ids
-        tasks |= {
+        prev_ids = ids
+        tasks = {
             asyncio.create_task(control_trace(client, id_)) for id_ in new_ids
         }
-        prev_ids = ids
+        await agen.asend(tasks)
 
 
 async def monitor_state(client: TestClient) -> None:
