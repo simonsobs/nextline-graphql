@@ -3,7 +3,7 @@ from async_asgi_testclient import TestClient
 
 import pytest
 
-from typing import AsyncGenerator, Set, Dict, Any, TypedDict
+from typing import AsyncGenerator, Optional, Set, Dict, Any, TypedDict
 
 from nextlinegraphql import create_app
 
@@ -51,8 +51,16 @@ class SubscribeMessage(TypedDict):
 
 async def subscribe(
     client: TestClient,
-    payload: SubscribePayload,
+    query: str,
+    variables: Optional[Dict[str, Any]] = None,
 ) -> AsyncGenerator[Any, None]:
+
+    payload = SubscribePayload(
+        variables=variables if variables else {},
+        extensions={},
+        operationName=None,
+        query=query,
+    )
 
     message = SubscribeMessage(id="1", type="start", payload=payload)
 
@@ -170,14 +178,7 @@ async def control_execution(client: TestClient):
 
 async def monitor_state(client: TestClient) -> None:
 
-    payload = SubscribePayload(
-        variables={},
-        extensions={},
-        operationName=None,
-        query=SUBSCRIBE_GLOBAL_STATE,
-    )
-
-    async for data in subscribe(client, payload):
+    async for data in subscribe(client, SUBSCRIBE_GLOBAL_STATE):
         # print(data)
         if data["globalState"] == "finished":
             break
