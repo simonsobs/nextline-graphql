@@ -164,14 +164,14 @@ async def control_execution(client: TestClient):
 
     prev_ids: Set[int] = set()
     async for data in agen:
-        ids = data["traceIds"]
-        if not ids:
+        if not (ids := set(data["traceIds"])):
             break
-        ids = set(ids)
-        new_ids = ids - prev_ids
-        prev_ids = ids
+        new_ids, prev_ids = ids - prev_ids, ids
         tasks = {
-            asyncio.create_task(control_trace(client, id_)) for id_ in new_ids
+            asyncio.create_task(
+                control_trace(client, id_),
+            )
+            for id_ in new_ids
         }
         await agen.asend(tasks)
 
