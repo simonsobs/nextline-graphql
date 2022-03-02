@@ -20,6 +20,54 @@ from .gql_strs import (
 )
 
 
+@pytest.mark.asyncio
+async def test_run():
+
+    async with TestClient(create_app()) as client:
+        data = await gql_request(client, QUERY_GLOBAL_STATE)
+        assert "initialized" == data["globalState"]
+
+        task_monitor_state = asyncio.create_task(monitor_state(client))
+
+        data = await gql_request(client, MUTATE_EXEC)
+        assert data["exec"]
+
+        await asyncio.sleep(0.01)
+
+        task_control_execution = asyncio.create_task(control_execution(client))
+
+        await asyncio.gather(task_monitor_state, task_control_execution)
+
+        data = await gql_request(client, QUERY_GLOBAL_STATE)
+        assert "finished" == data["globalState"]
+
+
+async def monitor_state(client: TestClient) -> None:
+
+    async for data in gql_subscribe(client, SUBSCRIBE_GLOBAL_STATE):
+        # print(data)
+        if data["globalState"] == "finished":
+            break
+
+
+async def control_execution(client: TestClient):
+
+    agen = agen_with_wait(gql_subscribe(client, SUBSCRIBE_TRACE_IDS))
+
+    prev_ids: Set[int] = set()
+    async for data in agen:
+        if not (ids := set(data["traceIds"])):
+            break
+        new_ids, prev_ids = ids - prev_ids, ids
+        tasks = {
+            asyncio.create_task(
+                control_trace(client, id_),
+            )
+            for id_ in new_ids
+        }
+        await agen.asend(tasks)
+
+
 async def control_trace(client: TestClient, trace_id: int) -> None:
     # print(f'control_trace({trace_id})')
 
@@ -59,51 +107,3 @@ async def control_trace(client: TestClient, trace_id: int) -> None:
                 },
             )
             assert data["sendPdbCommand"]
-
-
-async def control_execution(client: TestClient):
-
-    agen = agen_with_wait(gql_subscribe(client, SUBSCRIBE_TRACE_IDS))
-
-    prev_ids: Set[int] = set()
-    async for data in agen:
-        if not (ids := set(data["traceIds"])):
-            break
-        new_ids, prev_ids = ids - prev_ids, ids
-        tasks = {
-            asyncio.create_task(
-                control_trace(client, id_),
-            )
-            for id_ in new_ids
-        }
-        await agen.asend(tasks)
-
-
-async def monitor_state(client: TestClient) -> None:
-
-    async for data in gql_subscribe(client, SUBSCRIBE_GLOBAL_STATE):
-        # print(data)
-        if data["globalState"] == "finished":
-            break
-
-
-@pytest.mark.asyncio
-async def test_run():
-
-    async with TestClient(create_app()) as client:
-        data = await gql_request(client, QUERY_GLOBAL_STATE)
-        assert "initialized" == data["globalState"]
-
-        task_monitor_state = asyncio.create_task(monitor_state(client))
-
-        data = await gql_request(client, MUTATE_EXEC)
-        assert data["exec"]
-
-        await asyncio.sleep(0.01)
-
-        task_control_execution = asyncio.create_task(control_execution(client))
-
-        await asyncio.gather(task_monitor_state, task_control_execution)
-
-        data = await gql_request(client, QUERY_GLOBAL_STATE)
-        assert "finished" == data["globalState"]
