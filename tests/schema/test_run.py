@@ -137,7 +137,9 @@ async def agen_with_wait(agen: AsyncGenerator, tasks: Set[asyncio.Task]):
         done, pending = await asyncio.wait(
             aws, return_when=asyncio.FIRST_COMPLETED
         )
-        _ = [t.result() for t in tasks & done]  # raise exception
+        for t in done:
+            if exc := t.exception():
+                raise exc
         tasks = tasks & pending
         if task_anext not in done:
             continue
