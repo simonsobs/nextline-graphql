@@ -155,9 +155,9 @@ async def control_execution(client: TestClient):
             break
         ids = set(ids)
         new_ids = ids - prev_ids
-        for id_ in new_ids:
-            task = asyncio.create_task(control_trace(client, id_))
-            tasks.add(task)
+        tasks |= {
+            asyncio.create_task(control_trace(client, id_)) for id_ in new_ids
+        }
         prev_ids = ids
         task_anext = asyncio.create_task(agen.__anext__())
 
