@@ -2,7 +2,15 @@ import asyncio
 from async_asgi_testclient import TestClient
 
 
-from typing import AsyncGenerator, Optional, Set, Dict, Any, TypedDict
+from typing import (
+    AsyncGenerator,
+    Iterable,
+    Optional,
+    Set,
+    Dict,
+    Any,
+    TypedDict,
+)
 
 
 class PostRequest(TypedDict, total=False):
@@ -78,27 +86,34 @@ async def gql_subscribe(
 
 async def agen_with_wait(
     agen: AsyncGenerator,
-) -> AsyncGenerator[Any, Set[asyncio.Task]]:
+) -> AsyncGenerator[Any, Iterable[asyncio.Task]]:
     """Yield from the agen while waiting for received tasks
 
     Used to raise an exception from tasks
     """
-    tasks: Set[asyncio.Task] = set()
-    task_anext = asyncio.create_task(agen.__anext__())
+    done: Set[asyncio.Task] = set()
+    pending: Set[asyncio.Task] = set()
+    anext = asyncio.create_task(agen.__anext__())
     while True:
-        done, pending = await asyncio.wait(
-            tasks | {task_anext}, return_when=asyncio.FIRST_COMPLETED
+        done_, pending_ = await asyncio.wait(
+            pending | {anext}, return_when=asyncio.FIRST_COMPLETED
         )
-        for t in done - {task_anext}:
+        for t in done_ - {anext}:
             if exc := t.exception():
                 raise exc
-        tasks &= pending
-        if task_anext not in done:
+        if anext in done_:
+            try:
+                data = anext.result()
+            except StopAsyncIteration:
+                break
+            done_.remove(anext)
+            done |= done_
+        else:
+            done |= done_
             continue
-        try:
-            data = task_anext.result()
-        except StopAsyncIteration:
-            break
-        tasks |= yield data
-        yield
-        task_anext = asyncio.create_task(agen.__anext__())
+        pending &= pending_
+        new = yield data
+        pending |= set(new)
+        yield tuple(done), tuple(pending)
+        done.clear()
+        anext = asyncio.create_task(agen.__anext__())
