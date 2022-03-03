@@ -65,7 +65,9 @@ async def control_execution(client: TestClient):
             )
             for id_ in new_ids
         }
-        await agen.asend(tasks)
+        _, pending = await agen.asend(tasks)
+
+    await asyncio.gather(*pending)
 
 
 async def control_trace(client: TestClient, trace_id: int) -> None:
