@@ -3,7 +3,7 @@ from random import random, randint
 
 import pytest
 
-from typing import AsyncGenerator, Iterable
+from typing import AsyncGenerator, Iterable, List, Set
 
 from .funcs import agen_with_wait
 
@@ -21,12 +21,19 @@ async def test_one():
         delay = random() * 0.01
         await asyncio.sleep(delay)
 
+    all: Set[asyncio.Task] = set()
+    done: List[asyncio.Task] = []
+
     agen = agen_with_wait(aiterable(range(5)))
     async for i in agen:
         tasks = {asyncio.create_task(afunc()) for _ in range(randint(0, 2))}
-        _, pending = await agen.asend(tasks)
+        all |= tasks
+        done_, pending = await agen.asend(tasks)
+        done.extend(done_)
 
     await asyncio.gather(*pending)
+    assert len(all) == len(done) + len(pending)
+    assert all == set(done) | set(pending)
 
 
 @pytest.mark.asyncio
