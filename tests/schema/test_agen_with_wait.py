@@ -3,32 +3,30 @@ from random import random, randint
 
 import pytest
 
-from typing import AsyncGenerator, Iterable, List, Set
+from typing import List, Set
 
 from .funcs import agen_with_wait
 
 
-async def aiterable(iterable: Iterable) -> AsyncGenerator:
-    '''Wrap iterable so can be used with "async for"'''
-    for i in iterable:
-        await asyncio.sleep(0.01)
-        yield i
-
-
 @pytest.mark.asyncio
 async def test_one():
+    async def agen():
+        for i in range(3):
+            yield i
+            await asyncio.sleep(0.001)
+
     async def afunc():
-        delay = random() * 0.01
+        delay = random() * 0.001
         await asyncio.sleep(delay)
 
     all: Set[asyncio.Task] = set()
     done: List[asyncio.Task] = []
 
-    agen = agen_with_wait(aiterable(range(5)))
-    async for i in agen:
-        tasks = {asyncio.create_task(afunc()) for _ in range(randint(0, 2))}
+    obj = agen_with_wait(agen())
+    async for _ in obj:
+        tasks = {asyncio.create_task(afunc()) for _ in range(randint(0, 5))}
         all |= tasks
-        done_, pending = await agen.asend(tasks)
+        done_, pending = await obj.asend(tasks)
         done.extend(done_)
 
     await asyncio.gather(*pending)
@@ -49,7 +47,7 @@ async def test_raise():
 
     obj = agen_with_wait(agen())
     with pytest.raises(Exception) as exc:
-        async for i in obj:
+        async for _ in obj:
             tasks = {asyncio.create_task(afunc())}
             _, pending = await obj.asend(tasks)
 
