@@ -38,16 +38,19 @@ async def test_one():
 
 @pytest.mark.asyncio
 async def test_raise():
-    all_tasks = asyncio.all_tasks()
+    async def agen():
+        yield 0
+        await asyncio.sleep(0.1)
+        assert False  # The line shouldn't be reached
 
     async def afunc():
-        raise Exception()
+        await asyncio.sleep(0)
+        raise Exception("foo", "bar")
 
-    agen = agen_with_wait(aiterable(range(5)))
-    with pytest.raises(Exception):
-        async for i in agen:
+    obj = agen_with_wait(agen())
+    with pytest.raises(Exception) as exc:
+        async for i in obj:
             tasks = {asyncio.create_task(afunc())}
-            _, pending = await agen.asend(tasks)
+            _, pending = await obj.asend(tasks)
 
-    await asyncio.gather(*(asyncio.all_tasks() - all_tasks))
-    # <Task pending name='Task-21' coro=<<async_generator_asend without __name__>()>
+    assert ("foo", "bar") == exc.value.args
