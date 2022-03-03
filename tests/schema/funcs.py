@@ -1,16 +1,7 @@
-import asyncio
 from async_asgi_testclient import TestClient
 
 
-from typing import (
-    AsyncGenerator,
-    Iterable,
-    Optional,
-    Set,
-    Dict,
-    Any,
-    TypedDict,
-)
+from typing import AsyncGenerator, Optional, Dict, Any, TypedDict
 
 
 class PostRequest(TypedDict, total=False):
@@ -82,39 +73,3 @@ async def gql_subscribe(
             if resp_json["type"] == "complete":
                 break
             yield resp_json["payload"]["data"]
-
-
-async def agen_with_wait(
-    agen: AsyncGenerator,
-) -> AsyncGenerator[Any, Iterable[asyncio.Task]]:
-    """Yield from the agen while waiting for received tasks
-
-    Used to raise an exception from tasks
-    """
-    done: Set[asyncio.Task] = set()
-    pending: Set[asyncio.Task] = set()
-    anext = asyncio.create_task(agen.__anext__())
-    while True:
-        done_, pending_ = await asyncio.wait(
-            pending | {anext}, return_when=asyncio.FIRST_COMPLETED
-        )
-        for t in done_ - {anext}:
-            if exc := t.exception():
-                anext.cancel()
-                raise exc
-        if anext in done_:
-            try:
-                item = anext.result()
-            except StopAsyncIteration:
-                break
-            done_.remove(anext)
-            done |= done_
-        else:
-            done |= done_
-            continue
-        pending &= pending_
-        new = yield item
-        pending |= set(new)
-        yield tuple(done), tuple(pending)
-        done.clear()
-        anext = asyncio.create_task(agen.__anext__())

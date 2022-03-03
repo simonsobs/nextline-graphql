@@ -5,9 +5,10 @@ import pytest
 
 from typing import Set
 
+from nextline.utils import agen_with_wait
 from nextlinegraphql import create_app
 
-from .funcs import gql_request, gql_subscribe, agen_with_wait
+from .funcs import gql_request, gql_subscribe
 
 from .gql_strs import (
     QUERY_GLOBAL_STATE,
