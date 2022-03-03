@@ -104,7 +104,7 @@ async def agen_with_wait(
                 raise exc
         if anext in done_:
             try:
-                data = anext.result()
+                item = anext.result()
             except StopAsyncIteration:
                 break
             done_.remove(anext)
@@ -113,7 +113,7 @@ async def agen_with_wait(
             done |= done_
             continue
         pending &= pending_
-        new = yield data
+        new = yield item
         pending |= set(new)
         yield tuple(done), tuple(pending)
         done.clear()
