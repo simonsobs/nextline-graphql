@@ -100,6 +100,7 @@ async def agen_with_wait(
         )
         for t in done_ - {anext}:
             if exc := t.exception():
+                anext.cancel()
                 raise exc
         if anext in done_:
             try:
