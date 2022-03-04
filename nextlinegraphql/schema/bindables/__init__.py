@@ -172,14 +172,11 @@ async def trace_state_generator(_, info, traceId):
     trace_id = traceId
     nextline: Nextline = info.context["nextline"]
     async for y in nextline.subscribe_trace_state(trace_id):
-        # if y['prompting'] and y['trace_event'] == 'return':
-        #     nextline.send_pdb_command(thread_asynctask_id, 'return')
-        #     continue
         y = {
-            "prompting": y["prompting"],
-            "fileName": y["file_name"],
-            "lineNo": y["line_no"],
-            "traceEvent": y["trace_event"],
+            "prompting": y.prompting,
+            "fileName": y.file_name,
+            "lineNo": y.line_no,
+            "traceEvent": y.trace_event,
         }
         yield y
 
