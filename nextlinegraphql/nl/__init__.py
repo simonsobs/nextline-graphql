@@ -18,13 +18,12 @@ async def run_nextline():
     nextline = get_nextline()
     # print(nextline.state)
     if nextline.state == "initialized":
-        nextline.run()
         asyncio.create_task(_wait(nextline))
     return
 
 
 async def _wait(nextline):
-    await nextline.finish()
+    await nextline.run()
 
 
 def reset_nextline(statement=None):
