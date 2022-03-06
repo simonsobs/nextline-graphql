@@ -7,7 +7,7 @@ import traceback
 import janus
 from ariadne import ScalarType, QueryType, MutationType, SubscriptionType
 
-from typing import Iterable, TYPE_CHECKING
+from typing import Iterable, TYPE_CHECKING, List
 
 from ...nl import run_nextline, reset_nextline, close_nextline
 from ...db import Db
@@ -309,7 +309,7 @@ class StdoutQueue:
         await self.queue_dist.unsubscribe(queue)
 
 
-stdout_queue_holder = []
+stdout_queue_holder: List[StdoutQueue] = []
 
 
 async def get_stdout_queue():
