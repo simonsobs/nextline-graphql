@@ -171,7 +171,7 @@ def trace_ids_resolver(obj, info):
 async def trace_state_generator(_, info, traceId):
     trace_id = traceId
     nextline: Nextline = info.context["nextline"]
-    async for y in nextline.subscribe_trace_state(trace_id):
+    async for y in nextline.subscribe_prompting(trace_id):
         y = {
             "prompting": y.prompting,
             "fileName": y.file_name,
