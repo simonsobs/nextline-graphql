@@ -191,14 +191,10 @@ def trace_state_resolver(obj, info, traceId):
 @subscription.source("stdout")
 async def stdout_generator(_, info):
     stdout_queue = await get_stdout_queue()
-    queue = stdout_queue.subscribe()
-    # iter = queue.__aiter__
     nextline: Nextline = info.context["nextline"]
-    while True:
-        v = await queue.__anext__()
+    async for v in stdout_queue.subscribe():
         if nextline.state == "running":
             yield v
-    await stdout_queue.unsubscribe(queue)
 
 
 @subscription.field("stdout")
@@ -274,9 +270,6 @@ class StdoutQueue:
 
     def subscribe(self):
         return self.queue_dist.subscribe()
-
-    async def unsubscribe(self, queue):
-        await self.queue_dist.unsubscribe(queue)
 
 
 stdout_queue_holder: List[StdoutQueue] = []
