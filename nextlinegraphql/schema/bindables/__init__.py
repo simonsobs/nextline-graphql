@@ -9,6 +9,8 @@ from ariadne import ScalarType, QueryType, MutationType, SubscriptionType
 
 from typing import Iterable, TYPE_CHECKING, List
 
+from nextline.utils import QueueDist
+
 from ...nl import run_nextline, reset_nextline, close_nextline
 from ...db import Db
 
@@ -190,9 +192,10 @@ def trace_state_resolver(obj, info, traceId):
 async def stdout_generator(_, info):
     stdout_queue = await get_stdout_queue()
     queue = stdout_queue.subscribe()
+    # iter = queue.__aiter__
     nextline: Nextline = info.context["nextline"]
     while True:
-        v = await queue.async_q.get()
+        v = await queue.__anext__()
         if nextline.state == "running":
             yield v
     await stdout_queue.unsubscribe(queue)
@@ -252,55 +255,22 @@ async def resolve_update_hello_db_message(_, info, message):
 ##__________________________________________________________________||
 class StreamOut:
     def __init__(self, queue):
-        self.queue = queue
+        self._queue = queue
+        self._stdout_org = sys.stdout
+        sys.stdout = self
 
     def write(self, s):
-        self.queue.put(s)
+        self._queue.put(s)
+        self._stdout_org.write(s)
 
     def flush(self):
         pass
 
 
-class QueueDist:
-    def __init__(self, queue: janus.Queue):
-        self.queue = queue
-        self.subscribers = []
-
-        self.t = threading.Thread(target=self._listen, daemon=True)
-        self.t.start()
-
-    def _listen(self):
-        while True:
-            v = self.queue.sync_q.get()
-            for s in self.subscribers:
-                s.sync_q.put(v)
-
-    def subscribe(self):
-        ret = janus.Queue()
-        self.subscribers.append(ret)
-        return ret
-
-    async def unsubscribe(self, queue):
-        self.subscribers.remove(queue)
-        queue.close()
-        await queue.wait_closed()
-
-
 class StdoutQueue:
-    def __init__(self, queue: janus.Queue):
-        self.queue = queue
-        self.stdout_org = sys.stdout
-        sys.stdout = StreamOut(self.queue.sync_q)
-        self.queue_dist = QueueDist(self.queue)
-
-        self.q = self.subscribe()
-        self.t = threading.Thread(target=self._listen, daemon=True)
-        self.t.start()
-
-    def _listen(self):
-        while True:
-            v = self.q.sync_q.get()
-            self.stdout_org.write(v)
+    def __init__(self):
+        self.queue_dist = QueueDist()
+        StreamOut(self.queue_dist)
 
     def subscribe(self):
         return self.queue_dist.subscribe()
@@ -314,8 +284,7 @@ stdout_queue_holder: List[StdoutQueue] = []
 
 async def get_stdout_queue():
     if not stdout_queue_holder:
-        queue = janus.Queue()
-        stdout_queue_holder.append(StdoutQueue(queue))
+        stdout_queue_holder.append(StdoutQueue())
     return stdout_queue_holder[0]
 
 
