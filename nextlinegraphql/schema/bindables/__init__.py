@@ -2,12 +2,10 @@ from __future__ import annotations
 
 import sys
 import asyncio
-import threading
 import traceback
-import janus
 from ariadne import ScalarType, QueryType, MutationType, SubscriptionType
 
-from typing import Iterable, TYPE_CHECKING, List
+from typing import TYPE_CHECKING, Iterable
 
 from nextline.utils import QueueDist
 
@@ -190,9 +188,8 @@ def trace_state_resolver(obj, info, traceId):
 
 @subscription.source("stdout")
 async def stdout_generator(_, info):
-    stdout_queue = await get_stdout_queue()
     nextline: Nextline = info.context["nextline"]
-    async for v in stdout_queue.subscribe():
+    async for v in subscribe_stdout():
         if nextline.state == "running":
             yield v
 
@@ -263,23 +260,24 @@ class StreamOut:
         pass
 
 
-class StdoutQueue:
-    def __init__(self):
-        self.queue_dist = QueueDist()
-        StreamOut(self.queue_dist)
+def create_subscribe_stdout():
+    queue = None
 
-    def subscribe(self):
-        return self.queue_dist.subscribe()
+    def create_queue():
+        queue = QueueDist()
+        StreamOut(queue)
+        return queue
+
+    async def subscribe_stdout():
+        nonlocal queue
+        queue = queue or create_queue()
+        async for v in queue.subscribe():
+            yield v
+
+    return subscribe_stdout
 
 
-stdout_queue_holder: List[StdoutQueue] = []
-
-
-async def get_stdout_queue():
-    if not stdout_queue_holder:
-        stdout_queue_holder.append(StdoutQueue())
-    return stdout_queue_holder[0]
-
+subscribe_stdout = create_subscribe_stdout()
 
 ##__________________________________________________________________||
 bindables = [query, mutation, subscription, datetime_scalar]
