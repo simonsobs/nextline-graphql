@@ -2,12 +2,16 @@ import asyncio
 import datetime
 import traceback
 from ariadne.asgi import GraphQL
+from strawberry.asgi import GraphQL as SGraphQL
 
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
+from typing import Optional, Any
+
 from .schema import schema
+from .schema2 import schema as schema2
 from .db import Db
 from .nl import get_nextline
 
@@ -82,6 +86,16 @@ def create_app():
         debug=True,
     )
 
+    class ESGraphQl(SGraphQL):
+        async def get_context(self, request, response=None) -> Optional[Any]:
+            return {
+                "request": request,
+                "response": response,
+                "db": db,
+                "nextline": get_nextline(),
+            }
+    app_s = ESGraphQl(schema2)
+
     middleware = [
         Middleware(
             CORSMiddleware,
@@ -92,6 +106,7 @@ def create_app():
     ]
 
     app = Starlette(debug=True, middleware=middleware)
+    app.mount("/s/", app_s)
     app.mount("/", app_)
 
     return app
