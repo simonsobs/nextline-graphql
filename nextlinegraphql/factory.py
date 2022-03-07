@@ -3,6 +3,10 @@ import datetime
 import traceback
 from ariadne.asgi import GraphQL
 from strawberry.asgi import GraphQL as SGraphQL
+from strawberry.subscriptions import (
+    GRAPHQL_TRANSPORT_WS_PROTOCOL,
+    GRAPHQL_WS_PROTOCOL,
+)
 
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
@@ -94,7 +98,14 @@ def create_app():
                 "db": db,
                 "nextline": get_nextline(),
             }
-    app_s = ESGraphQl(schema2)
+
+    app_s = ESGraphQl(
+        schema2,
+        subscription_protocols=[
+            GRAPHQL_TRANSPORT_WS_PROTOCOL,
+            GRAPHQL_WS_PROTOCOL,
+        ],
+    )
 
     middleware = [
         Middleware(
