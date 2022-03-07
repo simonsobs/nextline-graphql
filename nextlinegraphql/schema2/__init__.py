@@ -24,10 +24,18 @@ def global_state_generator(info: Info) -> AsyncGenerator[str, None]:
     return nextline.subscribe_state()
 
 
+def run_no_generator(info: Info) -> AsyncGenerator[int, None]:
+    nextline: Nextline = info.context["nextline"]
+    return nextline.subscribe_run_no()
+
+
 @strawberry.type
 class Subscription:
     global_state: AsyncGenerator[str, None] = strawberry.field(
         is_subscription=True, resolver=global_state_generator
+    )
+    run_no: AsyncGenerator[str, None] = strawberry.field(
+        is_subscription=True, resolver=run_no_generator
     )
 
 
