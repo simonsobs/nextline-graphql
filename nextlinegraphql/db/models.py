@@ -18,7 +18,7 @@ class StateChange(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     datetime = Column(DateTime(), default=lambda: datetime.datetime.now())
-    run_no = Column(ForeignKey("run.run_no"))
+    run_no = Column(Integer, ForeignKey("run.run_no"))
 
 
 class Run(Base):
