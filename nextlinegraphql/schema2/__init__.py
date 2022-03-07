@@ -19,12 +19,12 @@ class Query:
     source: List[str] = strawberry.field(resolver=resolve_source)
 
 
-def global_state_generator(info: Info) -> AsyncGenerator[str, None]:
+def subscribe_global_state(info: Info) -> AsyncGenerator[str, None]:
     nextline: Nextline = info.context["nextline"]
     return nextline.subscribe_state()
 
 
-def run_no_generator(info: Info) -> AsyncGenerator[int, None]:
+def subscribe_run_no(info: Info) -> AsyncGenerator[int, None]:
     nextline: Nextline = info.context["nextline"]
     return nextline.subscribe_run_no()
 
@@ -32,10 +32,10 @@ def run_no_generator(info: Info) -> AsyncGenerator[int, None]:
 @strawberry.type
 class Subscription:
     global_state: AsyncGenerator[str, None] = strawberry.field(
-        is_subscription=True, resolver=global_state_generator
+        is_subscription=True, resolver=subscribe_global_state
     )
     run_no: AsyncGenerator[str, None] = strawberry.field(
-        is_subscription=True, resolver=run_no_generator
+        is_subscription=True, resolver=subscribe_run_no
     )
 
 
