@@ -48,6 +48,7 @@ setup(
             "flake8",
             "black",
             "mypy",
+            "sqlalchemy-stubs",
         ],
     },
 )
