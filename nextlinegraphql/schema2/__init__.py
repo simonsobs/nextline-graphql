@@ -160,7 +160,7 @@ async def subscribe_trace_state(
 
 async def subscribe_stdout(info: Info) -> AGen[str, None]:
     nextline: Nextline = info.context["nextline"]
-    from ..schema.bindables import subscribe_stdout as s
+    from .stream import subscribe_stdout as s
 
     async for y in s():
         if nextline.state == "running":
