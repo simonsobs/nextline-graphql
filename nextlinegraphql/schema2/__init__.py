@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import dataclasses
+
 import strawberry
 from strawberry.types import Info
 
@@ -37,6 +39,22 @@ def subscribe_trace_ids(info: Info) -> AGen[List[int], None]:
 
 
 @strawberry.type
+class TraceState:
+    prompting: int
+    file_name: str
+    line_no: int
+    trace_event: str
+
+
+async def subscribe_trace_state(
+    info: Info, trace_id: int
+) -> AGen[TraceState, None]:
+    nextline: Nextline = info.context["nextline"]
+    async for y in nextline.subscribe_prompting(trace_id):
+        yield TraceState(**dataclasses.asdict(y))
+
+
+@strawberry.type
 class Subscription:
     global_state: AGen[str, None] = strawberry.field(
         is_subscription=True, resolver=subscribe_global_state
@@ -46,6 +64,9 @@ class Subscription:
     )
     trace_ids: AGen[List[int], None] = strawberry.field(
         is_subscription=True, resolver=subscribe_trace_ids
+    )
+    trace_state: AGen[TraceState, None] = strawberry.field(
+        is_subscription=True, resolver=subscribe_trace_state
     )
 
 
