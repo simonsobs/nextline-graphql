@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING, AsyncGenerator, List, Optional
 if TYPE_CHECKING:
     from nextline import Nextline
 
+from ..nl import run_nextline, reset_nextline
+
 AGen = AsyncGenerator
 
 
@@ -52,6 +54,29 @@ class Query:
     source: List[str] = strawberry.field(resolver=resolve_source)
     source_line: str = strawberry.field(resolver=resolve_source_line)
     exception: Optional[str] = strawberry.field(resolver=resolve_exception)
+
+
+async def mutate_exec() -> bool:
+    await run_nextline()
+    return True
+
+
+def mutate_reset(statement: Optional[str] = None):
+    reset_nextline(statement=statement)
+    return True
+
+
+def mutate_send_pdb_command(info: Info, trace_id: int, command: str) -> bool:
+    nextline: Nextline = info.context["nextline"]
+    nextline.send_pdb_command(trace_id, command)
+    return True
+
+
+@strawberry.type
+class Mutation:
+    exec: bool = strawberry.field(resolver=mutate_exec)
+    reset: bool = strawberry.field(resolver=mutate_reset)
+    send_pdb_command: bool = strawberry.field(resolver=mutate_send_pdb_command)
 
 
 def subscribe_global_state(info: Info) -> AGen[str, None]:
@@ -113,4 +138,8 @@ class Subscription:
     )
 
 
-schema = strawberry.Schema(query=Query, subscription=Subscription)
+schema = strawberry.Schema(
+    query=Query,
+    mutation=Mutation,
+    subscription=Subscription,
+)
