@@ -1,11 +1,19 @@
 from __future__ import annotations
 
 import sys
+import io
 import asyncio
 import traceback
 from ariadne import ScalarType, QueryType, MutationType, SubscriptionType
 
-from typing import TYPE_CHECKING, Iterable
+from typing import (
+    TYPE_CHECKING,
+    AsyncGenerator,
+    Callable,
+    Union,
+    Iterable,
+    TextIO,
+)
 
 from nextline.utils import QueueDist
 
@@ -246,33 +254,41 @@ async def resolve_update_hello_db_message(_, info, message):
 
 
 ##__________________________________________________________________||
-class StreamOut:
-    def __init__(self, queue):
-        self._queue = queue
-        self._stdout_org = sys.stdout
-        sys.stdout = self
+AGenStr = AsyncGenerator[str, None]
 
-    def write(self, s):
+
+class IOSubscription(io.TextIOWrapper):
+    def __init__(self, src: TextIO):
+        """Make output stream subscribable
+
+        The src needs to be replaced with the instance of this class. For
+        example, if the src is stdout,
+            sys.stdout = IOSubscription(sys.stdout)
+        """
+        self._queue = QueueDist()
+        self._src = src
+
+    def write(self, s: str) -> int:
         self._queue.put(s)
-        self._stdout_org.write(s)
+        return self._src.write(s)
 
     def flush(self):
         pass
 
+    async def subscribe(self) -> AGenStr:
+        async for y in self._queue.subscribe():
+            yield y
 
-def create_subscribe_stdout():
-    queue = None
 
-    def create_queue():
-        queue = QueueDist()
-        StreamOut(queue)
-        return queue
+def create_subscribe_stdout() -> Callable[[], AGenStr]:
+    stream: Union[IOSubscription, None] = None
 
-    async def subscribe_stdout():
-        nonlocal queue
-        queue = queue or create_queue()
-        async for v in queue.subscribe():
-            yield v
+    async def subscribe_stdout() -> AGenStr:
+        nonlocal stream
+        if not stream:
+            stream = sys.stdout = IOSubscription(sys.stdout)
+        async for y in stream.subscribe():
+            yield y
 
     return subscribe_stdout
 
