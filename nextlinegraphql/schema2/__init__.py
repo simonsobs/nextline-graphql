@@ -1,17 +1,19 @@
 from __future__ import annotations
 
 import dataclasses
+import datetime
 import traceback
 
 import strawberry
 from strawberry.types import Info
 
-from typing import TYPE_CHECKING, AsyncGenerator, List, Optional
+from typing import TYPE_CHECKING, AsyncGenerator, List, Optional, Iterable
+
+from ..nl import run_nextline, reset_nextline
 
 if TYPE_CHECKING:
     from nextline import Nextline
-
-from ..nl import run_nextline, reset_nextline
+    from ..db import Db
 
 AGen = AsyncGenerator
 
@@ -48,12 +50,58 @@ def query_exception(info: Info) -> Optional[str]:
 
 
 @strawberry.type
+class StateChange:
+    name: str
+    datetime: datetime.datetime
+    run_no: int
+
+
+@strawberry.type
+class Run:
+    run_no: int
+    state: Optional[str] = None
+    started_at: Optional[datetime.date] = None
+    ended_at: Optional[datetime.date] = None
+    script: Optional[str] = None
+    exception: Optional[str] = None
+
+
+def query_state_changes(info: Info) -> List[StateChange]:
+    db: Db = info.context["db"]
+    with db.Session.begin() as session:
+        models = session.query(db.models.StateChange).all()
+        return [
+            StateChange(name=m.name, datetime=m.datetime, run_no=m.run_no)
+            for m in models
+        ]
+
+
+def query_runs(info: Info) -> List[Run]:
+    db: Db = info.context["db"]
+    with db.Session.begin() as session:
+        runs: Iterable[db.models.Run] = session.query(db.models.Run)
+        return [
+            Run(
+                run_no=m.run_no,
+                state=m.state,
+                started_at=m.started_at,
+                ended_at=m.ended_at,
+                script=m.script,
+                exception=m.exception,
+            )
+            for m in runs
+        ]
+
+
+@strawberry.type
 class Query:
     global_state: str = strawberry.field(resolver=query_global_state)
     run_no: int = strawberry.field(resolver=query_run_no)
     source: List[str] = strawberry.field(resolver=query_source)
     source_line: str = strawberry.field(resolver=query_source_line)
     exception: Optional[str] = strawberry.field(resolver=query_exception)
+    state_changes: StateChange = strawberry.field(resolver=query_state_changes)
+    runs: List[Run] = strawberry.field(resolver=query_runs)
 
 
 async def mutate_exec() -> bool:
