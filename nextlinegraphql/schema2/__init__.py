@@ -16,29 +16,29 @@ from ..nl import run_nextline, reset_nextline
 AGen = AsyncGenerator
 
 
-def resolve_global_state(info: Info) -> str:
+def query_global_state(info: Info) -> str:
     nextline: Nextline = info.context["nextline"]
     return nextline.state
 
 
-def resolve_run_no(info: Info) -> int:
+def query_run_no(info: Info) -> int:
     nextline: Nextline = info.context["nextline"]
     return nextline.run_no
 
 
-def resolve_source(info: Info, file_name: Optional[str] = None) -> List[str]:
+def query_source(info: Info, file_name: Optional[str] = None) -> List[str]:
     nextline: Nextline = info.context["nextline"]
     return nextline.get_source(file_name)
 
 
-def resolve_source_line(
+def query_source_line(
     info: Info, line_no: int, file_name: Optional[str]
 ) -> str:
     nextline: Nextline = info.context["nextline"]
     return nextline.get_source_line(line_no, file_name)
 
 
-def resolve_exception(info: Info) -> Optional[str]:
+def query_exception(info: Info) -> Optional[str]:
     nextline: Nextline = info.context["nextline"]
     if exc := nextline.exception():
         return "".join(
@@ -49,11 +49,11 @@ def resolve_exception(info: Info) -> Optional[str]:
 
 @strawberry.type
 class Query:
-    global_state: str = strawberry.field(resolver=resolve_global_state)
-    run_no: int = strawberry.field(resolver=resolve_run_no)
-    source: List[str] = strawberry.field(resolver=resolve_source)
-    source_line: str = strawberry.field(resolver=resolve_source_line)
-    exception: Optional[str] = strawberry.field(resolver=resolve_exception)
+    global_state: str = strawberry.field(resolver=query_global_state)
+    run_no: int = strawberry.field(resolver=query_run_no)
+    source: List[str] = strawberry.field(resolver=query_source)
+    source_line: str = strawberry.field(resolver=query_source_line)
+    exception: Optional[str] = strawberry.field(resolver=query_exception)
 
 
 async def mutate_exec() -> bool:
