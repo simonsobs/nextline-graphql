@@ -29,6 +29,11 @@ def subscribe_run_no(info: Info) -> AsyncGenerator[int, None]:
     return nextline.subscribe_run_no()
 
 
+def subscribe_trace_ids(info: Info) -> AsyncGenerator[List[int], None]:
+    nextline: Nextline = info.context["nextline"]
+    return nextline.subscribe_trace_ids()
+
+
 @strawberry.type
 class Subscription:
     global_state: AsyncGenerator[str, None] = strawberry.field(
@@ -36,6 +41,9 @@ class Subscription:
     )
     run_no: AsyncGenerator[str, None] = strawberry.field(
         is_subscription=True, resolver=subscribe_run_no
+    )
+    trace_ids: AsyncGenerator[List[int], None] = strawberry.field(
+        is_subscription=True, resolver=subscribe_trace_ids
     )
 
 
