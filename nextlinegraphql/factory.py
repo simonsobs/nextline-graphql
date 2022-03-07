@@ -106,8 +106,6 @@ def create_app():
     ]
 
     app = Starlette(debug=True, middleware=middleware)
-    # app.mount("/", app_s)
-    app.mount("/s/", app_s)
-    app.mount("/", app_)
+    app.mount("/", app_s)
 
     return app
