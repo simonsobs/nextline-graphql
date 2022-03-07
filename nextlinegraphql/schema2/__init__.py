@@ -54,6 +54,15 @@ async def subscribe_trace_state(
         yield TraceState(**dataclasses.asdict(y))
 
 
+async def subscribe_stdout(info: Info) -> AGen[str, None]:
+    nextline: Nextline = info.context["nextline"]
+    from ..schema.bindables import subscribe_stdout as s
+
+    async for y in s():
+        if nextline.state == "running":
+            yield y
+
+
 @strawberry.type
 class Subscription:
     global_state: AGen[str, None] = strawberry.field(
@@ -67,6 +76,9 @@ class Subscription:
     )
     trace_state: AGen[TraceState, None] = strawberry.field(
         is_subscription=True, resolver=subscribe_trace_state
+    )
+    stdout: AGen[str, None] = strawberry.field(
+        is_subscription=True, resolver=subscribe_stdout
     )
 
 
