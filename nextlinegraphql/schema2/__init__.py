@@ -18,6 +18,12 @@ if TYPE_CHECKING:
 AGen = AsyncGenerator
 
 
+def query_hello(info: Info) -> str:
+    request = info.context["request"]
+    user_agent = request.headers.get("user-agent", "guest")
+    return "Hello, %s!" % user_agent
+
+
 def query_global_state(info: Info) -> str:
     nextline: Nextline = info.context["nextline"]
     return nextline.state
@@ -95,6 +101,7 @@ def query_runs(info: Info) -> List[Run]:
 
 @strawberry.type
 class Query:
+    hello: str = strawberry.field(resolver=query_hello)
     global_state: str = strawberry.field(resolver=query_global_state)
     run_no: int = strawberry.field(resolver=query_run_no)
     source: List[str] = strawberry.field(resolver=query_source)
