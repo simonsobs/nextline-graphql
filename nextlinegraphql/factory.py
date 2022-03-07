@@ -12,7 +12,6 @@ from .db import Db
 from .nl import get_nextline
 
 
-##__________________________________________________________________||
 class WGraphQL(GraphQL):
     """Wrap GraphQL for introspection"""
 
@@ -96,6 +95,3 @@ def create_app():
     app.mount("/", app_)
 
     return app
-
-
-##__________________________________________________________________||
