@@ -4,8 +4,6 @@ import pytest
 
 from async_asgi_testclient import TestClient
 
-from nextlinegraphql import create_app
-
 from ..graphql import QUERY_SOURCE
 from ..funcs import gql_request
 
@@ -22,12 +20,6 @@ params = [
     pytest.param("<string>", id="string"),
     pytest.param(SCRIPT_PATH, id="path"),
 ]
-
-
-@pytest.fixture
-async def client():
-    async with TestClient(create_app()) as y:
-        yield y
 
 
 @pytest.mark.parametrize("file_name", params)

@@ -1,6 +1,10 @@
 import sys
 import threading
+
 import pytest
+from async_asgi_testclient import TestClient
+
+from nextlinegraphql import create_app
 
 
 @pytest.fixture(autouse=True)
@@ -10,3 +14,9 @@ def recover_trace():
     yield
     sys.settrace(trace_org)
     threading.settrace(trace_org)
+
+
+@pytest.fixture
+async def client():
+    async with TestClient(create_app()) as y:
+        yield y
