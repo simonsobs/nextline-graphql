@@ -38,7 +38,7 @@ async def test_source(snapshot, file_name):
     async with TestClient(create_app()) as client:
         resp = await client.post("/", json=data, headers=headers)
         assert resp.status_code == 200
-        snapshot.assert_match(resp.json())
+        snapshot.assert_match(resp.json()["data"])
 
 
 ##__________________________________________________________________||
