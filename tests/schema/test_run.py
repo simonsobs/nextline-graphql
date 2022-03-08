@@ -6,7 +6,6 @@ import pytest
 from typing import Set
 
 from nextline.utils import agen_with_wait
-from nextlinegraphql import create_app
 
 from .funcs import gql_request, gql_subscribe
 
@@ -22,25 +21,24 @@ from .graphql import (
 
 
 @pytest.mark.asyncio
-async def test_run():
+async def test_run(client: TestClient):
 
-    async with TestClient(create_app()) as client:
-        data = await gql_request(client, QUERY_GLOBAL_STATE)
-        assert "initialized" == data["globalState"]
+    data = await gql_request(client, QUERY_GLOBAL_STATE)
+    assert "initialized" == data["globalState"]
 
-        task_monitor_state = asyncio.create_task(monitor_state(client))
+    task_monitor_state = asyncio.create_task(monitor_state(client))
 
-        data = await gql_request(client, MUTATE_EXEC)
-        assert data["exec"]
+    data = await gql_request(client, MUTATE_EXEC)
+    assert data["exec"]
 
-        await asyncio.sleep(0.01)
+    await asyncio.sleep(0.01)
 
-        task_control_execution = asyncio.create_task(control_execution(client))
+    task_control_execution = asyncio.create_task(control_execution(client))
 
-        await asyncio.gather(task_monitor_state, task_control_execution)
+    await asyncio.gather(task_monitor_state, task_control_execution)
 
-        data = await gql_request(client, QUERY_GLOBAL_STATE)
-        assert "finished" == data["globalState"]
+    data = await gql_request(client, QUERY_GLOBAL_STATE)
+    assert "finished" == data["globalState"]
 
 
 async def monitor_state(client: TestClient) -> None:
