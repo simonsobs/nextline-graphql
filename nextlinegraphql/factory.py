@@ -10,7 +10,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from typing import Optional, Any
 
-from .schema2 import schema as schema2
+from .schema import schema
 from .db import Db
 from .nl import get_nextline
 
@@ -71,7 +71,7 @@ def create_app():
             """
             return GRAPHQL_WS_PROTOCOL
 
-    app_s = ESGraphQl(schema2)
+    app_ = ESGraphQl(schema)
 
     middleware = [
         Middleware(
@@ -83,6 +83,6 @@ def create_app():
     ]
 
     app = Starlette(debug=True, middleware=middleware)
-    app.mount("/", app_s)
+    app.mount("/", app_)
 
     return app
