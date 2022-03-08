@@ -10,7 +10,6 @@ from strawberry.types import Info
 
 from typing import TYPE_CHECKING, AsyncGenerator, List, Optional, Iterable
 
-from ..nl import run_nextline, reset_nextline
 
 if TYPE_CHECKING:
     from nextline import Nextline
@@ -112,13 +111,20 @@ class Query:
     runs: List[Run] = strawberry.field(resolver=query_runs)
 
 
-async def mutate_exec() -> bool:
-    await run_nextline()
+async def mutate_exec(info: Info) -> bool:
+
+    nextline: Nextline = info.context["nextline"]
+
+    async def wait():
+        await nextline.run()
+
+    asyncio.create_task(wait())
     return True
 
 
-def mutate_reset(statement: Optional[str] = None):
-    reset_nextline(statement=statement)
+def mutate_reset(info: Info, statement: Optional[str] = None):
+    nextline: Nextline = info.context["nextline"]
+    nextline.reset(statement=statement)
     return True
 
 

@@ -10,12 +10,3 @@ def recover_trace():
     yield
     sys.settrace(trace_org)
     threading.settrace(trace_org)
-
-
-@pytest.fixture(autouse=True)
-async def close_nextline():
-    """Close nextline after each test"""
-    yield
-    from nextlinegraphql.nl import close_nextline as close
-
-    await close()

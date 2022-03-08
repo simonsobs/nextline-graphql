@@ -1,7 +1,8 @@
 import asyncio
+import contextlib
 import datetime
 import traceback
-from strawberry.asgi import GraphQL as SGraphQL
+from strawberry.asgi import GraphQL
 from strawberry.subscriptions import GRAPHQL_WS_PROTOCOL
 
 from starlette.applications import Starlette
@@ -10,13 +11,14 @@ from starlette.middleware.cors import CORSMiddleware
 
 from typing import Optional, Any
 
+from nextline import Nextline
+
 from .schema import schema
 from .db import Db
-from .nl import get_nextline
+from .example_script import statement
 
 
-async def monitor_state(db):
-    nextline = get_nextline()
+async def monitor_state(nextline: Nextline, db):
     async for state_name in nextline.subscribe_state():
         run_no = nextline.run_no
         now = datetime.datetime.now()
@@ -52,16 +54,15 @@ async def monitor_state(db):
 def create_app():
 
     db = Db()
+    nextline = Nextline(statement)
 
-    asyncio.create_task(monitor_state(db))
-
-    class ESGraphQl(SGraphQL):
+    class ESGraphQl(GraphQL):
         async def get_context(self, request, response=None) -> Optional[Any]:
             return {
                 "request": request,
                 "response": response,
                 "db": db,
-                "nextline": get_nextline(),
+                "nextline": nextline,
             }
 
         def pick_preferred_protocol(self, ws):
@@ -73,6 +74,14 @@ def create_app():
 
     app_ = ESGraphQl(schema)
 
+    @contextlib.asynccontextmanager
+    async def lifespan(app):
+        del app
+        task = asyncio.create_task(monitor_state(nextline, db))
+        yield
+        await nextline.close()
+        await task
+
     middleware = [
         Middleware(
             CORSMiddleware,
@@ -82,7 +91,7 @@ def create_app():
         )
     ]
 
-    app = Starlette(debug=True, middleware=middleware)
+    app = Starlette(debug=True, lifespan=lifespan, middleware=middleware)
     app.mount("/", app_)
 
     return app

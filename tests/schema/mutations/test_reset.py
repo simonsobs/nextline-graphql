@@ -34,9 +34,8 @@ async def test_reset(snapshot, statement):
         assert resp.status_code == 200
         assert {"data": {"reset": True}} == resp.json()
 
-    data = {"query": QUERY_SOURCE}
+        data = {"query": QUERY_SOURCE}
 
-    async with TestClient(create_app()) as client:
         resp = await client.post("/", json=data, headers=headers)
         assert resp.status_code == 200
         snapshot.assert_match(resp.json())
