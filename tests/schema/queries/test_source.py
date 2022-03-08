@@ -9,9 +9,8 @@ from nextlinegraphql import create_app
 from ..graphql import QUERY_SOURCE
 from ..funcs import gql_request
 
-##__________________________________________________________________||
-THIS_DIR = Path(__file__).resolve().parent
-PACKAGE_TOP = THIS_DIR.parent.parent.parent
+CWD = Path(__file__).resolve().parent
+PACKAGE_TOP = CWD.parent.parent.parent
 SCRIPT_PATH = str(
     PACKAGE_TOP.joinpath(
         "nextlinegraphql", "example_script", "script_threading.py"
@@ -41,6 +40,3 @@ async def test_source(client: TestClient, snapshot, file_name):
 
     data = await gql_request(client, QUERY_SOURCE, variables=variables)
     snapshot.assert_match(data)
-
-
-##__________________________________________________________________||
