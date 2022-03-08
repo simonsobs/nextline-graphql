@@ -25,17 +25,22 @@ params = [
 ]
 
 
+@pytest.fixture
+async def client():
+    async with TestClient(create_app()) as y:
+        yield y
+
+
 @pytest.mark.parametrize("file_name", params)
 @pytest.mark.asyncio
-async def test_source(snapshot, file_name):
+async def test_source(client: TestClient, snapshot, file_name):
 
     variables = {}
     if file_name:
         variables["fileName"] = file_name
 
-    async with TestClient(create_app()) as client:
-        data = await gql_request(client, QUERY_SOURCE, variables=variables)
-        snapshot.assert_match(data)
+    data = await gql_request(client, QUERY_SOURCE, variables=variables)
+    snapshot.assert_match(data)
 
 
 ##__________________________________________________________________||
