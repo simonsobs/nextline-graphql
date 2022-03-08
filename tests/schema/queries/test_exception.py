@@ -6,7 +6,7 @@ from async_asgi_testclient import TestClient
 
 from nextlinegraphql import create_app
 
-from ..gql_strs import (
+from ..graphql import (
     QUERY_GLOBAL_STATE,
     QUERY_SOURCE_LINE,
     QUERY_EXCEPTION,
@@ -14,7 +14,7 @@ from ..gql_strs import (
     SUBSCRIBE_TRACE_IDS,
     SUBSCRIBE_TRACE_STATE,
     MUTATE_EXEC,
-    MUTATION_RESET,
+    MUTATE_RESET,
     MUTATE_SEND_PDB_COMMAND,
 )
 
@@ -174,7 +174,7 @@ async def test_reset(snapshot, statement):
     query_exception = {"query": QUERY_EXCEPTION}
 
     mutate_reset = {
-        "query": MUTATION_RESET,
+        "query": MUTATE_RESET,
         "variables": {"statement": statement},
     }
 

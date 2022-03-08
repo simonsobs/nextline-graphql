@@ -10,7 +10,7 @@ from nextlinegraphql import create_app
 
 from .funcs import gql_request, gql_subscribe
 
-from .gql_strs import (
+from .graphql import (
     QUERY_GLOBAL_STATE,
     QUERY_SOURCE_LINE,
     SUBSCRIBE_GLOBAL_STATE,

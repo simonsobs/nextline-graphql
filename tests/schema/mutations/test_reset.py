@@ -4,7 +4,7 @@ from async_asgi_testclient import TestClient
 
 from nextlinegraphql import create_app
 
-from ..gql_strs import QUERY_SOURCE, MUTATION_RESET
+from ..graphql import QUERY_SOURCE, MUTATE_RESET
 
 ##__________________________________________________________________||
 SOURCE_ONE = """
@@ -25,7 +25,7 @@ async def test_reset(snapshot, statement):
 
     headers = {"Content-Type:": "application/json"}
 
-    data = {"query": MUTATION_RESET}
+    data = {"query": MUTATE_RESET}
     if statement:
         data["variables"] = {"statement": statement}
 
