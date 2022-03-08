@@ -9,7 +9,7 @@ MUTATE_SEND_PDB_COMMAND = sub.joinpath("SendPdbCommand.gql").read_text()
 
 sub = pwd.joinpath("queries")
 QUERY_GLOBAL_STATE = sub.joinpath("GlobalState.gql").read_text()
-QUERY_EXCEPTION = sub.joinpath("exception.gql").read_text()
+QUERY_EXCEPTION = sub.joinpath("Exception.gql").read_text()
 QUERY_RUNS = sub.joinpath("Runs.gql").read_text()
 QUERY_SOURCE = sub.joinpath("Source.gql").read_text()
 QUERY_SOURCE_LINE = sub.joinpath("SourceLine.gql").read_text()
