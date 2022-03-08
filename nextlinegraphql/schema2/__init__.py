@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import dataclasses
 import datetime
 import traceback
@@ -134,6 +135,12 @@ class Mutation:
     send_pdb_command: bool = strawberry.field(resolver=mutate_send_pdb_command)
 
 
+async def subscribe_counter() -> AGen[int, None]:
+    for i in range(5):
+        await asyncio.sleep(0)
+        yield i + 1
+
+
 def subscribe_global_state(info: Info) -> AGen[str, None]:
     nextline: Nextline = info.context["nextline"]
     return nextline.subscribe_state()
@@ -176,6 +183,9 @@ async def subscribe_stdout(info: Info) -> AGen[str, None]:
 
 @strawberry.type
 class Subscription:
+    counter: AGen[int, None] = strawberry.field(
+        is_subscription=True, resolver=subscribe_counter
+    )
     global_state: AGen[str, None] = strawberry.field(
         is_subscription=True, resolver=subscribe_global_state
     )
