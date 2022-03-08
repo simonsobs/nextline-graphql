@@ -31,7 +31,7 @@ setup(
         "ariadne>=0.12.0",
         "strawberry-graphql>=0.102.0",
         "uvicorn>=0.12.2",
-        "websockets>=8.1",
+        "websockets>=10.2",
         "janus>=0.6",
         "SQLAlchemy>=1.4",
     ],
