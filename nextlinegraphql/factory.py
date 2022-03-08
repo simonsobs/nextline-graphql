@@ -2,7 +2,7 @@ import asyncio
 import contextlib
 import datetime
 import traceback
-from strawberry.asgi import GraphQL
+from strawberry.asgi import GraphQL as GraphQL_
 from strawberry.subscriptions import GRAPHQL_WS_PROTOCOL
 
 from starlette.applications import Starlette
@@ -16,6 +16,19 @@ from nextline import Nextline
 from .schema import schema
 from .db import Db
 from .example_script import statement
+
+
+class GraphQL(GraphQL_):
+    """Add a fix to the strawberry GraphQL for async_asgi_testclient"""
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "websocket":
+            if not scope.get("subprotocols"):
+                # strawberry closes the websocket connection if
+                # subprotocols are empty, which is the case for
+                # async_asgi_testclient.
+                scope["subprotocols"] = [GRAPHQL_WS_PROTOCOL]
+        await super().__call__(scope, receive, send)
 
 
 async def monitor_state(nextline: Nextline, db):
@@ -57,15 +70,6 @@ def create_app():
     nextline = Nextline(statement)
 
     class ESGraphQl(GraphQL):
-        async def __call__(self, scope, receive, send):
-            if scope["type"] == "websocket":
-                if not scope.get("subprotocols"):
-                    # strawberry closes the websocket connection if
-                    # subprotocols are empty, which is the case for
-                    # async_asgi_testclient.
-                    scope["subprotocols"] = [GRAPHQL_WS_PROTOCOL]
-            await super().__call__(scope, receive, send)
-
         async def get_context(self, request, response=None) -> Optional[Any]:
             return {
                 "request": request,
