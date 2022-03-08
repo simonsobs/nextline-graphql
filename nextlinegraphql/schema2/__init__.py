@@ -76,7 +76,7 @@ class Run:
 def query_state_changes(info: Info) -> List[StateChange]:
     db: Db = info.context["db"]
     with db.Session.begin() as session:
-        models = session.query(db.models.StateChange).all()
+        models = session.query(db.models.StateChange).all()  # type: ignore
         return [
             StateChange(name=m.name, datetime=m.datetime, run_no=m.run_no)
             for m in models
@@ -86,7 +86,7 @@ def query_state_changes(info: Info) -> List[StateChange]:
 def query_runs(info: Info) -> List[Run]:
     db: Db = info.context["db"]
     with db.Session.begin() as session:
-        runs: Iterable[db.models.Run] = session.query(db.models.Run)
+        runs: Iterable[db.models.Run] = session.query(db.models.Run)  # type: ignore
         return [
             Run(
                 run_no=m.run_no,
