@@ -64,12 +64,12 @@ def create_app():
                 "nextline": get_nextline(),
             }
 
-        def pick_preferred_protocol(self, _):
+        def pick_preferred_protocol(self, ws):
             """Overriding for async_asgi_testclient
 
-            TODO: Use this only for tests
+            Return GRAPHQL_WS_PROTOCOL if the base class returns None.
             """
-            return GRAPHQL_WS_PROTOCOL
+            return super().pick_preferred_protocol(ws) or GRAPHQL_WS_PROTOCOL
 
     app_ = ESGraphQl(schema)
 
