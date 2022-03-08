@@ -69,7 +69,12 @@ def create_app():
     db = Db()
     nextline = Nextline(statement)
 
-    class ESGraphQl(GraphQL):
+    class EGraphQL(GraphQL):
+        """Extend the strawberry GraphQL app
+
+        https://strawberry.rocks/docs/integrations/asgi
+        """
+
         async def get_context(self, request, response=None) -> Optional[Any]:
             return {
                 "request": request,
@@ -78,7 +83,7 @@ def create_app():
                 "nextline": nextline,
             }
 
-    app_ = ESGraphQl(schema)
+    app_ = EGraphQL(schema)
 
     @contextlib.asynccontextmanager
     async def lifespan(app):
