@@ -1,0 +1,10 @@
+query Runs {
+  runs {
+    runNo
+    state
+    startedAt
+    endedAt
+    script
+    exception
+  }
+}

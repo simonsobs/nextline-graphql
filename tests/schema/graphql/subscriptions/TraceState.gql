@@ -1,0 +1,8 @@
+subscription TraceState($traceId: Int!) {
+  traceState(traceId: $traceId) {
+    prompting
+    fileName
+    lineNo
+    traceEvent
+  }
+}

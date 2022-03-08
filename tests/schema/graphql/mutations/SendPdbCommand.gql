@@ -1,0 +1,3 @@
+mutation SendPdbCommand($traceId: Int!, $command: String!) {
+  sendPdbCommand(traceId: $traceId, command: $command)
+}
