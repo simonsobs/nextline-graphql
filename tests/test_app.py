@@ -56,10 +56,10 @@ async def test_cors_preflight():
 
 
 @pytest.mark.asyncio
-async def test_playground():
-    """test if the playground is returned for the get request"""
+async def test_graphiql():
+    """test if the graphiql is returned for the get request"""
     async with TestClient(create_app()) as client:
         resp = await client.get("/")
         assert resp.status_code == 200
         assert "text/html" in (resp.headers["content-type"].lower())
-        assert "playground" in resp.text.lower()
+        assert "graphiql" in resp.text.lower()

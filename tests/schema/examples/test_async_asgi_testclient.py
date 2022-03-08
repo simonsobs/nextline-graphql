@@ -1,22 +1,8 @@
-import sys
 from async_asgi_testclient import TestClient
 
 import pytest
-from unittest.mock import AsyncMock, Mock
 
 from nextlinegraphql import create_app
-
-
-##__________________________________________________________________||
-@pytest.fixture(autouse=True)
-def mock_asyncio_sleep(monkeypatch):
-    import asyncio
-
-    y = Mock(wraps=asyncio)
-    y.sleep = AsyncMock()
-    module = sys.modules["nextlinegraphql.schema.bindables"]
-    monkeypatch.setattr(module, "asyncio", y)
-    yield y
 
 
 ##__________________________________________________________________||

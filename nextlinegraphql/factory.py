@@ -1,35 +1,18 @@
 import asyncio
 import datetime
 import traceback
-from ariadne.asgi import GraphQL
+from strawberry.asgi import GraphQL as SGraphQL
+from strawberry.subscriptions import GRAPHQL_WS_PROTOCOL
 
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
+from typing import Optional, Any
+
 from .schema import schema
 from .db import Db
 from .nl import get_nextline
-
-
-class WGraphQL(GraphQL):
-    """Wrap GraphQL for introspection"""
-
-    async def __call__(self, scope, receive, send):
-        # print(scope)
-        # print(receive)
-        # print(send)
-        await super().__call__(scope, receive, send)
-
-    async def handle_websocket_message(
-        self, message, websocket, subscriptions
-    ):
-        # print(message)
-        # print(websocket)
-        # print(subscriptions)
-        await super().handle_websocket_message(
-            message, websocket, subscriptions
-        )
 
 
 async def monitor_state(db):
@@ -72,15 +55,23 @@ def create_app():
 
     asyncio.create_task(monitor_state(db))
 
-    app_ = WGraphQL(
-        schema,
-        context_value=lambda request: {
-            "request": request,
-            "db": db,
-            "nextline": get_nextline(),
-        },
-        debug=True,
-    )
+    class ESGraphQl(SGraphQL):
+        async def get_context(self, request, response=None) -> Optional[Any]:
+            return {
+                "request": request,
+                "response": response,
+                "db": db,
+                "nextline": get_nextline(),
+            }
+
+        def pick_preferred_protocol(self, _):
+            """Overriding for async_asgi_testclient
+
+            TODO: Use this only for tests
+            """
+            return GRAPHQL_WS_PROTOCOL
+
+    app_ = ESGraphQl(schema)
 
     middleware = [
         Middleware(
