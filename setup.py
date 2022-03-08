@@ -44,7 +44,6 @@ setup(
             "async-asgi-testclient>=1.4.6",
         ],
         "dev": [
-            "uvicorn",
             "twine",
             "flake8",
             "black",
