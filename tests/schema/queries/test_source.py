@@ -7,6 +7,7 @@ from async_asgi_testclient import TestClient
 from nextlinegraphql import create_app
 
 from ..graphql import QUERY_SOURCE
+from ..funcs import gql_request
 
 ##__________________________________________________________________||
 THIS_DIR = Path(__file__).resolve().parent
@@ -28,17 +29,13 @@ params = [
 @pytest.mark.asyncio
 async def test_source(snapshot, file_name):
 
-    data = {"query": QUERY_SOURCE}
-
+    variables = {}
     if file_name:
-        data["variables"] = {"fileName": file_name}
-
-    headers = {"Content-Type:": "application/json"}
+        variables["fileName"] = file_name
 
     async with TestClient(create_app()) as client:
-        resp = await client.post("/", json=data, headers=headers)
-        assert resp.status_code == 200
-        snapshot.assert_match(resp.json()["data"])
+        data = await gql_request(client, QUERY_SOURCE, variables=variables)
+        snapshot.assert_match(data)
 
 
 ##__________________________________________________________________||
