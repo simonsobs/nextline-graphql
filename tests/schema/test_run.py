@@ -3,7 +3,7 @@ from async_asgi_testclient import TestClient
 
 import pytest
 
-from typing import Set
+from typing import List, Set
 
 from nextline.utils import agen_with_wait
 
@@ -23,30 +23,34 @@ from .graphql import (
 @pytest.mark.asyncio
 async def test_run(client: TestClient):
 
+    task_subscribe_state = asyncio.create_task(subscribe_state(client))
+
     data = await gql_request(client, QUERY_GLOBAL_STATE)
     assert "initialized" == data["globalState"]
 
-    task_monitor_state = asyncio.create_task(monitor_state(client))
+    task_control_execution = asyncio.create_task(control_execution(client))
 
     data = await gql_request(client, MUTATE_EXEC)
     assert data["exec"]
 
-    await asyncio.sleep(0.01)
-
-    task_control_execution = asyncio.create_task(control_execution(client))
-
-    await asyncio.gather(task_monitor_state, task_control_execution)
+    states, *_ = await asyncio.gather(
+        task_subscribe_state,
+        task_control_execution,
+    )
+    assert ["initialized", "running", "exited", "finished"] == states
 
     data = await gql_request(client, QUERY_GLOBAL_STATE)
     assert "finished" == data["globalState"]
 
 
-async def monitor_state(client: TestClient) -> None:
-
+async def subscribe_state(client: TestClient) -> List[str]:
+    ret = []
     async for data in gql_subscribe(client, SUBSCRIBE_GLOBAL_STATE):
-        # print(data)
-        if data["globalState"] == "finished":
+        s = data["globalState"]
+        ret.append(s)
+        if s == "finished":
             break
+    return ret
 
 
 async def control_execution(client: TestClient):
