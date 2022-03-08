@@ -57,6 +57,15 @@ def create_app():
     nextline = Nextline(statement)
 
     class ESGraphQl(GraphQL):
+        async def __call__(self, scope, receive, send):
+            if scope["type"] == "websocket":
+                if not scope.get("subprotocols"):
+                    # strawberry closes the websocket connection if
+                    # subprotocols are empty, which is the case for
+                    # async_asgi_testclient.
+                    scope["subprotocols"] = [GRAPHQL_WS_PROTOCOL]
+            await super().__call__(scope, receive, send)
+
         async def get_context(self, request, response=None) -> Optional[Any]:
             return {
                 "request": request,
@@ -64,13 +73,6 @@ def create_app():
                 "db": db,
                 "nextline": nextline,
             }
-
-        def pick_preferred_protocol(self, ws):
-            """Overriding for async_asgi_testclient
-
-            Return GRAPHQL_WS_PROTOCOL if the base class returns None.
-            """
-            return super().pick_preferred_protocol(ws) or GRAPHQL_WS_PROTOCOL
 
     app_ = ESGraphQl(schema)
 
