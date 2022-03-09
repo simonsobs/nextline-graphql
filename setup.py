@@ -40,6 +40,7 @@ setup(
             "pytest>=5.4",
             "pytest-cov>=2.8",
             "pytest-asyncio>=0.14",
+            "pytest-timeout>=2.1.0",
             "snapshottest>0.5",
             "async-asgi-testclient>=1.4.6",
         ],
