@@ -10,9 +10,9 @@ from nextline.utils import agen_with_wait
 from .funcs import gql_request, gql_subscribe
 
 from .graphql import (
-    QUERY_GLOBAL_STATE,
+    QUERY_STATE,
     QUERY_SOURCE_LINE,
-    SUBSCRIBE_GLOBAL_STATE,
+    SUBSCRIBE_STATE,
     SUBSCRIBE_TRACE_IDS,
     SUBSCRIBE_TRACE_STATE,
     MUTATE_EXEC,
@@ -25,8 +25,8 @@ async def test_run(client: TestClient):
 
     task_subscribe_state = asyncio.create_task(subscribe_state(client))
 
-    data = await gql_request(client, QUERY_GLOBAL_STATE)
-    assert "initialized" == data["globalState"]
+    data = await gql_request(client, QUERY_STATE)
+    assert "initialized" == data["state"]
 
     task_control_execution = asyncio.create_task(control_execution(client))
 
@@ -39,14 +39,14 @@ async def test_run(client: TestClient):
     )
     assert ["initialized", "running", "exited", "finished"] == states
 
-    data = await gql_request(client, QUERY_GLOBAL_STATE)
-    assert "finished" == data["globalState"]
+    data = await gql_request(client, QUERY_STATE)
+    assert "finished" == data["state"]
 
 
 async def subscribe_state(client: TestClient) -> List[str]:
     ret = []
-    async for data in gql_subscribe(client, SUBSCRIBE_GLOBAL_STATE):
-        s = data["globalState"]
+    async for data in gql_subscribe(client, SUBSCRIBE_STATE):
+        s = data["state"]
         ret.append(s)
         if s == "finished":
             break

@@ -7,10 +7,10 @@ from async_asgi_testclient import TestClient
 from nextlinegraphql import create_app
 
 from ..graphql import (
-    QUERY_GLOBAL_STATE,
+    QUERY_STATE,
     QUERY_SOURCE_LINE,
     QUERY_EXCEPTION,
-    SUBSCRIBE_GLOBAL_STATE,
+    SUBSCRIBE_STATE,
     SUBSCRIBE_TRACE_IDS,
     SUBSCRIBE_TRACE_STATE,
     MUTATE_EXEC,
@@ -141,7 +141,7 @@ async def monitor_state(client):
             "variables": {},
             "extensions": {},
             "operationName": None,
-            "query": SUBSCRIBE_GLOBAL_STATE,
+            "query": SUBSCRIBE_STATE,
         },
     }
 
@@ -151,8 +151,8 @@ async def monitor_state(client):
             resp_json = await ws.receive_json()
             if resp_json["type"] == "complete":
                 break
-            # print(resp_json['payload']['data']['globalState'])
-            if resp_json["payload"]["data"]["globalState"] == "finished":
+            # print(resp_json['payload']['data']['state'])
+            if resp_json["payload"]["data"]["state"] == "finished":
                 break
 
 
@@ -169,7 +169,7 @@ async def test_reset(snapshot, statement):
 
     headers = {"Content-Type:": "application/json"}
 
-    query_state = {"query": QUERY_GLOBAL_STATE}
+    query_state = {"query": QUERY_STATE}
 
     query_exception = {"query": QUERY_EXCEPTION}
 
@@ -187,7 +187,7 @@ async def test_reset(snapshot, statement):
 
         resp = await client.post("/", json=query_state, headers=headers)
         assert resp.status_code == 200
-        assert "initialized" == resp.json()["data"]["globalState"]
+        assert "initialized" == resp.json()["data"]["state"]
 
         task_monitor_state = asyncio.create_task(
             monitor_state(client)

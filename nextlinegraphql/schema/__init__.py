@@ -24,7 +24,7 @@ def query_hello(info: Info) -> str:
     return "Hello, %s!" % user_agent
 
 
-def query_global_state(info: Info) -> str:
+def query_state(info: Info) -> str:
     nextline: Nextline = info.context["nextline"]
     return nextline.state
 
@@ -102,7 +102,7 @@ def query_runs(info: Info) -> List[Run]:
 @strawberry.type
 class Query:
     hello: str = strawberry.field(resolver=query_hello)
-    global_state: str = strawberry.field(resolver=query_global_state)
+    state: str = strawberry.field(resolver=query_state)
     run_no: int = strawberry.field(resolver=query_run_no)
     source: List[str] = strawberry.field(resolver=query_source)
     source_line: str = strawberry.field(resolver=query_source_line)
@@ -147,7 +147,7 @@ async def subscribe_counter() -> AGen[int, None]:
         yield i + 1
 
 
-def subscribe_global_state(info: Info) -> AGen[str, None]:
+def subscribe_state(info: Info) -> AGen[str, None]:
     nextline: Nextline = info.context["nextline"]
     return nextline.subscribe_state()
 
@@ -192,8 +192,8 @@ class Subscription:
     counter: AGen[int, None] = strawberry.field(
         is_subscription=True, resolver=subscribe_counter
     )
-    global_state: AGen[str, None] = strawberry.field(
-        is_subscription=True, resolver=subscribe_global_state
+    state: AGen[str, None] = strawberry.field(
+        is_subscription=True, resolver=subscribe_state
     )
     run_no: AGen[str, None] = strawberry.field(
         is_subscription=True, resolver=subscribe_run_no
