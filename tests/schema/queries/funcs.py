@@ -1,5 +1,5 @@
 import asyncio
-from typing import Set
+from typing import Optional, Set
 from async_asgi_testclient import TestClient
 
 from nextline.utils import agen_with_wait
@@ -16,7 +16,7 @@ from ..graphql import (
 )
 
 
-async def run_statement(client, statement: str):
+async def run_statement(client, statement: Optional[str] = None):
     variables = {"statement": statement}
     data = await gql_request(client, MUTATE_RESET, variables=variables)
     assert data["reset"]
