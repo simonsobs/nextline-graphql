@@ -70,6 +70,7 @@ async def control_trace(client: TestClient, trace_id: int) -> None:
         state = data["prompting"]
         # print(state)
         if state["prompting"]:
+            await asyncio.sleep(0.001)
             command = "continue"
             variables = {"traceId": trace_id, "command": command}
             data = await gql_request(

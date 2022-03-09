@@ -1,3 +1,4 @@
+import asyncio
 import pytest
 from async_asgi_testclient import TestClient
 
@@ -15,6 +16,8 @@ x = 1
 
 @pytest.mark.asyncio
 async def test_one(client: TestClient):
+
+    await asyncio.sleep(0.001)
 
     statement = SOURCE
     await run_statement(client, statement)
