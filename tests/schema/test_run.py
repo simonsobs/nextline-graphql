@@ -28,7 +28,11 @@ async def test_run(client: TestClient):
     data = await gql_request(client, QUERY_STATE)
     assert "initialized" == data["state"]
 
+    await asyncio.sleep(0.01)
+
     task_control_execution = asyncio.create_task(control_execution(client))
+
+    await asyncio.sleep(0.01)
 
     data = await gql_request(client, MUTATE_EXEC)
     assert data["exec"]
