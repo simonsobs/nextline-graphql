@@ -1,3 +1,4 @@
+import asyncio
 import sys
 import threading
 
@@ -19,4 +20,5 @@ def recover_trace():
 @pytest.fixture
 async def client():
     async with TestClient(create_app()) as y:
+        await asyncio.sleep(0)
         yield y
