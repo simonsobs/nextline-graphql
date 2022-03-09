@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, AsyncGenerator, List
 if TYPE_CHECKING:
     from nextline import Nextline
 
-from .types import TraceState
+from .types import PromptingData
 
 AGen = AsyncGenerator
 
@@ -36,10 +36,10 @@ def subscribe_trace_ids(info: Info) -> AGen[List[int], None]:
 
 async def subscribe_prompting(
     info: Info, trace_id: int
-) -> AGen[TraceState, None]:
+) -> AGen[PromptingData, None]:
     nextline: Nextline = info.context["nextline"]
     async for y in nextline.subscribe_prompting(trace_id):
-        yield TraceState(**dataclasses.asdict(y))
+        yield PromptingData(**dataclasses.asdict(y))
 
 
 async def subscribe_stdout(info: Info) -> AGen[str, None]:
@@ -65,7 +65,7 @@ class Subscription:
     trace_ids: AGen[List[int], None] = strawberry.field(
         is_subscription=True, resolver=subscribe_trace_ids
     )
-    prompting: AGen[TraceState, None] = strawberry.field(
+    prompting: AGen[PromptingData, None] = strawberry.field(
         is_subscription=True, resolver=subscribe_prompting
     )
     stdout: AGen[str, None] = strawberry.field(

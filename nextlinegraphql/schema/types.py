@@ -22,7 +22,7 @@ class Run:
 
 
 @strawberry.type
-class TraceState:
+class PromptingData:
     prompting: int
     file_name: str
     line_no: int
