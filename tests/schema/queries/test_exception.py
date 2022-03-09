@@ -12,7 +12,7 @@ from ..graphql import (
     QUERY_EXCEPTION,
     SUBSCRIBE_STATE,
     SUBSCRIBE_TRACE_IDS,
-    SUBSCRIBE_TRACE_STATE,
+    SUBSCRIBE_PROMPTING,
     MUTATE_EXEC,
     MUTATE_RESET,
     MUTATE_SEND_PDB_COMMAND,
@@ -42,7 +42,7 @@ async def control_trace(client, trace_id):
             "variables": {"traceId": trace_id},
             "extensions": {},
             "operationName": None,
-            "query": SUBSCRIBE_TRACE_STATE,
+            "query": SUBSCRIBE_PROMPTING,
         },
     }
 
@@ -59,7 +59,7 @@ async def control_trace(client, trace_id):
             if resp_json["type"] == "complete":
                 break
             assert "errors" not in resp_json["payload"]
-            state = resp_json["payload"]["data"]["traceState"]
+            state = resp_json["payload"]["data"]["prompting"]
             # print(state)
             if state["prompting"]:
                 command = "next"

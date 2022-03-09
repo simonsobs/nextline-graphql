@@ -34,7 +34,7 @@ def subscribe_trace_ids(info: Info) -> AGen[List[int], None]:
     return nextline.subscribe_trace_ids()
 
 
-async def subscribe_trace_state(
+async def subscribe_prompting(
     info: Info, trace_id: int
 ) -> AGen[TraceState, None]:
     nextline: Nextline = info.context["nextline"]
@@ -65,8 +65,8 @@ class Subscription:
     trace_ids: AGen[List[int], None] = strawberry.field(
         is_subscription=True, resolver=subscribe_trace_ids
     )
-    trace_state: AGen[TraceState, None] = strawberry.field(
-        is_subscription=True, resolver=subscribe_trace_state
+    prompting: AGen[TraceState, None] = strawberry.field(
+        is_subscription=True, resolver=subscribe_prompting
     )
     stdout: AGen[str, None] = strawberry.field(
         is_subscription=True, resolver=subscribe_stdout

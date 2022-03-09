@@ -1,0 +1,8 @@
+subscription Prompting($traceId: Int!) {
+  prompting(traceId: $traceId) {
+    prompting
+    fileName
+    lineNo
+    traceEvent
+  }
+}

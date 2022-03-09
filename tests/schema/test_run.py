@@ -14,7 +14,7 @@ from .graphql import (
     QUERY_SOURCE_LINE,
     SUBSCRIBE_STATE,
     SUBSCRIBE_TRACE_IDS,
-    SUBSCRIBE_TRACE_STATE,
+    SUBSCRIBE_PROMPTING,
     MUTATE_EXEC,
     MUTATE_SEND_PDB_COMMAND,
 )
@@ -84,10 +84,10 @@ async def control_trace(client: TestClient, trace_id: int) -> None:
 
     async for data in gql_subscribe(
         client,
-        SUBSCRIBE_TRACE_STATE,
+        SUBSCRIBE_PROMPTING,
         variables={"traceId": trace_id},
     ):
-        state = data["traceState"]
+        state = data["prompting"]
         # print(state)
         if state["prompting"]:
             command = "next"
