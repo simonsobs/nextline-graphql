@@ -4,7 +4,7 @@ import strawberry
 from strawberry.types import Info
 from typing import TYPE_CHECKING, List, Optional, Iterable
 
-from .types import StateChange, Run
+from . import types
 
 if TYPE_CHECKING:
     from nextline import Nextline
@@ -48,22 +48,24 @@ def query_exception(info: Info) -> Optional[str]:
     return None
 
 
-def query_state_changes(info: Info) -> List[StateChange]:
+def query_state_changes(info: Info) -> List[types.StateChange]:
     db: Db = info.context["db"]
     with db.Session.begin() as session:
         models = session.query(db.models.StateChange).all()  # type: ignore
         return [
-            StateChange(name=m.name, datetime=m.datetime, run_no=m.run_no)
+            types.StateChange(
+                name=m.name, datetime=m.datetime, run_no=m.run_no
+            )
             for m in models
         ]
 
 
-def query_runs(info: Info) -> List[Run]:
+def query_runs(info: Info) -> List[types.Run]:
     db: Db = info.context["db"]
     with db.Session.begin() as session:
         runs: Iterable[db.models.Run] = session.query(db.models.Run)  # type: ignore
         return [
-            Run(
+            types.Run(
                 run_no=m.run_no,
                 state=m.state,
                 started_at=m.started_at,
@@ -83,5 +85,7 @@ class Query:
     source: List[str] = strawberry.field(resolver=query_source)
     source_line: str = strawberry.field(resolver=query_source_line)
     exception: Optional[str] = strawberry.field(resolver=query_exception)
-    state_changes: StateChange = strawberry.field(resolver=query_state_changes)
-    runs: List[Run] = strawberry.field(resolver=query_runs)
+    state_changes: types.StateChange = strawberry.field(
+        resolver=query_state_changes
+    )
+    runs: List[types.Run] = strawberry.field(resolver=query_runs)
