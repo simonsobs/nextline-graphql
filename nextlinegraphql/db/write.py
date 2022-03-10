@@ -13,10 +13,10 @@ if TYPE_CHECKING:
 
 
 async def write_db(nextline: Nextline, db: Db) -> None:
-    aws: Set[asyncio.Task] = set()
-    aws.add(asyncio.create_task(subscribe_state(nextline, db)))
-    aws.add(asyncio.create_task(subscribe_trace_ids(nextline, db)))
-    await asyncio.gather(*aws)
+    await asyncio.gather(
+        subscribe_state(nextline, db),
+        subscribe_trace_ids(nextline, db),
+    )
 
 
 async def subscribe_state(nextline: Nextline, db: Db):
