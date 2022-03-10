@@ -68,6 +68,24 @@ async def subscribe_trace_ids(nextline: Nextline, db: Db) -> None:
             for id_ in started
         }
         _, pending = await agen.asend(tasks)
+        run_no = nextline.run_no
+        now = datetime.datetime.now()
+        with db.Session.begin() as session:
+            for id_ in started:
+                trace = db.models.Trace(  # type: ignore
+                    trace_id=id_,
+                    run_no=run_no,
+                    started_at=now,
+                )
+                session.add(trace)
+            for id_ in ended:
+                trace = (
+                    session.query(db.models.Trace)  # type: ignore
+                    .filter_by(trace_id=id_)
+                    .one()
+                )
+                trace.ended_at = now
+            session.commit()
 
     await asyncio.gather(*pending)
 
