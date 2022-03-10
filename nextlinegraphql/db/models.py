@@ -51,6 +51,9 @@ class Prompt(Base):
     run_no = Column(Integer, ForeignKey("run.run_no"))
     trace_id = Column(Integer, ForeignKey("trace.trace_id"))
     started_at = Column(DateTime)
+    file_name = Column(String)
+    line_no = Column(Integer)
+    event = Column(String)
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.id!r}>"

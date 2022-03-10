@@ -108,6 +108,9 @@ async def subscribe_prompting(
                 run_no=run_no,
                 trace_id=trace_id,
                 started_at=now,
+                file_name=s.file_name,
+                line_no=s.line_no,
+                event=s.trace_event,
             )
             session.add(prompt)
             session.commit()

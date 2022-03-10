@@ -37,6 +37,9 @@ def test_one(db: Db, run_nextline, statement):
             assert run_no == prompt.run_no
             assert prompt.trace_id
             assert prompt.started_at
+            assert prompt.line_no
+            assert prompt.file_name
+            assert prompt.event
 
 
 @pytest.fixture
