@@ -36,8 +36,9 @@ class Run(Base):
 
 class Trace(Base):
     __tablename__ = "trace"
-    trace_id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     run_no = Column(Integer, ForeignKey("run.run_no"))
+    trace_id = Column(Integer, index=True)
     started_at = Column(DateTime)
     ended_at = Column(DateTime)
 
