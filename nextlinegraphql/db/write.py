@@ -99,5 +99,15 @@ async def subscribe_prompting(
     trace_id: int,
 ) -> None:
     async for s in nextline.subscribe_prompting(trace_id):
-        # print(s)
-        pass
+        if not s.prompting:
+            continue
+        run_no = nextline.run_no
+        now = datetime.datetime.now()
+        with db.Session.begin() as session:
+            prompt = db.models.Prompt(  # type: ignore
+                run_no=run_no,
+                trace_id=trace_id,
+                started_at=now,
+            )
+            session.add(prompt)
+            session.commit()
