@@ -21,6 +21,8 @@ async def write_db(nextline: Nextline, db: Db) -> None:
 
 async def subscribe_state(nextline: Nextline, db: Db):
     async for state_name in nextline.subscribe_state():
+        if state_name == "closed":
+            continue
         run_no = nextline.run_no
         now = datetime.datetime.now()
         with db.Session.begin() as session:
