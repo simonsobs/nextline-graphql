@@ -2,6 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from . import models
+from .write import write_db
+
+__all__ = ["Db", "write_db"]
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 
