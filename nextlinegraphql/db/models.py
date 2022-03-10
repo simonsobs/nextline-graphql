@@ -34,3 +34,12 @@ class Run(Base):
         return f"<{self.__class__.__name__} {self.run_no!r}>"
 
 
+class Trace(Base):
+    __tablename__ = "trace"
+    trace_id = Column(Integer, primary_key=True, index=True)
+    run_no = Column(Integer, ForeignKey("run.run_no"))
+    started_at = Column(DateTime)
+    ended_at = Column(DateTime)
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} {self.trace_id!r}>"
