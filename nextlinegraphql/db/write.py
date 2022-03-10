@@ -57,6 +57,7 @@ async def subscribe_state(nextline: Nextline, db: Db):
 
 async def subscribe_trace_ids(nextline: Nextline, db: Db) -> None:
     ids: Set[int] = set()
+    pending: Set[asyncio.Task] = set()
     agen = agen_with_wait(nextline.subscribe_trace_ids())
     async for ids_ in agen:
         ids_ = set(ids_)
