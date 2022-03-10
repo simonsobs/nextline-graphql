@@ -1,10 +1,21 @@
+from __future__ import annotations
+import asyncio
 import datetime
 import traceback
 
-from nextline import Nextline
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from nextline import Nextline
+    from . import Db
 
 
-async def write_db(nextline: Nextline, db) -> None:
+async def write_db(nextline: Nextline, db: Db) -> None:
+    t = asyncio.create_task(subscribe_state(nextline, db))
+    await t
+
+
+async def subscribe_state(nextline: Nextline, db: Db):
     async for state_name in nextline.subscribe_state():
         run_no = nextline.run_no
         now = datetime.datetime.now()
