@@ -12,7 +12,7 @@ class StateChange:
 
 
 @strawberry.type
-class Run:
+class RunHistory:
     run_no: int
     state: Optional[str] = None
     started_at: Optional[datetime.date] = None
