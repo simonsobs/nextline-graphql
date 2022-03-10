@@ -33,7 +33,10 @@ async def subscribe_state(nextline: Nextline, db: Db):
                 .one_or_none()
             )
             if run is None:
-                run = db.models.Run(run_no=run, script=nextline.statement)  # type: ignore
+                run = db.models.Run(  # type: ignore
+                    run_no=run_no,
+                    script=nextline.statement,
+                )
                 session.add(run)
             run.state = state_name
             if state_name == "running":
