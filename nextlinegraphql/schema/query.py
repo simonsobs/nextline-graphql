@@ -63,7 +63,7 @@ def query_state_changes(info: Info) -> List[types.StateChange]:
 def query_runs(info: Info) -> List[types.RunHistory]:
     db: Db = info.context["db"]
     with db.Session.begin() as session:
-        runs: Iterable[db.models.Run] = session.query(db.models.Run)  # type: ignore
+        models: Iterable[db.models.Run] = session.query(db.models.Run)  # type: ignore
         return [
             types.RunHistory(
                 run_no=m.run_no,
@@ -73,7 +73,7 @@ def query_runs(info: Info) -> List[types.RunHistory]:
                 script=m.script,
                 exception=m.exception,
             )
-            for m in runs
+            for m in models
         ]
 
 
