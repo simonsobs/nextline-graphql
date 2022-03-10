@@ -23,7 +23,8 @@ class StateChange(Base):
 
 class Run(Base):
     __tablename__ = "run"
-    run_no = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
+    run_no = Column(Integer, index=True)
     state = Column(String)
     started_at = Column(DateTime)
     ended_at = Column(DateTime)
