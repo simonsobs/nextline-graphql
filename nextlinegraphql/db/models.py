@@ -43,3 +43,14 @@ class Trace(Base):
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.trace_id!r}>"
+
+
+class Prompt(Base):
+    __tablename__ = "prompt"
+    id = Column(Integer, primary_key=True, index=True)
+    run_no = Column(Integer, ForeignKey("run.run_no"))
+    trace_id = Column(Integer, ForeignKey("trace.trace_id"))
+    started_at = Column(DateTime)
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} {self.id!r}>"
