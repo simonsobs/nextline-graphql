@@ -31,7 +31,7 @@ class GraphQL(GraphQL_):
         await super().__call__(scope, receive, send)
 
 
-async def monitor_state(nextline: Nextline, db):
+async def write_db(nextline: Nextline, db) -> None:
     async for state_name in nextline.subscribe_state():
         run_no = nextline.run_no
         now = datetime.datetime.now()
@@ -88,7 +88,7 @@ def create_app():
     @contextlib.asynccontextmanager
     async def lifespan(app):
         del app
-        task = asyncio.create_task(monitor_state(nextline, db))
+        task = asyncio.create_task(write_db(nextline, db))
         yield
         await nextline.close()
         await task
