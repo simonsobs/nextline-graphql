@@ -56,14 +56,16 @@ async def subscribe_state(nextline: Nextline, db: Db):
 
 
 async def subscribe_trace_ids(nextline: Nextline, db: Db) -> None:
-    prev_ids: Set[int] = set()
+    ids: Set[int] = set()
     agen = agen_with_wait(nextline.subscribe_trace_ids())
     async for ids_ in agen:
-        ids = set(ids_)
-        new_ids, prev_ids = ids - prev_ids, ids
+        ids_ = set(ids_)
+        started = ids_ - ids
+        ended = ids - ids_
+        ids = ids_
         tasks = {
             asyncio.create_task(subscribe_prompting(nextline, db, id_))
-            for id_ in new_ids
+            for id_ in started
         }
         _, pending = await agen.asend(tasks)
 
