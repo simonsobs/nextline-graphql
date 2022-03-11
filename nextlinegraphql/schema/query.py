@@ -106,7 +106,6 @@ class Query:
     state_changes: types.StateChange = strawberry.field(
         resolver=query_state_changes
     )
-    runs: List[types.RunHistory] = strawberry.field(resolver=query_runs)
 
     @strawberry.field
     def history(self) -> History:
