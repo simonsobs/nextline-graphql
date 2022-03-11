@@ -12,7 +12,7 @@ from typing import Optional, Any
 from nextline import Nextline
 
 from .schema import schema
-from .db import Db, write_db
+from .db import init_db, write_db
 from .example_script import statement
 
 
@@ -31,7 +31,7 @@ class GraphQL(GraphQL_):
 
 def create_app():
 
-    db = Db()
+    db = init_db()
     nextline = Nextline(statement)
 
     class EGraphQL(GraphQL):

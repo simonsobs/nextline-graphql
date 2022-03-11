@@ -2,13 +2,20 @@ from __future__ import annotations
 import traceback
 import strawberry
 from strawberry.types import Info
-from typing import TYPE_CHECKING, List, Optional, Iterable
+from sqlalchemy.orm import Session
+from typing import (
+    TYPE_CHECKING,
+    List,
+    Optional,
+    Iterable,
+    cast,
+)
 
 from . import types
+from ..db import models as db_models
 
 if TYPE_CHECKING:
     from nextline import Nextline
-    from ..db import Db
 
 
 def query_hello(info: Info) -> str:
@@ -49,9 +56,10 @@ def query_exception(info: Info) -> Optional[str]:
 
 
 def query_state_changes(info: Info) -> List[types.StateChange]:
-    db: Db = info.context["db"]
-    with db.Session.begin() as session:
-        models = session.query(db.models.StateChange).all()  # type: ignore
+    db = info.context["db"]
+    with db() as session:
+        session = cast(Session, session)
+        models = session.query(db_models.StateChange).all()
         return [
             types.StateChange(
                 name=m.name, datetime=m.datetime, run_no=m.run_no
@@ -61,9 +69,10 @@ def query_state_changes(info: Info) -> List[types.StateChange]:
 
 
 def query_runs(info: Info) -> List[types.RunHistory]:
-    db: Db = info.context["db"]
-    with db.Session.begin() as session:
-        models: Iterable[db.models.Run] = session.query(db.models.Run)  # type: ignore
+    db = info.context["db"]
+    with db() as session:
+        session = cast(Session, session)
+        models: Iterable[db_models.Run] = session.query(db_models.Run)
         return [
             types.RunHistory(
                 run_no=m.run_no,
@@ -78,9 +87,10 @@ def query_runs(info: Info) -> List[types.RunHistory]:
 
 
 def query_traces(info: Info) -> List[types.TraceHistory]:
-    db: Db = info.context["db"]
-    with db.Session.begin() as session:
-        models: Iterable[db.models.Trace] = session.query(db.models.Trace)  # type: ignore
+    db = info.context["db"]
+    with db() as session:
+        session = cast(Session, session)
+        models: Iterable[db_models.Trace] = session.query(db_models.Trace)
         return [
             types.TraceHistory(
                 trace_id=m.trace_id,
@@ -93,9 +103,10 @@ def query_traces(info: Info) -> List[types.TraceHistory]:
 
 
 def query_prompt(info: Info) -> List[types.PromptHistory]:
-    db: Db = info.context["db"]
-    with db.Session.begin() as session:
-        models: Iterable[db.models.Prompt] = session.query(db.models.Prompt)  # type: ignore
+    db = info.context["db"]
+    with db() as session:
+        session = cast(Session, session)
+        models: Iterable[db_models.Prompt] = session.query(db_models.Prompt)
         return [
             types.PromptHistory(
                 run_no=m.run_no,

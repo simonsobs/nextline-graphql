@@ -1,17 +1,20 @@
 import asyncio
 from pathlib import Path
+from sqlalchemy.orm import Session
 from typing import Optional, Set
 import pytest
+from typing import cast
 from nextline import Nextline
 from nextline.utils import agen_with_wait
 
-from nextlinegraphql.db import Db, write_db
+from nextlinegraphql.db import init_db, write_db, models as db_models
 
 
-def test_one(db: Db, run_nextline, statement):
+def test_one(db, run_nextline, statement):
     del run_nextline
-    with db.Session.begin() as session:
-        runs = session.query(db.models.Run).all()  # type: ignore
+    with db() as session:
+        session = cast(Session, session)
+        runs = session.query(db_models.Run).all()  # type: ignore
         assert 2 == len(runs)
         run = runs[1]
         assert 2 == run.run_no
@@ -20,7 +23,7 @@ def test_one(db: Db, run_nextline, statement):
         assert statement == run.script
         assert run.exception is None
 
-        traces = session.query(db.models.Trace).all()  # type: ignore
+        traces = session.query(db_models.Trace).all()  # type: ignore
         assert 5 == len(traces)
         run_no = 2
         trace_id = 0
@@ -31,7 +34,7 @@ def test_one(db: Db, run_nextline, statement):
             assert trace.started_at
             assert trace.ended_at
 
-        prompts = session.query(db.models.Prompt).all()  # type: ignore
+        prompts = session.query(db_models.Prompt).all()  # type: ignore
         assert 58 == len(prompts)
         for prompt in prompts:
             assert run_no == prompt.run_no
@@ -58,11 +61,11 @@ def statement(monkey_patch_syspath):
 
 @pytest.fixture
 def db():
-    return Db()
+    return init_db()
 
 
 @pytest.fixture
-async def run_nextline(db: Db, statement):
+async def run_nextline(db, statement):
     nextline = Nextline(statement)
     task_write = asyncio.create_task(write_db(nextline, db))
     task_control = asyncio.create_task(control_execution(nextline))

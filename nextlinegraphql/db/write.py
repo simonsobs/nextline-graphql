@@ -3,17 +3,19 @@ import sys
 import asyncio
 import datetime
 import traceback
+from sqlalchemy.orm import Session
 
-from typing import TYPE_CHECKING, Set
+from typing import TYPE_CHECKING, Set, cast
 
 from nextline.utils import agen_with_wait
 
+from . import models as db_models
+
 if TYPE_CHECKING:
     from nextline import Nextline
-    from . import Db
 
 
-async def write_db(nextline: Nextline, db: Db) -> None:
+async def write_db(nextline: Nextline, db) -> None:
     try:
         await asyncio.gather(
             subscribe_state(nextline, db),
@@ -27,23 +29,24 @@ async def write_db(nextline: Nextline, db: Db) -> None:
         raise
 
 
-async def subscribe_state(nextline: Nextline, db: Db):
+async def subscribe_state(nextline: Nextline, db):
     async for state_name in nextline.subscribe_state():
         if state_name == "closed":
             continue
         run_no = nextline.run_no
         now = datetime.datetime.now()
-        with db.Session.begin() as session:
-            state_change = db.models.StateChange(  # type: ignore
+        with db() as session:
+            session = cast(Session, session)
+            state_change = db_models.StateChange(  # type: ignore
                 name=state_name, datetime=now, run_no=run_no
             )
             run = (
-                session.query(db.models.Run)  # type: ignore
+                session.query(db_models.Run)  # type: ignore
                 .filter_by(run_no=run_no)
                 .one_or_none()
             )
             if run is None:
-                run = db.models.Run(  # type: ignore
+                run = db_models.Run(  # type: ignore
                     run_no=run_no,
                     script=nextline.statement,
                 )
@@ -65,7 +68,7 @@ async def subscribe_state(nextline: Nextline, db: Db):
             session.commit()
 
 
-async def subscribe_trace_ids(nextline: Nextline, db: Db) -> None:
+async def subscribe_trace_ids(nextline: Nextline, db) -> None:
     ids: Set[int] = set()
     pending: Set[asyncio.Task] = set()
     agen = agen_with_wait(nextline.subscribe_trace_ids())
@@ -81,9 +84,10 @@ async def subscribe_trace_ids(nextline: Nextline, db: Db) -> None:
         _, pending = await agen.asend(tasks)
         run_no = nextline.run_no
         now = datetime.datetime.now()
-        with db.Session.begin() as session:
+        with db() as session:
+            session = cast(Session, session)
             for id_ in started:
-                trace = db.models.Trace(  # type: ignore
+                trace = db_models.Trace(  # type: ignore
                     trace_id=id_,
                     run_no=run_no,
                     started_at=now,
@@ -91,7 +95,7 @@ async def subscribe_trace_ids(nextline: Nextline, db: Db) -> None:
                 session.add(trace)
             for id_ in ended:
                 trace = (
-                    session.query(db.models.Trace)  # type: ignore
+                    session.query(db_models.Trace)  # type: ignore
                     .filter_by(run_no=run_no, trace_id=id_)
                     .one()
                 )
@@ -101,18 +105,15 @@ async def subscribe_trace_ids(nextline: Nextline, db: Db) -> None:
     await asyncio.gather(*pending)
 
 
-async def subscribe_prompting(
-    nextline: Nextline,
-    db: Db,
-    trace_id: int,
-) -> None:
+async def subscribe_prompting(nextline: Nextline, db, trace_id: int) -> None:
     async for s in nextline.subscribe_prompting(trace_id):
         if not s.prompting:
             continue
         run_no = nextline.run_no
         now = datetime.datetime.now()
-        with db.Session.begin() as session:
-            prompt = db.models.Prompt(  # type: ignore
+        with db() as session:
+            session = cast(Session, session)
+            prompt = db_models.Prompt(  # type: ignore
                 run_no=run_no,
                 trace_id=trace_id,
                 prompt_no=s.prompting,
