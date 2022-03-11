@@ -95,10 +95,6 @@ class History:
     )
 
 
-async def query_history(info: Info) -> History:
-    return History()
-
-
 @strawberry.type
 class Query:
     hello: str = strawberry.field(resolver=query_hello)
@@ -111,4 +107,7 @@ class Query:
         resolver=query_state_changes
     )
     runs: List[types.RunHistory] = strawberry.field(resolver=query_runs)
-    history: History = strawberry.field(resolver=query_history)
+
+    @strawberry.field
+    def history(self) -> History:
+        return History()
