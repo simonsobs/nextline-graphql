@@ -92,7 +92,7 @@ async def subscribe_trace_ids(nextline: Nextline, db: Db) -> None:
             for id_ in ended:
                 trace = (
                     session.query(db.models.Trace)  # type: ignore
-                    .filter_by(trace_id=id_)
+                    .filter_by(run_no=run_no, trace_id=id_)
                     .one()
                 )
                 trace.ended_at = now
