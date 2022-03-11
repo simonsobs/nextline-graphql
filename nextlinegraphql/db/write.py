@@ -1,4 +1,5 @@
 from __future__ import annotations
+import sys
 import asyncio
 import datetime
 import traceback
@@ -13,10 +14,17 @@ if TYPE_CHECKING:
 
 
 async def write_db(nextline: Nextline, db: Db) -> None:
-    await asyncio.gather(
-        subscribe_state(nextline, db),
-        subscribe_trace_ids(nextline, db),
-    )
+    try:
+        await asyncio.gather(
+            subscribe_state(nextline, db),
+            subscribe_trace_ids(nextline, db),
+        )
+    except BaseException as exc:
+        # TODO: use logging in a way uvicorn can format
+        print(f"{exc.__class__.__name__} in write_db()", file=sys.stderr)
+        print(exc, file=sys.stderr)
+
+        raise
 
 
 async def subscribe_state(nextline: Nextline, db: Db):
