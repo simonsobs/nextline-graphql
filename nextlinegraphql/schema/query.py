@@ -72,53 +72,24 @@ def query_runs(info: Info) -> List[types.RunHistory]:
     db = info.context["db"]
     with db() as session:
         session = cast(Session, session)
-        models: Iterable[db_models.Run] = session.query(db_models.Run)
-        return [
-            types.RunHistory(
-                run_no=m.run_no,
-                state=m.state,
-                started_at=m.started_at,
-                ended_at=m.ended_at,
-                script=m.script,
-                exception=m.exception,
-            )
-            for m in models
-        ]
+        models = session.query(db_models.Run)
+        return [types.RunHistory.from_model(m) for m in models]
 
 
 def query_traces(info: Info) -> List[types.TraceHistory]:
     db = info.context["db"]
     with db() as session:
         session = cast(Session, session)
-        models: Iterable[db_models.Trace] = session.query(db_models.Trace)
-        return [
-            types.TraceHistory(
-                trace_id=m.trace_id,
-                run_no=m.run_no,
-                started_at=m.started_at,
-                ended_at=m.ended_at,
-            )
-            for m in models
-        ]
+        models = session.query(db_models.Trace)
+        return [types.TraceHistory.from_model(m) for m in models]
 
 
 def query_prompt(info: Info) -> List[types.PromptHistory]:
     db = info.context["db"]
     with db() as session:
         session = cast(Session, session)
-        models: Iterable[db_models.Prompt] = session.query(db_models.Prompt)
-        return [
-            types.PromptHistory(
-                run_no=m.run_no,
-                trace_id=m.trace_id,
-                prompt_no=m.prompt_no,
-                event=m.event,
-                started_at=m.started_at,
-                file_name=m.file_name,
-                line_no=m.line_no,
-            )
-            for m in models
-        ]
+        models = session.query(db_models.Prompt)
+        return [types.PromptHistory.from_model(m) for m in models]
 
 
 @strawberry.type

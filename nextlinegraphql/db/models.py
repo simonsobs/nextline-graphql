@@ -32,7 +32,7 @@ class StateChange(Base):
 class Run(Base):
     __tablename__ = "run"
     id = Column(Integer, primary_key=True, index=True)
-    run_no = Column(Integer, unique=True)
+    run_no = Column(Integer, unique=True, nullable=False)
     state = Column(String)
     started_at = Column(DateTime)
     ended_at = Column(DateTime)
@@ -46,9 +46,9 @@ class Run(Base):
 class Trace(Base):
     __tablename__ = "trace"
     id = Column(Integer, primary_key=True, index=True)
-    run_no = Column(Integer, ForeignKey("run.run_no"))
-    trace_id = Column(Integer)
-    started_at = Column(DateTime)
+    run_no = Column(Integer, ForeignKey("run.run_no"), nullable=False)
+    trace_id = Column(Integer, nullable=False)
+    started_at = Column(DateTime, nullable=False)
     ended_at = Column(DateTime)
 
     __table_args__ = (
@@ -62,13 +62,13 @@ class Trace(Base):
 class Prompt(Base):
     __tablename__ = "prompt"
     id = Column(Integer, primary_key=True, index=True)
-    run_no = Column(Integer, ForeignKey("run.run_no"))
-    trace_id = Column(Integer, ForeignKey("trace.trace_id"))
-    prompt_no = Column(Integer)
-    started_at = Column(DateTime)
+    run_no = Column(Integer, ForeignKey("run.run_no"), nullable=False)
+    trace_id = Column(Integer, ForeignKey("trace.trace_id"), nullable=False)
+    prompt_no = Column(Integer, nullable=False)
+    event = Column(String, nullable=False)
+    started_at = Column(DateTime, nullable=False)
     file_name = Column(String)
     line_no = Column(Integer)
-    event = Column(String)
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.id!r}>"
