@@ -52,6 +52,7 @@ class Prompt(Base):
     id = Column(Integer, primary_key=True, index=True)
     run_no = Column(Integer, ForeignKey("run.run_no"))
     trace_id = Column(Integer, ForeignKey("trace.trace_id"))
+    prompt_no = Column(Integer)
     started_at = Column(DateTime)
     file_name = Column(String)
     line_no = Column(Integer)

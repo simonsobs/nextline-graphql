@@ -115,6 +115,7 @@ async def subscribe_prompting(
             prompt = db.models.Prompt(  # type: ignore
                 run_no=run_no,
                 trace_id=trace_id,
+                prompt_no=s.prompting,
                 started_at=now,
                 file_name=s.file_name,
                 line_no=s.line_no,
