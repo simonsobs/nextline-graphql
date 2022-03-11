@@ -77,6 +77,52 @@ def query_runs(info: Info) -> List[types.RunHistory]:
         ]
 
 
+def query_traces(info: Info) -> List[types.TraceHistory]:
+    db: Db = info.context["db"]
+    with db.Session.begin() as session:
+        models: Iterable[db.models.Trace] = session.query(db.models.Trace)  # type: ignore
+        return [
+            types.TraceHistory(
+                trace_id=m.trace_id,
+                run_no=m.run_no,
+                started_at=m.started_at,
+                ended_at=m.ended_at,
+            )
+            for m in models
+        ]
+
+
+def query_prompt(info: Info) -> List[types.PromptHistory]:
+    db: Db = info.context["db"]
+    with db.Session.begin() as session:
+        models: Iterable[db.models.Prompt] = session.query(db.models.Prompt)  # type: ignore
+        return [
+            types.PromptHistory(
+                run_no=m.run_no,
+                trace_id=m.trace_id,
+                prompt_no=m.prompt_no,
+                event=m.event,
+                started_at=m.started_at,
+                file_name=m.file_name,
+                line_no=m.line_no,
+            )
+            for m in models
+        ]
+
+
+@strawberry.type
+class History:
+    runs: List[types.RunHistory] = strawberry.field(resolver=query_runs)
+    traces: List[types.TraceHistory] = strawberry.field(resolver=query_traces)
+    prompts: List[types.PromptHistory] = strawberry.field(
+        resolver=query_prompt
+    )
+
+
+async def query_history(info: Info) -> History:
+    return History()
+
+
 @strawberry.type
 class Query:
     hello: str = strawberry.field(resolver=query_hello)
@@ -88,4 +134,5 @@ class Query:
     state_changes: types.StateChange = strawberry.field(
         resolver=query_state_changes
     )
-    runs: List[types.Run] = strawberry.field(resolver=query_runs)
+    runs: List[types.RunHistory] = strawberry.field(resolver=query_runs)
+    history: History = strawberry.field(resolver=query_history)
