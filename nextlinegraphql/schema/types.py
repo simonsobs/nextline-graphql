@@ -1,5 +1,6 @@
 from __future__ import annotations
 import datetime
+import base64
 import strawberry
 from typing import Optional
 
@@ -20,6 +21,11 @@ class RunHistory:
     script: Optional[str] = None
     exception: Optional[str] = None
 
+    @strawberry.field
+    def id(self) -> strawberry.ID:
+        s = f"{self.__class__.__name__}:{self.run_no}"
+        return strawberry.ID(base64.b64encode(s.encode()).decode())
+
 
 @strawberry.type
 class TraceHistory:
@@ -27,6 +33,11 @@ class TraceHistory:
     trace_id: int
     started_at: datetime.date
     ended_at: Optional[datetime.date] = None
+
+    @strawberry.field
+    def id(self) -> strawberry.ID:
+        s = f"{self.__class__.__name__}:{self.run_no}-{self.trace_id}"
+        return strawberry.ID(base64.b64encode(s.encode()).decode())
 
 
 @strawberry.type
@@ -38,6 +49,11 @@ class PromptHistory:
     started_at: datetime.date
     file_name: Optional[str] = None
     line_no: Optional[int] = None
+
+    @strawberry.field
+    def id(self) -> strawberry.ID:
+        s = f"{self.__class__.__name__}:{self.run_no}-{self.prompt_no}"
+        return strawberry.ID(base64.b64encode(s.encode()).decode())
 
 
 @strawberry.type
