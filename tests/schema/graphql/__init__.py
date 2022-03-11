@@ -13,6 +13,7 @@ QUERY_EXCEPTION = sub.joinpath("Exception.gql").read_text()
 QUERY_RUNS = sub.joinpath("Runs.gql").read_text()
 QUERY_SOURCE = sub.joinpath("Source.gql").read_text()
 QUERY_SOURCE_LINE = sub.joinpath("SourceLine.gql").read_text()
+QUERY_HISTORY = sub.joinpath("History.gql").read_text()
 
 sub = pwd.joinpath("subscriptions")
 SUBSCRIBE_COUNTER = sub.joinpath("Counter.gql").read_text()

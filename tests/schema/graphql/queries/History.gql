@@ -1,0 +1,29 @@
+query History {
+  history {
+    runs {
+      id
+      runNo
+      state
+      startedAt
+      endedAt
+      exception
+    }
+    traces {
+      id
+      runNo
+      traceId
+      startedAt
+      endedAt
+    }
+    prompts {
+      id
+      runNo
+      traceId
+      promptNo
+      event
+      startedAt
+      fileName
+      lineNo
+    }
+  }
+}
