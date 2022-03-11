@@ -37,9 +37,6 @@ async def subscribe_state(nextline: Nextline, db):
         now = datetime.datetime.now()
         with db() as session:
             session = cast(Session, session)
-            state_change = db_models.StateChange(  # type: ignore
-                name=state_name, datetime=now, run_no=run_no
-            )
             run = (
                 session.query(db_models.Run)  # type: ignore
                 .filter_by(run_no=run_no)
@@ -64,7 +61,6 @@ async def subscribe_state(nextline: Nextline, db):
                             type(exc), exc, exc.__traceback__
                         )
                     )
-            session.add(state_change)
             session.commit()
 
 

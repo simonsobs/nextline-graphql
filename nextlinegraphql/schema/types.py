@@ -10,13 +10,6 @@ from ..db import models as db_models
 
 
 @strawberry.type
-class StateChange:
-    name: str
-    datetime: datetime.datetime
-    run_no: int
-
-
-@strawberry.type
 class RunHistory:
     _model: strawberry.Private[db_models.Run]
     id: int

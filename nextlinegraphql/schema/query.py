@@ -49,19 +49,6 @@ def query_exception(info: Info) -> Optional[str]:
     return None
 
 
-def query_state_changes(info: Info) -> List[types.StateChange]:
-    db = info.context["db"]
-    with db() as session:
-        session = cast(Session, session)
-        models = session.query(db_models.StateChange).all()
-        return [
-            types.StateChange(
-                name=m.name, datetime=m.datetime, run_no=m.run_no
-            )
-            for m in models
-        ]
-
-
 def query_runs(info: Info) -> List[types.RunHistory]:
     db = info.context["db"]
     with db() as session:
@@ -103,9 +90,6 @@ class Query:
     source: List[str] = strawberry.field(resolver=query_source)
     source_line: str = strawberry.field(resolver=query_source_line)
     exception: Optional[str] = strawberry.field(resolver=query_exception)
-    state_changes: types.StateChange = strawberry.field(
-        resolver=query_state_changes
-    )
 
     @strawberry.field
     def history(self) -> History:
