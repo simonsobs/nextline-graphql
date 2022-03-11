@@ -3,13 +3,7 @@ import traceback
 import strawberry
 from strawberry.types import Info
 from sqlalchemy.orm import Session
-from typing import (
-    TYPE_CHECKING,
-    List,
-    Optional,
-    Iterable,
-    cast,
-)
+from typing import TYPE_CHECKING, List, Optional, cast
 
 from . import types
 from ..db import models as db_models
