@@ -24,7 +24,7 @@ class StateChange(Base):
 class Run(Base):
     __tablename__ = "run"
     id = Column(Integer, primary_key=True, index=True)
-    run_no = Column(Integer, index=True)
+    run_no = Column(Integer, unique=True)
     state = Column(String)
     started_at = Column(DateTime)
     ended_at = Column(DateTime)
@@ -39,9 +39,13 @@ class Trace(Base):
     __tablename__ = "trace"
     id = Column(Integer, primary_key=True, index=True)
     run_no = Column(Integer, ForeignKey("run.run_no"))
-    trace_id = Column(Integer, index=True)
+    trace_id = Column(Integer)
     started_at = Column(DateTime)
     ended_at = Column(DateTime)
+
+    __table_args__ = (
+        UniqueConstraint("run_no", "trace_id", name="_run_no_trace_id"),
+    )
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.trace_id!r}>"
