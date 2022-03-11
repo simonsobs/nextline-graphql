@@ -1,5 +1,6 @@
 """
 uvicorn --factory --reload --reload-dir nextline-graphql --reload-dir nextline nextlinegraphql:create_app
+use "--lifespan on" to show exception in lifespan
 """
 
 __all__ = ["create_app"]
