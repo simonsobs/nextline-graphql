@@ -36,12 +36,12 @@ setup(
     ],
     extras_require={
         "tests": [
-            "pytest>=5.4",
-            "pytest-cov>=2.8",
-            "pytest-asyncio>=0.14",
-            "pytest-timeout>=2.1.0",
-            "snapshottest>0.5",
-            "async-asgi-testclient>=1.4.6",
+            "pytest>=7.0",
+            "pytest-cov>=3.0",
+            "pytest-asyncio>=0.18",
+            "pytest-timeout>=2.1",
+            "snapshottest>=0.6",
+            "async-asgi-testclient>=1.4",
         ],
         "dev": [
             "twine",
