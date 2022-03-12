@@ -76,6 +76,7 @@ class PromptHistory:
     run_no: int
     trace_no: int
     prompt_no: int
+    open: bool
     event: str
     started_at: datetime.date
     file_name: Optional[str] = None
@@ -92,6 +93,7 @@ class PromptHistory:
             run_no=model.run_no,
             trace_no=model.trace_no,
             prompt_no=model.prompt_no,
+            open=model.open,
             event=model.event,
             started_at=model.started_at,
             file_name=model.file_name,
