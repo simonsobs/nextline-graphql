@@ -3,6 +3,7 @@ import sys
 import asyncio
 import datetime
 import traceback
+from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 
 from typing import TYPE_CHECKING, Set, cast
@@ -41,11 +42,8 @@ async def subscribe_state(nextline: Nextline, db):
         now = datetime.datetime.now()
         with db() as session:
             session = cast(Session, session)
-            run = (
-                session.query(db_models.Run)  # type: ignore
-                .filter_by(run_no=run_no)
-                .one_or_none()
-            )
+            stmt = select(db_models.Run).filter_by(run_no=run_no)
+            run = session.execute(stmt).scalar_one_or_none()
             if run is None:
                 run = db_models.Run(  # type: ignore
                     run_no=run_no,
@@ -94,11 +92,10 @@ async def subscribe_trace_ids(nextline: Nextline, db) -> None:
                 )
                 session.add(trace)
             for id_ in ended:
-                trace = (
-                    session.query(db_models.Trace)  # type: ignore
-                    .filter_by(run_no=run_no, trace_id=id_)
-                    .one()
+                stmt = select(db_models.Trace).filter_by(
+                    run_no=run_no, trace_id=id_
                 )
+                trace = session.execute(stmt).scalar_one()
                 trace.ended_at = now
             session.commit()
 

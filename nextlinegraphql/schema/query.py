@@ -2,6 +2,7 @@ from __future__ import annotations
 import traceback
 import strawberry
 from strawberry.types import Info
+from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 from typing import TYPE_CHECKING, List, Optional, cast
 
@@ -53,7 +54,7 @@ def query_runs(info: Info) -> List[types.RunHistory]:
     db = info.context["db"]
     with db() as session:
         session = cast(Session, session)
-        models = session.query(db_models.Run)
+        models = session.scalars(select(db_models.Run))
         return [types.RunHistory.from_model(m) for m in models]
 
 
@@ -61,7 +62,7 @@ def query_traces(info: Info) -> List[types.TraceHistory]:
     db = info.context["db"]
     with db() as session:
         session = cast(Session, session)
-        models = session.query(db_models.Trace)
+        models = session.scalars(select(db_models.Trace))
         return [types.TraceHistory.from_model(m) for m in models]
 
 
@@ -69,7 +70,7 @@ def query_prompt(info: Info) -> List[types.PromptHistory]:
     db = info.context["db"]
     with db() as session:
         session = cast(Session, session)
-        models = session.query(db_models.Prompt)
+        models = session.scalars(select(db_models.Prompt))
         return [types.PromptHistory.from_model(m) for m in models]
 
 
