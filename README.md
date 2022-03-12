@@ -30,14 +30,13 @@ Docker images of the Nextline GraphQL API server are created as
 These images are created by the
 [Dockerfile](https://github.com/simonsobs/nextline-graphql/blob/main/Dockerfile).
 
-
-Use, for example, the following comand to run as a Docker container.
+Use, for example, the following command to run as a Docker container.
 
 ```bash
 docker run -p 8080:8000 ghcr.io/simonsobs/nextline-graphql
 ```
 
-If you access to the API server with a web browser, you will see the GraphQL playground: <http://localhost:8080/>.
+If you access to the API server with a web browser, you will see the GraphQL IDE: <http://localhost:8080/>.
 
 ### from PyPI
 
@@ -45,7 +44,7 @@ It is also possible to install with pip and run.
 
 ```bash
 pip install nextline-graphql
-uvicorn --factory --port 8080 nextlinegraphql:create_app
+uvicorn --lifespan on --factory --port 8080 nextlinegraphql:create_app
 ```
 
 Check with a web browser at <http://localhost:8080/>.
@@ -66,7 +65,7 @@ pip install -e ./nextline-graphql/"[tests,dev]"
 To run
 
 ```bash
-uvicorn --port 8080 --factory --reload --reload-dir nextline-graphql --reload-dir nextline nextlinegraphql:create_app
+uvicorn --port 8080 --lifespan on --factory --reload --reload-dir nextline-graphql --reload-dir nextline nextlinegraphql:create_app
 ```
 
 ---
