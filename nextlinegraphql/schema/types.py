@@ -40,7 +40,10 @@ class TraceHistory:
     id: int
     run_no: int
     trace_id: int
+    state: str
+    thread_no: int
     started_at: datetime.date
+    task_no: Optional[int] = None
     ended_at: Optional[datetime.date] = None
 
     @classmethod
@@ -50,7 +53,10 @@ class TraceHistory:
             id=model.id,
             run_no=model.run_no,
             trace_id=model.trace_id,
+            state=model.state,
+            thread_no=model.thread_no,
             started_at=model.started_at,
+            task_no=model.task_no,
             ended_at=model.ended_at,
         )
 
@@ -66,6 +72,9 @@ class PromptHistory:
     started_at: datetime.date
     file_name: Optional[str] = None
     line_no: Optional[int] = None
+    stdout: Optional[str] = None
+    command: Optional[str] = None
+    ended_at: Optional[datetime.date] = None
 
     @classmethod
     def from_model(cls: Type["PromptHistory"], model: db_models.Prompt):
@@ -75,10 +84,13 @@ class PromptHistory:
             run_no=model.run_no,
             trace_id=model.trace_id,
             prompt_no=model.prompt_no,
+            event=model.event,
             started_at=model.started_at,
             file_name=model.file_name,
             line_no=model.line_no,
-            event=model.event,
+            stdout=model.stdout,
+            command=model.command,
+            ended_at=model.ended_at,
         )
 
 
