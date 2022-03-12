@@ -1,4 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 from sqlalchemy import (
     Column,
@@ -31,6 +32,8 @@ class Run(Base):
     script = Column(Text)
     exception = Column(Text)
 
+    traces = relationship("Trace", back_populates="run")
+
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.run_no!r}>"
 
@@ -38,13 +41,16 @@ class Run(Base):
 class Trace(Base):
     __tablename__ = "trace"
     id = Column(Integer, primary_key=True, index=True)
-    run_no = Column(Integer, ForeignKey("run.run_no"), nullable=False)
+    run_no = Column(Integer, nullable=False)
     trace_id = Column(Integer, nullable=False)
     state = Column(String, nullable=False)
     thread_no = Column(Integer, nullable=False)
     task_no = Column(Integer)
     started_at = Column(DateTime, nullable=False)
     ended_at = Column(DateTime)
+
+    run_id = Column(Integer, ForeignKey("run.id"), nullable=False)
+    run = relationship("Run", back_populates="traces")
 
     __table_args__ = (
         UniqueConstraint("run_no", "trace_id", name="_run_no_trace_id"),

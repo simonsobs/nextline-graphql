@@ -61,6 +61,9 @@ async def subscribe_trace_info(nextline: Nextline, db):
         now = datetime.datetime.now()
         with db() as session:
             session = cast(Session, session)
+            stmt = select(db_models.Run).filter_by(run_no=trace_info.run_no)
+            while not (run := session.execute(stmt).scalar_one_or_none()):
+                await asyncio.sleep(0)
             if trace_info.state == "running":
                 model = db_models.Trace(
                     run_no=trace_info.run_no,
@@ -69,6 +72,7 @@ async def subscribe_trace_info(nextline: Nextline, db):
                     thread_no=trace_info.thread_no,
                     task_no=trace_info.task_no,
                     started_at=now,
+                    run=run,
                 )
                 session.add(model)
             elif trace_info.state == "finished":

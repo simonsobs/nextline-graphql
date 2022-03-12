@@ -4,7 +4,7 @@
 
 import datetime
 import strawberry
-from typing import Optional, Type
+from typing import List, Optional, Type
 
 from ..db import models as db_models
 
@@ -19,6 +19,10 @@ class RunHistory:
     ended_at: Optional[datetime.date] = None
     script: Optional[str] = None
     exception: Optional[str] = None
+
+    @strawberry.field
+    def traces(self) -> List["TraceHistory"]:
+        return [TraceHistory.from_model(m) for m in self._model.traces]  # type: ignore
 
     @classmethod
     def from_model(cls: Type["RunHistory"], model: db_models.Run):
@@ -45,6 +49,10 @@ class TraceHistory:
     started_at: datetime.date
     task_no: Optional[int] = None
     ended_at: Optional[datetime.date] = None
+
+    @strawberry.field
+    def run(self) -> RunHistory:
+        return RunHistory.from_model(self._model.run)
 
     @classmethod
     def from_model(cls: Type["TraceHistory"], model: db_models.Trace):
