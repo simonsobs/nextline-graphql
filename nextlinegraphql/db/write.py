@@ -24,8 +24,12 @@ async def write_db(nextline: Nextline, db) -> None:
     except BaseException as exc:
         # TODO: use logging in a way uvicorn can format
         print(f"{exc.__class__.__name__} in write_db()", file=sys.stderr)
-        print(exc, file=sys.stderr)
-
+        print(
+            "".join(
+                traceback.format_exception(type(exc), exc, exc.__traceback__)
+            ),
+            file=sys.stderr,
+        )
         raise
 
 
