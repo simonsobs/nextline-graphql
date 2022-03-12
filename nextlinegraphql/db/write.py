@@ -91,6 +91,14 @@ async def subscribe_prompt_info(nextline: Nextline, db):
         now = datetime.datetime.now()
         with db() as session:
             session = cast(Session, session)
+            stmt = select(db_models.Run).filter_by(run_no=prompt_info.run_no)
+            while not (run := session.execute(stmt).scalar_one_or_none()):
+                await asyncio.sleep(0)
+            stmt = select(db_models.Trace).filter_by(
+                run_no=prompt_info.run_no, trace_no=prompt_info.trace_no
+            )
+            while not (trace := session.execute(stmt).scalar_one_or_none()):
+                await asyncio.sleep(0)
             if prompt_info.open:
                 model = db_models.Prompt(
                     run_no=prompt_info.run_no,
@@ -102,6 +110,8 @@ async def subscribe_prompt_info(nextline: Nextline, db):
                     line_no=prompt_info.line_no,
                     stdout=prompt_info.stdout,
                     started_at=now,
+                    run=run,
+                    trace=trace,
                 )
                 session.add(model)
             else:
