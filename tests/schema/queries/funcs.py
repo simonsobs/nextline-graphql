@@ -38,6 +38,8 @@ async def run_statement(client, statement: Optional[str] = None):
     data = await gql_request(client, QUERY_STATE)
     assert "finished" == data["state"]
 
+    await asyncio.sleep(0.01)
+
 
 async def control_execution(client: TestClient):
 
