@@ -15,8 +15,8 @@ def test_one(db, run_nextline, statement):
     with db() as session:
         session = cast(Session, session)
         runs = session.query(db_models.Run).all()  # type: ignore
-        assert 2 == len(runs)
-        run = runs[1]
+        assert 1 == len(runs)
+        run = runs[0]
         assert 2 == run.run_no
         assert run.started_at
         assert run.ended_at
