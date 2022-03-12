@@ -12,14 +12,14 @@ query History {
     traces {
       id
       runNo
-      traceId
+      traceNo
       startedAt
       endedAt
     }
     prompts {
       id
       runNo
-      traceId
+      traceNo
       promptNo
       event
       startedAt

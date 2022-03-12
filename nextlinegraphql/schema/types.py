@@ -43,7 +43,7 @@ class TraceHistory:
     _model: strawberry.Private[db_models.Trace]
     id: int
     run_no: int
-    trace_id: int
+    trace_no: int
     state: str
     thread_no: int
     started_at: datetime.date
@@ -60,7 +60,7 @@ class TraceHistory:
             _model=model,
             id=model.id,
             run_no=model.run_no,
-            trace_id=model.trace_id,
+            trace_no=model.trace_no,
             state=model.state,
             thread_no=model.thread_no,
             started_at=model.started_at,
@@ -74,7 +74,7 @@ class PromptHistory:
     _model: strawberry.Private[db_models.Prompt]
     id: int
     run_no: int
-    trace_id: int
+    trace_no: int
     prompt_no: int
     event: str
     started_at: datetime.date
@@ -90,7 +90,7 @@ class PromptHistory:
             _model=model,
             id=model.id,
             run_no=model.run_no,
-            trace_id=model.trace_id,
+            trace_no=model.trace_no,
             prompt_no=model.prompt_no,
             event=model.event,
             started_at=model.started_at,

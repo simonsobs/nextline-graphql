@@ -67,7 +67,7 @@ async def subscribe_trace_info(nextline: Nextline, db):
             if trace_info.state == "running":
                 model = db_models.Trace(
                     run_no=trace_info.run_no,
-                    trace_id=trace_info.trace_no,
+                    trace_no=trace_info.trace_no,
                     state=trace_info.state,
                     thread_no=trace_info.thread_no,
                     task_no=trace_info.task_no,
@@ -78,7 +78,7 @@ async def subscribe_trace_info(nextline: Nextline, db):
             elif trace_info.state == "finished":
                 stmt = select(db_models.Trace).filter_by(
                     run_no=trace_info.run_no,
-                    trace_id=trace_info.trace_no,
+                    trace_no=trace_info.trace_no,
                 )
                 model = session.execute(stmt).scalar_one()
                 model.state = trace_info.state
@@ -94,7 +94,7 @@ async def subscribe_prompt_info(nextline: Nextline, db):
             if prompt_info.open:
                 model = db_models.Prompt(
                     run_no=prompt_info.run_no,
-                    trace_id=prompt_info.trace_no,
+                    trace_no=prompt_info.trace_no,
                     prompt_no=prompt_info.prompt_no,
                     open=prompt_info.open,
                     event=prompt_info.event,

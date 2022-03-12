@@ -42,7 +42,7 @@ class Trace(Base):
     __tablename__ = "trace"
     id = Column(Integer, primary_key=True, index=True)
     run_no = Column(Integer, nullable=False)
-    trace_id = Column(Integer, nullable=False)
+    trace_no = Column(Integer, nullable=False)
     state = Column(String, nullable=False)
     thread_no = Column(Integer, nullable=False)
     task_no = Column(Integer)
@@ -53,18 +53,18 @@ class Trace(Base):
     run = relationship("Run", back_populates="traces")
 
     __table_args__ = (
-        UniqueConstraint("run_no", "trace_id", name="_run_no_trace_id"),
+        UniqueConstraint("run_no", "trace_no", name="_run_no_trace_no"),
     )
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} {self.trace_id!r}>"
+        return f"<{self.__class__.__name__} {self.trace_no!r}>"
 
 
 class Prompt(Base):
     __tablename__ = "prompt"
     id = Column(Integer, primary_key=True, index=True)
     run_no = Column(Integer, ForeignKey("run.run_no"), nullable=False)
-    trace_id = Column(Integer, ForeignKey("trace.trace_id"), nullable=False)
+    trace_no = Column(Integer, ForeignKey("trace.trace_no"), nullable=False)
     prompt_no = Column(Integer, nullable=False)
     open = Column(Boolean, nullable=False)
     event = Column(String, nullable=False)

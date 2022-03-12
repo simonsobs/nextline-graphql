@@ -26,10 +26,10 @@ def test_one(db, run_nextline, statement):
         traces = session.query(db_models.Trace).all()  # type: ignore
         assert 5 == len(traces)
         run_no = 2
-        trace_id = 0
+        trace_no = 0
         for trace in traces:
-            trace_id += 1
-            assert trace_id == trace.trace_id
+            trace_no += 1
+            assert trace_no == trace.trace_no
             assert run_no == trace.run_no
             assert trace.started_at
             assert trace.ended_at
@@ -38,7 +38,7 @@ def test_one(db, run_nextline, statement):
         assert 58 == len(prompts)
         for prompt in prompts:
             assert run_no == prompt.run_no
-            assert prompt.trace_id
+            assert prompt.trace_no
             assert prompt.started_at
             assert prompt.line_no
             assert prompt.file_name
@@ -99,9 +99,9 @@ async def control_execution(nextline: Nextline):
     await asyncio.gather(*pending)
 
 
-async def control_trace(nextline: Nextline, trace_id):
+async def control_trace(nextline: Nextline, trace_no):
     file_name = ""
-    async for s in nextline.subscribe_prompting(trace_id):
+    async for s in nextline.subscribe_prompting(trace_no):
         if not file_name == s.file_name:
             file_name = s.file_name
             assert nextline.get_source(file_name)
@@ -114,7 +114,7 @@ async def control_trace(nextline: Nextline, trace_id):
                 )
                 command = find_command(line) or command
             await asyncio.sleep(0.01)
-            nextline.send_pdb_command(trace_id, command)
+            nextline.send_pdb_command(trace_no, command)
 
 
 def find_command(line: str) -> Optional[str]:
