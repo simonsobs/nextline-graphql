@@ -54,9 +54,11 @@ def create_app():
     async def lifespan(app):
         del app
         task = asyncio.create_task(write_db(nextline, db))
-        yield
-        await nextline.close()
-        await task
+        try:
+            yield
+        finally:
+            await asyncio.wait_for(nextline.close(), timeout=3)
+            await asyncio.wait_for(task, timeout=3)
 
     middleware = [
         Middleware(
