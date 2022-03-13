@@ -51,27 +51,31 @@ def query_exception(info: Info) -> Optional[str]:
 
 
 def query_runs(info: Info) -> List[types.RunHistory]:
-    db = info.context["db"]
-    with db() as session:
-        session = cast(Session, session)
-        models = session.scalars(select(db_models.Run))
-        return [types.RunHistory.from_model(m) for m in models]
+    session = info.context["session"]
+    session = cast(Session, session)
+    models = session.scalars(select(db_models.Run))
+    return [types.RunHistory.from_model(m) for m in models]
 
 
 def query_traces(info: Info) -> List[types.TraceHistory]:
-    db = info.context["db"]
-    with db() as session:
-        session = cast(Session, session)
-        models = session.scalars(select(db_models.Trace))
-        return [types.TraceHistory.from_model(m) for m in models]
+    session = info.context["session"]
+    session = cast(Session, session)
+    models = session.scalars(select(db_models.Trace))
+    return [types.TraceHistory.from_model(m) for m in models]
 
 
 def query_prompt(info: Info) -> List[types.PromptHistory]:
-    db = info.context["db"]
-    with db() as session:
-        session = cast(Session, session)
-        models = session.scalars(select(db_models.Prompt))
-        return [types.PromptHistory.from_model(m) for m in models]
+    session = info.context["session"]
+    session = cast(Session, session)
+    models = session.scalars(select(db_models.Prompt))
+    return [types.PromptHistory.from_model(m) for m in models]
+
+
+def query_stdouts(info: Info) -> List[types.StdoutHistory]:
+    session = info.context["session"]
+    session = cast(Session, session)
+    models = session.scalars(select(db_models.Stdout))
+    return [types.StdoutHistory.from_model(m) for m in models]
 
 
 @strawberry.type
@@ -80,6 +84,9 @@ class History:
     traces: List[types.TraceHistory] = strawberry.field(resolver=query_traces)
     prompts: List[types.PromptHistory] = strawberry.field(
         resolver=query_prompt
+    )
+    stdouts: List[types.StdoutHistory] = strawberry.field(
+        resolver=query_stdouts
     )
 
 
@@ -93,5 +100,8 @@ class Query:
     exception: Optional[str] = strawberry.field(resolver=query_exception)
 
     @strawberry.field
-    def history(self) -> History:
-        return History()
+    def history(self, info: Info) -> History:
+        db = info.context["db"]
+        with db() as session:
+            info.context["session"] = session
+            return History()
