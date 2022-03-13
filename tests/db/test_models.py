@@ -44,6 +44,13 @@ def test_one(db, run_nextline, statement):
             assert prompt.file_name
             assert prompt.event
 
+        stdouts = session.query(db_models.Stdout).all()  # type: ignore
+        # assert 1 == len(stdouts)
+        # for stdout in stdouts:
+        #     assert run_no == stdout.run_no
+        #     assert stdout.text
+        #     assert stdout.written_at
+
 
 @pytest.fixture
 def monkey_patch_syspath(monkeypatch):

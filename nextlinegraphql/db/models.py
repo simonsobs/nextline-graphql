@@ -34,6 +34,7 @@ class Run(Base):
 
     traces = relationship("Trace", back_populates="run")
     prompts = relationship("Prompt", back_populates="run")
+    stdouts = relationship("Stdout", back_populates="run")
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.run_no!r}>"
@@ -90,3 +91,17 @@ class Prompt(Base):
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.id!r}>"
+
+
+class Stdout(Base):
+    __tablename__ = "stdout"
+    id = Column(Integer, primary_key=True, index=True)
+    run_no = Column(Integer, nullable=False)
+    text = Column(String)
+    written_at = Column(DateTime)
+
+    run_id = Column(Integer, ForeignKey("run.id"), nullable=False)
+    run = relationship("Run", back_populates="stdouts")
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} {self.text!r}>"

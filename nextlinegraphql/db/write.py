@@ -1,12 +1,15 @@
 from __future__ import annotations
 import sys
+import datetime
 import asyncio
 import traceback
+from collections import deque
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Deque, List, Tuple, cast
 
+from ..schema import stream
 from . import models as db_models
 
 if TYPE_CHECKING:
@@ -19,6 +22,7 @@ async def write_db(nextline: Nextline, db) -> None:
             subscribe_run_info(nextline, db),
             subscribe_trace_info(nextline, db),
             subscribe_prompt_info(nextline, db),
+            subscribe_stdout(nextline, db),
         )
     except BaseException as exc:
         # TODO: use logging in a way uvicorn can format
@@ -120,3 +124,46 @@ async def subscribe_prompt_info(nextline: Nextline, db):
                 model.command = prompt_info.command
                 model.ended_at = prompt_info.ended_at
             session.commit()
+
+
+async def subscribe_stdout(nextline: Nextline, db):
+
+    run_info = None
+    lines: Deque[Tuple[datetime.datetime, str]] = deque()
+    lock = asyncio.Condition()
+
+    async def f():
+        nonlocal lines
+        async for s in stream.subscribe_stdout():
+            async with lock:
+                lines.append(s)
+
+    t = asyncio.create_task(f())
+
+    async for run_info in nextline.subscribe_run_info():
+        if not run_info.state == "finished":
+            continue
+        run_no = run_info.run_no
+        async with lock:
+            to_save: List[Tuple[datetime.datetime, str]] = []
+            while lines:
+                then, line = lines.popleft()
+                if then < run_info.started_at:
+                    continue
+                if run_info.ended_at < then:
+                    lines.appendleft((then, line))
+                    break
+                to_save.append((then, line))
+        with db() as session:
+            for then, line in to_save:
+                session = cast(Session, session)
+                stmt = select(db_models.Run).filter_by(run_no=run_info.run_no)
+                while not (run := session.execute(stmt).scalar_one_or_none()):
+                    await asyncio.sleep(0)
+                model = db_models.Stdout(
+                    run_no=run_no, text=line, written_at=then, run=run
+                )
+                session.add(model)
+            session.commit()
+
+    t.cancel()
