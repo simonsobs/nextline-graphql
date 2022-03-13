@@ -46,7 +46,7 @@ async def subscribe_stdout(info: Info) -> AGen[str, None]:
     nextline: Nextline = info.context["nextline"]
     from .stream import subscribe_stdout as s
 
-    async for y in s():
+    async for _, y in s():
         if nextline.state == "running":
             yield y
 
