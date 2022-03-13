@@ -15,8 +15,8 @@ class RunHistory:
     id: int
     run_no: int
     state: Optional[str] = None
-    started_at: Optional[datetime.date] = None
-    ended_at: Optional[datetime.date] = None
+    started_at: Optional[datetime.datetime] = None
+    ended_at: Optional[datetime.datetime] = None
     script: Optional[str] = None
     exception: Optional[str] = None
 
@@ -50,9 +50,9 @@ class TraceHistory:
     trace_no: int
     state: str
     thread_no: int
-    started_at: datetime.date
+    started_at: datetime.datetime
     task_no: Optional[int] = None
-    ended_at: Optional[datetime.date] = None
+    ended_at: Optional[datetime.datetime] = None
 
     @strawberry.field
     def run(self) -> RunHistory:
@@ -86,12 +86,12 @@ class PromptHistory:
     prompt_no: int
     open: bool
     event: str
-    started_at: datetime.date
+    started_at: datetime.datetime
     file_name: Optional[str] = None
     line_no: Optional[int] = None
     stdout: Optional[str] = None
     command: Optional[str] = None
-    ended_at: Optional[datetime.date] = None
+    ended_at: Optional[datetime.datetime] = None
 
     @strawberry.field
     def run(self) -> RunHistory:
