@@ -1,7 +1,6 @@
 from __future__ import annotations
 import sys
 import asyncio
-import datetime
 import traceback
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
@@ -36,14 +35,13 @@ async def write_db(nextline: Nextline, db) -> None:
 async def subscribe_run_info(nextline: Nextline, db):
     async for run_info in nextline.subscribe_run_info():
         run_no = run_info.run_no
-        now = datetime.datetime.now()
         with db() as session:
             session = cast(Session, session)
             if run_info.state == "running":
                 model = db_models.Run(
                     run_no=run_no,
                     state=run_info.state,
-                    started_at=now,
+                    started_at=run_info.started_at,
                     script=run_info.script,
                 )
                 session.add(model)
@@ -51,14 +49,13 @@ async def subscribe_run_info(nextline: Nextline, db):
                 stmt = select(db_models.Run).filter_by(run_no=run_no)
                 model = session.execute(stmt).scalar_one()
                 model.state = run_info.state
-                model.ended_at = now
+                model.ended_at = run_info.ended_at
                 model.exception = run_info.exception
             session.commit()
 
 
 async def subscribe_trace_info(nextline: Nextline, db):
     async for trace_info in nextline.subscribe_trace_info():
-        now = datetime.datetime.now()
         with db() as session:
             session = cast(Session, session)
             stmt = select(db_models.Run).filter_by(run_no=trace_info.run_no)
@@ -71,7 +68,7 @@ async def subscribe_trace_info(nextline: Nextline, db):
                     state=trace_info.state,
                     thread_no=trace_info.thread_no,
                     task_no=trace_info.task_no,
-                    started_at=now,
+                    started_at=trace_info.started_at,
                     run=run,
                 )
                 session.add(model)
@@ -82,13 +79,12 @@ async def subscribe_trace_info(nextline: Nextline, db):
                 )
                 model = session.execute(stmt).scalar_one()
                 model.state = trace_info.state
-                model.ended_at = now
+                model.ended_at = trace_info.ended_at
             session.commit()
 
 
 async def subscribe_prompt_info(nextline: Nextline, db):
     async for prompt_info in nextline.subscribe_prompt_info():
-        now = datetime.datetime.now()
         with db() as session:
             session = cast(Session, session)
             stmt = select(db_models.Run).filter_by(run_no=prompt_info.run_no)
@@ -109,7 +105,7 @@ async def subscribe_prompt_info(nextline: Nextline, db):
                     file_name=prompt_info.file_name,
                     line_no=prompt_info.line_no,
                     stdout=prompt_info.stdout,
-                    started_at=now,
+                    started_at=prompt_info.started_at,
                     run=run,
                     trace=trace,
                 )
@@ -122,5 +118,5 @@ async def subscribe_prompt_info(nextline: Nextline, db):
                 model = session.execute(stmt).scalar_one()
                 model.open = prompt_info.open
                 model.command = prompt_info.command
-                model.ended_at = now
+                model.ended_at = prompt_info.ended_at
             session.commit()
