@@ -71,12 +71,22 @@ def query_prompt(info: Info) -> List[types.PromptHistory]:
     return [types.PromptHistory.from_model(m) for m in models]
 
 
+def query_stdouts(info: Info) -> List[types.StdoutHistory]:
+    session = info.context["session"]
+    session = cast(Session, session)
+    models = session.scalars(select(db_models.Stdout))
+    return [types.StdoutHistory.from_model(m) for m in models]
+
+
 @strawberry.type
 class History:
     runs: List[types.RunHistory] = strawberry.field(resolver=query_runs)
     traces: List[types.TraceHistory] = strawberry.field(resolver=query_traces)
     prompts: List[types.PromptHistory] = strawberry.field(
         resolver=query_prompt
+    )
+    stdouts: List[types.StdoutHistory] = strawberry.field(
+        resolver=query_stdouts
     )
 
 
