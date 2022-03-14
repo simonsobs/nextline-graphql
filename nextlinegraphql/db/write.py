@@ -51,7 +51,8 @@ async def subscribe_run_info(nextline: Nextline, db):
                 session.add(model)
             elif run_info.state == "finished":
                 stmt = select(db_models.Run).filter_by(run_no=run_no)
-                model = session.execute(stmt).scalar_one()
+                while not (model := session.execute(stmt).scalar_one_or_none()):
+                    await asyncio.sleep(0)
                 model.state = run_info.state
                 model.ended_at = run_info.ended_at
                 model.exception = run_info.exception
@@ -81,7 +82,8 @@ async def subscribe_trace_info(nextline: Nextline, db):
                     run_no=trace_info.run_no,
                     trace_no=trace_info.trace_no,
                 )
-                model = session.execute(stmt).scalar_one()
+                while not (model := session.execute(stmt).scalar_one_or_none()):
+                    await asyncio.sleep(0)
                 model.state = trace_info.state
                 model.ended_at = trace_info.ended_at
             session.commit()
@@ -119,7 +121,8 @@ async def subscribe_prompt_info(nextline: Nextline, db):
                     run_no=prompt_info.run_no,
                     prompt_no=prompt_info.prompt_no,
                 )
-                model = session.execute(stmt).scalar_one()
+                while not (model := session.execute(stmt).scalar_one_or_none()):
+                    await asyncio.sleep(0)
                 model.open = prompt_info.open
                 model.command = prompt_info.command
                 model.ended_at = prompt_info.ended_at
