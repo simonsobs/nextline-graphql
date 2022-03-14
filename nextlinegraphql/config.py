@@ -6,12 +6,14 @@ Example: https://github.com/rochacbruno/learndynaconf/blob/main/config.py
 from dynaconf import Dynaconf, Validator
 from pathlib import Path
 
-cwd = Path(__file__).resolve().parent
-default_settings_file = cwd.joinpath("config", "default.toml")
+here = Path(__file__).resolve().parent
 
 settings = Dynaconf(
     envvar_prefix="NEXTLINE",
-    settings_files=[str(default_settings_file)],
+    settings_files=[
+        str(here.joinpath("config", "default.toml")),
+        "nextline-graphql.toml"
+    ],
 )
 
 settings.validators.register(
