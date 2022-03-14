@@ -1,1 +1,6 @@
-db__url = "sqlite:///:memory:"
+# Default settings
+#
+# Syntax can be learned from Dynaconf examples 
+# https://github.com/rochacbruno/learndynaconf/tree/main/configs
+
+db = {url = "sqlite:///:memory:"}
