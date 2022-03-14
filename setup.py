@@ -34,6 +34,7 @@ setup(
         "janus>=0.6",
         "SQLAlchemy>=1.4",
         "alembic>=1.7",
+        "dynaconf>=3.1",
     ],
     extras_require={
         "tests": [
