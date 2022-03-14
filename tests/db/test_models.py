@@ -68,7 +68,8 @@ def statement(monkey_patch_syspath):
 
 @pytest.fixture
 def db():
-    return init_db()
+    url = "sqlite:///:memory:"
+    return init_db(url)
 
 
 @pytest.fixture

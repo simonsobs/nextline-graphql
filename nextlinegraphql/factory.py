@@ -15,6 +15,8 @@ from .schema import schema
 from .db import init_db, write_db
 from .example_script import statement
 
+from .config import settings
+
 
 class GraphQL(GraphQL_):
     """Add a fix to the strawberry GraphQL for async_asgi_testclient"""
@@ -31,7 +33,7 @@ class GraphQL(GraphQL_):
 
 def create_app():
 
-    db = init_db()
+    db = init_db(settings.db.url)
     nextline = Nextline(statement)
 
     class EGraphQL(GraphQL):
