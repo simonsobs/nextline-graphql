@@ -38,6 +38,28 @@ docker run -p 8080:8000 ghcr.io/simonsobs/nextline-graphql
 
 If you access to the API server with a web browser, you will see the GraphQL IDE: <http://localhost:8080/>.
 
+### With a persistent DB
+
+Nextline-graphql stores the execution history and other information in the DB.
+It uses [SQLAlchemy](https://www.sqlalchemy.org/), with, by default, a [SQLite
+in-memory database](https://www.sqlite.org/inmemorydb.html).
+
+#### An environment variable in the container
+
+The container has one environment variable, which is to change the [DB URL](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls) of SQLAlchemy.
+
+| Environment variable | Default value         | Description                                                                                   |
+| -------------------- | --------------------- | --------------------------------------------------------------------------------------------- |
+| `NEXTLINE_DB__URL`   | `sqlite:///:memory:/` | The [DB URL](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls) of SQLAlchemy |
+
+For example, the following command uses a file on the host machine
+`db/db.sqlite3` as the persistent DB. The directory `db/` and the file
+`db.sqlite3` will be created if they don't exist.
+
+```bash
+docker run -p 8080:8000 --env NEXTLINE_DB__URL='sqlite:////db/db.sqlite3' -v "$(pwd)/db:/db "ghcr.io/simonsobs/nextline-graphql
+```
+
 ### from PyPI
 
 It is also possible to install with pip and run.
@@ -46,6 +68,9 @@ It is also possible to install with pip and run.
 pip install nextline-graphql
 uvicorn --lifespan on --factory --port 8080 nextlinegraphql:create_app
 ```
+
+The environment variable `NEXTLINE_DB__URL` mentioned above can be used to
+specify the SQLAlchemy DB URL.
 
 Check with a web browser at <http://localhost:8080/>.
 
