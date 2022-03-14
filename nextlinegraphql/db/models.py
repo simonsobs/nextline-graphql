@@ -56,9 +56,7 @@ class Trace(Base):
 
     prompts = relationship("Prompt", back_populates="trace")
 
-    __table_args__ = (
-        UniqueConstraint("run_no", "trace_no", name="_run_no_trace_no"),
-    )
+    __table_args__ = (UniqueConstraint("run_no", "trace_no"),)
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.trace_no!r}>"
@@ -85,9 +83,7 @@ class Prompt(Base):
     trace_id = Column(Integer, ForeignKey("trace.id"), nullable=False)
     trace = relationship("Trace", back_populates="prompts")
 
-    __table_args__ = (
-        UniqueConstraint("run_no", "prompt_no", name="_run_no_prompt_no"),
-    )
+    __table_args__ = (UniqueConstraint("run_no", "prompt_no"),)
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.id!r}>"

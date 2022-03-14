@@ -3,3 +3,5 @@ include nextlinegraphql/_version.py
 recursive-include nextlinegraphql *.toml
 recursive-exclude nextlinegraphql *.secrets.toml
 recursive-include nextlinegraphql *.graphql
+include nextlinegraphql/db/alembic.ini
+graft nextlinegraphql/db/alembic
