@@ -14,6 +14,7 @@ settings = Dynaconf(
     settings_files=[
         str(here.joinpath("config", "default.toml")),
         str(cwd.joinpath("nextline-graphql.toml")),
+        str(cwd.joinpath("migration.toml")),  # for alembic to run in ./db/
     ],
     environments=True,
 )
