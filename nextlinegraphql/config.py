@@ -15,6 +15,7 @@ settings = Dynaconf(
         str(here.joinpath("config", "default.toml")),
         str(cwd.joinpath("nextline-graphql.toml")),
     ],
+    environments=True,
 )
 
 settings.validators.register(
