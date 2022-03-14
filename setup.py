@@ -33,6 +33,7 @@ setup(
         "websockets>=10.2",
         "janus>=0.6",
         "SQLAlchemy>=1.4",
+        "alembic>=1.7",
     ],
     extras_require={
         "tests": [
