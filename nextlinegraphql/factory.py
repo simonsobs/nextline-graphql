@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+from dynaconf import Dynaconf
 from strawberry.asgi import GraphQL as GraphQL_
 from strawberry.subscriptions import GRAPHQL_WS_PROTOCOL
 
@@ -15,8 +16,6 @@ from .schema import schema
 from .db import init_db, write_db
 from .example_script import statement
 
-from .config import settings
-
 
 class GraphQL(GraphQL_):
     """Add a fix to the strawberry GraphQL for async_asgi_testclient"""
@@ -31,9 +30,14 @@ class GraphQL(GraphQL_):
         await super().__call__(scope, receive, send)
 
 
-def create_app():
+def create_app(config: Optional[Dynaconf] = None):
 
-    db = init_db(settings.db.url)
+    if config is None:
+        from .config import settings
+
+        config = settings
+
+    db = init_db(config.db.url)
     nextline = Nextline(statement)
 
     class EGraphQL(GraphQL):
