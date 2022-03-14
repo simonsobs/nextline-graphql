@@ -1,8 +1,6 @@
 import asyncio
 import contextlib
 from dynaconf import Dynaconf
-from strawberry.asgi import GraphQL as GraphQL_
-from strawberry.subscriptions import GRAPHQL_WS_PROTOCOL
 
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
@@ -12,22 +10,10 @@ from typing import Optional, Any
 
 from nextline import Nextline
 
+from .strawberry_fix import GraphQL
 from .schema import schema
 from .db import init_db, write_db
 from .example_script import statement
-
-
-class GraphQL(GraphQL_):
-    """Add a fix to the strawberry GraphQL for async_asgi_testclient"""
-
-    async def __call__(self, scope, receive, send):
-        if scope["type"] == "websocket":
-            if not scope.get("subprotocols"):
-                # strawberry closes the websocket connection if
-                # subprotocols are empty, which is the case for
-                # async_asgi_testclient.
-                scope["subprotocols"] = [GRAPHQL_WS_PROTOCOL]
-        await super().__call__(scope, receive, send)
 
 
 def create_app(config: Optional[Dynaconf] = None):
