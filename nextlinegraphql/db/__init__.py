@@ -7,7 +7,7 @@ from .write import write_db
 __all__ = ["init_db", "write_db"]
 
 
-def init_db(url):
+def init_db(url: str):
     engine = create_engine(
         url,
         connect_args={"check_same_thread": False},
