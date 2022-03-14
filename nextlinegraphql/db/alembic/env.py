@@ -1,28 +1,20 @@
-from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
+import logging.config
+from sqlalchemy import create_engine
 from alembic import context
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
+from nextlinegraphql.config import settings
+from nextlinegraphql.db import models
+
+# Config in alembic.ini, only used to configure logger
 config = context.config
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
-fileConfig(config.config_file_name)
+# E.g., how to access to a config value
+# script_location = config.get_main_option("script_location")
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
+if config.config_file_name:
+    logging.config.fileConfig(config.config_file_name)
 
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
+target_metadata = models.Base.metadata
 
 
 def run_migrations_offline():
@@ -37,7 +29,7 @@ def run_migrations_offline():
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = settings.db.url
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -56,11 +48,7 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    connectable = create_engine(settings.db.url)
 
     with connectable.connect() as connection:
         context.configure(
