@@ -57,7 +57,7 @@ For example, the following command uses a file on the host machine
 `db.sqlite3` will be created if they don't exist.
 
 ```bash
-docker run -p 8080:8000 --env NEXTLINE_DB__URL='sqlite:////db/db.sqlite3' -v "$(pwd)/db:/db "ghcr.io/simonsobs/nextline-graphql
+docker run -p 8080:8000 --env NEXTLINE_DB__URL='sqlite:////db/db.sqlite3' -v "$(pwd)/db:/db" ghcr.io/simonsobs/nextline-graphql
 ```
 
 ### from PyPI
