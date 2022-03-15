@@ -1,18 +1,18 @@
 {
-  "python.linting.pylintEnabled": false,
+  "editor.rulers": [80],
+  "prettier.printWidth": 79,
+  "rewrap.wrappingColumn": 79,
   "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length", "79"],
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": false,
   "python.linting.mypyEnabled": true,
   "python.linting.flake8Enabled": true,
-  "python.linting.enabled": true,
-  "python.formatting.blackArgs": ["--line-length", "79"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["tests"],
   "markdownlint.config": {
     "MD033": { "allowed_elements": ["i", "span", "a", "img"] },
     "MD041": false
-  },
-  "prettier.printWidth": 79,
-  "rewrap.wrappingColumn": 79,
-  "python.testing.pytestArgs": ["tests"],
-  "python.testing.unittestEnabled": false,
-  "python.testing.pytestEnabled": true,
-  "editor.rulers": [80]
+  }
 }
