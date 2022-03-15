@@ -30,7 +30,7 @@ jobs:
         python -m pip install --upgrade pip
         pwd
         cd ..
-        git clone git://github.com/simonsobs/nextline.git
+        git clone https://github.com/simonsobs/nextline.git
         python -m pip install -e './nextline'
         cd -
         python -m pip install -e '.[tests]'
