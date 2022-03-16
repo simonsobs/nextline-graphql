@@ -1,19 +1,18 @@
 from __future__ import annotations
 import sys
-import datetime
 import asyncio
 import traceback
 from collections import deque
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 
-from typing import TYPE_CHECKING, Deque, List, Tuple, cast
+from typing import TYPE_CHECKING, Deque, List, cast
 
-from ..schema import stream
 from . import models as db_models
 
 if TYPE_CHECKING:
     from nextline import Nextline
+    from nextline.types import StdoutInfo
 
 
 async def write_db(nextline: Nextline, db) -> None:
@@ -51,7 +50,9 @@ async def subscribe_run_info(nextline: Nextline, db):
                 session.add(model)
             elif run_info.state == "finished":
                 stmt = select(db_models.Run).filter_by(run_no=run_no)
-                while not (model := session.execute(stmt).scalar_one_or_none()):
+                while not (
+                    model := session.execute(stmt).scalar_one_or_none()
+                ):
                     await asyncio.sleep(0)
                 model.state = run_info.state
                 model.ended_at = run_info.ended_at
@@ -82,7 +83,9 @@ async def subscribe_trace_info(nextline: Nextline, db):
                     run_no=trace_info.run_no,
                     trace_no=trace_info.trace_no,
                 )
-                while not (model := session.execute(stmt).scalar_one_or_none()):
+                while not (
+                    model := session.execute(stmt).scalar_one_or_none()
+                ):
                     await asyncio.sleep(0)
                 model.state = trace_info.state
                 model.ended_at = trace_info.ended_at
@@ -121,7 +124,9 @@ async def subscribe_prompt_info(nextline: Nextline, db):
                     run_no=prompt_info.run_no,
                     prompt_no=prompt_info.prompt_no,
                 )
-                while not (model := session.execute(stmt).scalar_one_or_none()):
+                while not (
+                    model := session.execute(stmt).scalar_one_or_none()
+                ):
                     await asyncio.sleep(0)
                 model.open = prompt_info.open
                 model.command = prompt_info.command
@@ -132,39 +137,51 @@ async def subscribe_prompt_info(nextline: Nextline, db):
 async def subscribe_stdout(nextline: Nextline, db):
 
     run_info = None
-    lines: Deque[Tuple[datetime.datetime, str]] = deque()
+    stdout_info_list: Deque[StdoutInfo] = deque()
     lock = asyncio.Condition()
 
     async def f():
-        nonlocal lines
-        async for s in stream.subscribe_stdout():
+        nonlocal stdout_info_list
+        async for s in nextline.subscribe_stdout():
+            # print(s, file=sys.stderr)
             async with lock:
-                lines.append(s)
+                stdout_info_list.append(s)
 
     t = asyncio.create_task(f())
 
     async for run_info in nextline.subscribe_run_info():
         if not run_info.state == "finished":
             continue
-        run_no = run_info.run_no
         async with lock:
-            to_save: List[Tuple[datetime.datetime, str]] = []
-            while lines:
-                then, line = lines.popleft()
-                if then < run_info.started_at:
+            to_save: List[StdoutInfo] = []
+            while stdout_info_list:
+                info = stdout_info_list.popleft()
+                if info.run_no < run_info.run_no:
                     continue
-                if run_info.ended_at < then:
-                    lines.appendleft((then, line))
+                if run_info.run_no < info.run_no:
+                    stdout_info_list.appendleft(info)
                     break
-                to_save.append((then, line))
+                to_save.append(info)
         with db() as session:
-            for then, line in to_save:
+            for info in to_save:
                 session = cast(Session, session)
-                stmt = select(db_models.Run).filter_by(run_no=run_info.run_no)
+                stmt = select(db_models.Run).filter_by(run_no=info.run_no)
                 while not (run := session.execute(stmt).scalar_one_or_none()):
                     await asyncio.sleep(0)
+                stmt = select(db_models.Trace).filter_by(
+                    run_no=info.run_no, trace_no=info.trace_no
+                )
+                while not (
+                    trace := session.execute(stmt).scalar_one_or_none()
+                ):
+                    await asyncio.sleep(0)
                 model = db_models.Stdout(
-                    run_no=run_no, text=line, written_at=then, run=run
+                    run_no=info.run_no,
+                    trace_no=info.trace_no,
+                    text=info.text,
+                    written_at=info.written_at,
+                    run=run,
+                    trace=trace,
                 )
                 session.add(model)
             session.commit()
