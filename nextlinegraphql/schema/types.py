@@ -66,6 +66,10 @@ class TraceHistory:
     def prompts(self) -> List["PromptHistory"]:
         return [PromptHistory.from_model(m) for m in self._model.prompts]  # type: ignore
 
+    @strawberry.field
+    def stdouts(self) -> List["StdoutHistory"]:
+        return [StdoutHistory.from_model(m) for m in self._model.stdouts]  # type: ignore
+
     @classmethod
     def from_model(cls: Type["TraceHistory"], model: db_models.Trace):
         return cls(
@@ -129,6 +133,7 @@ class StdoutHistory:
     _model: strawberry.Private[db_models.Stdout]
     id: int
     run_no: int
+    trace_no: int
     text: Optional[str] = None
     written_at: Optional[datetime.datetime] = None
 
@@ -136,12 +141,17 @@ class StdoutHistory:
     def run(self) -> RunHistory:
         return RunHistory.from_model(self._model.run)
 
+    @strawberry.field
+    def trace(self) -> TraceHistory:
+        return TraceHistory.from_model(self._model.trace)
+
     @classmethod
     def from_model(cls: Type["StdoutHistory"], model: db_models.Stdout):
         return cls(
             _model=model,
             id=model.id,
             run_no=model.run_no,
+            trace_no=model.trace_no,
             text=model.text,
             written_at=model.written_at,
         )
