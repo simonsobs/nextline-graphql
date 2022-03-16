@@ -55,6 +55,7 @@ class Trace(Base):
     run = relationship("Run", back_populates="traces")
 
     prompts = relationship("Prompt", back_populates="trace")
+    stdouts = relationship("Stdout", back_populates="trace")
 
     __table_args__ = (UniqueConstraint("run_no", "trace_no"),)
 
@@ -93,11 +94,15 @@ class Stdout(Base):
     __tablename__ = "stdout"
     id = Column(Integer, primary_key=True, index=True)
     run_no = Column(Integer, nullable=False)
+    trace_no = Column(Integer, nullable=False)
     text = Column(String)
     written_at = Column(DateTime)
 
     run_id = Column(Integer, ForeignKey("run.id"), nullable=False)
     run = relationship("Run", back_populates="stdouts")
+
+    trace_id = Column(Integer, ForeignKey("trace.id"), nullable=False)
+    trace = relationship("Trace", back_populates="stdouts")
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.text!r}>"
