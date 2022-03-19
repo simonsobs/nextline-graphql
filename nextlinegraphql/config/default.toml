@@ -5,3 +5,21 @@
 
 [default]
 db = {url = "sqlite:///:memory:"}
+
+[default.logging]
+disable_existing_loggers = false
+version = 1
+
+[default.logging.formatters.default]
+# datefmt = "%Y-%m-%d %H:%M:%S"
+# format = "{asctime} {levelname:>8s} {pathname}:{lineno}: {message}"
+format = "{levelname:8s} [{name}] {message}"
+style = "{"
+
+[default.logging.handlers.default]
+class = "logging.StreamHandler"
+formatter = "default"
+
+[default.logging.loggers.nextlinegraphql]
+handlers = ["default"]
+level = "DEBUG"

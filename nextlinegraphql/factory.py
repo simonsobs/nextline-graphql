@@ -17,6 +17,7 @@ from .strawberry_fix import GraphQL
 from .schema import schema
 from .db import init_db, write_db, models as db_models
 from .example_script import statement
+from .logging import configure_logging
 
 
 def create_app(config: Optional[Dynaconf] = None):
@@ -25,6 +26,8 @@ def create_app(config: Optional[Dynaconf] = None):
         from .config import settings
 
         config = settings
+
+    configure_logging(config.logging)
 
     db = None
     nextline: Nextline
