@@ -51,6 +51,7 @@ setup(
             "black",
             "mypy",
             "sqlalchemy-stubs",
+            "logging_tree",
         ],
     },
 )
