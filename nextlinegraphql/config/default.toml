@@ -24,6 +24,10 @@ formatter = "default"
 handlers = ["default"]
 level = "DEBUG"
 
+[default.logging.loggers.nextline]
+handlers = ["default"]
+level = "DEBUG"
+
 [default.logging.loggers.alembic]
 handlers = ["default"]
 level = "INFO"
