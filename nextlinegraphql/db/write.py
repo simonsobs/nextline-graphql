@@ -1,10 +1,9 @@
 from __future__ import annotations
-import sys
 import asyncio
-import traceback
 from collections import deque
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
+from logging import getLogger
 
 from typing import TYPE_CHECKING, Deque, List, cast
 
@@ -23,15 +22,9 @@ async def write_db(nextline: Nextline, db) -> None:
             subscribe_prompt_info(nextline, db),
             subscribe_stdout(nextline, db),
         )
-    except BaseException as exc:
-        # TODO: use logging in a way uvicorn can format
-        print(f"{exc.__class__.__name__} in write_db()", file=sys.stderr)
-        print(
-            "".join(
-                traceback.format_exception(type(exc), exc, exc.__traceback__)
-            ),
-            file=sys.stderr,
-        )
+    except BaseException:
+        logger = getLogger(__name__)
+        logger.exception("Exception occurred in writing to DB")
         raise
 
 
