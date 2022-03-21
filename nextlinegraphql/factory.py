@@ -1,6 +1,7 @@
 import asyncio
 import contextlib
 from dynaconf import Dynaconf
+from logging import getLogger
 
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
@@ -52,20 +53,47 @@ def create_app(config: Optional[Dynaconf] = None):
     async def lifespan(app):
         del app
         nonlocal db, nextline
-        db = init_db(config.db.url)
+
+        logger = getLogger(__name__)
+
         run_no_start_from = 1
-        with db() as session:
-            stmt = select(db_models.Run, func.max(db_models.Run.run_no))
-            model = session.execute(stmt).scalar_one_or_none()
-            if model:
-                run_no_start_from = model.run_no + 1
+
+        try:
+            db = init_db(config.db.url)
+        except BaseException:
+            logger.exception("failed to initialize DB ")
+            db = None
+
+        if db:
+            try:
+                with db() as session:
+                    stmt = select(
+                        db_models.Run,
+                        func.max(db_models.Run.run_no),
+                    )
+                    if model := session.execute(stmt).scalar_one_or_none():
+                        run_no_start_from = model.run_no + 1
+                    else:
+                        msg = "No previous runs were found in the DB"
+                        logger.info(msg)
+            except BaseException:
+                msg = "failed to obtain the last run number in the DB"
+                logger.exception(msg)
+                db = None
+
         nextline = Nextline(statement, run_no_start_from)
-        task = asyncio.create_task(write_db(nextline, db))
+        if db:
+            task = asyncio.create_task(write_db(nextline, db))
+        else:
+            logger.error("Starting without DB")
+            task = None
+
         try:
             yield
         finally:
             await asyncio.wait_for(nextline.close(), timeout=3)
-            await asyncio.wait_for(task, timeout=3)
+            if task:
+                await asyncio.wait_for(task, timeout=3)
 
     middleware = [
         Middleware(
