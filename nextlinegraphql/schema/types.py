@@ -1,6 +1,4 @@
-# from __future__ import annotations
-# strawberry.Private will be compatible with annotations
-# https://github.com/strawberry-graphql/strawberry/pull/1684
+from __future__ import annotations
 
 import datetime
 import strawberry
@@ -71,7 +69,7 @@ class TraceHistory:
         return [StdoutHistory.from_model(m) for m in self._model.stdouts]  # type: ignore
 
     @classmethod
-    def from_model(cls: Type["TraceHistory"], model: db_models.Trace):
+    def from_model(cls: Type[TraceHistory], model: db_models.Trace):
         return cls(
             _model=model,
             id=model.id,
@@ -110,7 +108,7 @@ class PromptHistory:
         return TraceHistory.from_model(self._model.trace)
 
     @classmethod
-    def from_model(cls: Type["PromptHistory"], model: db_models.Prompt):
+    def from_model(cls: Type[PromptHistory], model: db_models.Prompt):
         return cls(
             _model=model,
             id=model.id,
@@ -146,7 +144,7 @@ class StdoutHistory:
         return TraceHistory.from_model(self._model.trace)
 
     @classmethod
-    def from_model(cls: Type["StdoutHistory"], model: db_models.Stdout):
+    def from_model(cls: Type[StdoutHistory], model: db_models.Stdout):
         return cls(
             _model=model,
             id=model.id,
