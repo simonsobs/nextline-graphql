@@ -48,9 +48,9 @@ in-memory database](https://www.sqlite.org/inmemorydb.html).
 
 The container has one environment variable, which is to change the [DB URL](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls) of SQLAlchemy.
 
-| Environment variable | Default value         | Description                                                                                   |
-| -------------------- | --------------------- | --------------------------------------------------------------------------------------------- |
-| `NEXTLINE_DB__URL`   | `sqlite:///:memory:/` | The [DB URL](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls) of SQLAlchemy |
+| Environment variable | Default value                                | Description                                                                                   |
+| -------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `NEXTLINE_DB__URL`   | `sqlite:///:memory:?check_same_thread=false` | The [DB URL](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls) of SQLAlchemy |
 
 For example, the following command uses a file on the host machine
 `db/db.sqlite3` as the persistent DB. The directory `db/` and the file

@@ -18,17 +18,11 @@ __all__ = ["init_db", "write_db"]
 def init_db(config: Dict):
 
     url = config["url"]
-    connect_args = config.get("connect_args")
 
     logger = getLogger(__name__)
     logger.info(f"SQLAlchemy DB URL: {url}")
-    logger.debug(f"SQLAlchemy connect args: {connect_args}")
 
-    kwargs = {}
-    if connect_args is not None:
-        kwargs["connect_args"] = connect_args
-
-    engine = create_engine(url, **kwargs)
+    engine = create_engine(url)
 
     run_alembic_upgrade(engine)
 
