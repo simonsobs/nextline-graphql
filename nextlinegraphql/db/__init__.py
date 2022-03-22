@@ -7,21 +7,28 @@ from alembic.script import ScriptDirectory
 from alembic.runtime.environment import EnvironmentContext
 from logging import getLogger
 
+from typing import Dict
+
 from . import models
 from .write import write_db
 
 __all__ = ["init_db", "write_db"]
 
 
-def init_db(url: str):
+def init_db(config: Dict):
+
+    url = config["url"]
+    connect_args = config.get("connect_args")
 
     logger = getLogger(__name__)
     logger.info(f"SQLAlchemy DB URL: {url}")
+    logger.debug(f"SQLAlchemy connect args: {connect_args}")
 
-    engine = create_engine(
-        url,
-        connect_args={"check_same_thread": False},
-    )
+    kwargs = {}
+    if connect_args is not None:
+        kwargs["connect_args"] = connect_args
+
+    engine = create_engine(url, **kwargs)
 
     run_alembic_upgrade(engine)
 

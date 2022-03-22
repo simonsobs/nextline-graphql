@@ -4,7 +4,12 @@
 # https://github.com/rochacbruno/learndynaconf/tree/main/configs
 
 [default]
-db = {url = "sqlite:///:memory:"}
+
+[default.db]
+url = "sqlite:///:memory:"
+
+[default.db.connect_args]
+check_same_thread = false
 
 [default.logging]
 disable_existing_loggers = false
