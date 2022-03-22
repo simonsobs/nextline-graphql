@@ -1,20 +1,9 @@
-"""Test the app object
-
-The ASGI test client async-asgi-testclient is used
-- https://pypi.org/project/async-asgi-testclient/
-- https://github.com/vinissimus/async-asgi-testclient
-
-"""
-
-from async_asgi_testclient import TestClient
-
 import pytest
-
-from nextlinegraphql import create_app
+from async_asgi_testclient import TestClient
 
 
 @pytest.mark.asyncio
-async def test_cors_get():
+async def test_get(client: TestClient):
     """test if CORSMiddleware is in effect
 
     The response header should include CORSMiddleware
@@ -30,14 +19,14 @@ async def test_cors_get():
     headers = {
         "ORIGIN": "https://foo.example",
     }
-    async with TestClient(create_app()) as client:
-        resp = await client.get("/", headers=headers)
-        assert "*" == resp.headers["access-control-allow-origin"]
-        assert resp.status_code == 200
+
+    resp = await client.get("/", headers=headers)
+    assert "*" == resp.headers["access-control-allow-origin"]
+    assert resp.status_code == 200
 
 
 @pytest.mark.asyncio
-async def test_cors_preflight():
+async def test_preflight(client: TestClient):
     """test if CORSMiddleware is in effect with the preflighted request
 
     https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#preflighted_requests
@@ -49,7 +38,7 @@ async def test_cors_preflight():
         "Access-Control-Request-Method": "POST",
         "Access-Control-Request-Headers": "X-PINGOTHER, Content-Type",
     }
-    async with TestClient(create_app()) as client:
-        resp = await client.options("/", headers=headers)
-        assert "*" == resp.headers["access-control-allow-origin"]
-        assert resp.status_code == 200
+
+    resp = await client.options("/", headers=headers)
+    assert "*" == resp.headers["access-control-allow-origin"]
+    assert resp.status_code == 200

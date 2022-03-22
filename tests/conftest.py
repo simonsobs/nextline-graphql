@@ -18,7 +18,12 @@ def recover_trace():
 
 
 @pytest.fixture
-async def client():
-    async with TestClient(create_app()) as y:
+async def client(app):
+    async with TestClient(app) as y:
         await asyncio.sleep(0)
         yield y
+
+
+@pytest.fixture
+def app():
+    return create_app()
