@@ -53,8 +53,5 @@ def sample(db):
 
 @pytest.fixture
 def db():
-    config = {
-        "url": "sqlite:///:memory:",
-        "connect_args": {"check_same_thread": False},
-    }
-    return init_db(config)
+    config = {"url": "sqlite:///:memory:?check_same_thread=false"}
+    return init_db(config)[0]

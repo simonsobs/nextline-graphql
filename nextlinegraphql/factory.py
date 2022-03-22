@@ -59,7 +59,7 @@ def create_app(config: Optional[Dynaconf] = None):
         run_no_start_from = 1
 
         try:
-            db = init_db(config.db)
+            db, _ = init_db(config.db)
         except BaseException:
             logger.exception("failed to initialize DB ")
             db = None

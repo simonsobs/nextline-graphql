@@ -1,5 +1,6 @@
 from pathlib import Path
 from sqlalchemy import create_engine
+from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
 from alembic.config import Config
 from alembic.migration import MigrationContext
@@ -7,7 +8,7 @@ from alembic.script import ScriptDirectory
 from alembic.runtime.environment import EnvironmentContext
 from logging import getLogger
 
-from typing import Dict
+from typing import Dict, Tuple
 
 from . import models
 from .write import write_db
@@ -15,7 +16,7 @@ from .write import write_db
 __all__ = ["init_db", "write_db"]
 
 
-def init_db(config: Dict):
+def init_db(config: Dict) -> Tuple[sessionmaker, Engine]:
 
     url = config["url"]
 
@@ -32,7 +33,8 @@ def init_db(config: Dict):
     logger.info(f"Alembic migration version: {rev!s}")
 
     models.Base.metadata.create_all(bind=engine)
-    return sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    return db, engine
 
 
 def run_alembic_upgrade(engine):
