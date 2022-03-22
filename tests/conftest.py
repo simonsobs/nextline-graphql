@@ -25,5 +25,26 @@ async def client(app):
 
 
 @pytest.fixture
-def app():
-    return create_app()
+def app(config, db_engine, nextline):
+    db, engine = db_engine
+    return create_app(
+        config=config,
+        db=db,
+        engine=engine,
+        nextline=nextline,
+    )
+
+
+@pytest.fixture
+def config():
+    return None
+
+
+@pytest.fixture
+def db_engine():
+    return None, None
+
+
+@pytest.fixture
+def nextline():
+    return None
