@@ -56,30 +56,19 @@ def create_app(config: Optional[Dynaconf] = None):
 
         logger = getLogger(__name__)
 
-        run_no_start_from = 1
-
         try:
             db, _ = init_db(config.db)
         except BaseException:
             logger.exception("failed to initialize DB ")
             db = None
 
-        if db:
-            try:
-                with db() as session:
-                    stmt = select(
-                        db_models.Run,
-                        func.max(db_models.Run.run_no),
-                    )
-                    if model := session.execute(stmt).scalar_one_or_none():
-                        run_no_start_from = model.run_no + 1
-                    else:
-                        msg = "No previous runs were found in the DB"
-                        logger.info(msg)
-            except BaseException:
-                msg = "failed to obtain the last run number in the DB"
-                logger.exception(msg)
-                db = None
+        try:
+            run_no_start_from = determine_first_run_no(db)
+        except BaseException:
+            msg = "failed to obtain the last run number in the DB"
+            logger.exception(msg)
+            run_no_start_from = 1
+            db = None
 
         nextline = Nextline(statement, run_no_start_from)
         if db:
@@ -108,3 +97,19 @@ def create_app(config: Optional[Dynaconf] = None):
     app.mount("/", app_)
 
     return app
+
+
+def determine_first_run_no(db) -> int:
+
+    if not db:
+        return 1
+
+    with db() as session:
+        stmt = select(db_models.Run, func.max(db_models.Run.run_no))
+        if model := session.execute(stmt).scalar_one_or_none():
+            return model.run_no + 1
+        else:
+            logger = getLogger(__name__)
+            msg = "No previous runs were found in the DB"
+            logger.info(msg)
+            return 1
