@@ -9,6 +9,8 @@ from starlette.middleware.cors import CORSMiddleware
 
 from sqlalchemy.future import select
 from sqlalchemy import func
+from sqlalchemy.engine.base import Engine
+from sqlalchemy.orm import sessionmaker
 
 from typing import Optional, Any
 
@@ -21,7 +23,12 @@ from .example_script import statement
 from .logging import configure_logging
 
 
-def create_app(config: Optional[Dynaconf] = None):
+def create_app(
+    config: Optional[Dynaconf] = None,
+    db: Optional[sessionmaker] = None,
+    engine: Optional[Engine] = None,
+    nextline: Optional[Nextline] = None,
+):
 
     if config is None:
         from .config import settings
@@ -29,9 +36,6 @@ def create_app(config: Optional[Dynaconf] = None):
         config = settings
 
     configure_logging(config.logging)
-
-    db = None
-    nextline: Nextline
 
     class EGraphQL(GraphQL):
         """Extend the strawberry GraphQL app
@@ -44,6 +48,7 @@ def create_app(config: Optional[Dynaconf] = None):
                 "request": request,
                 "response": response,
                 "db": db,
+                "engine": engine,
                 "nextline": nextline,
             }
 
@@ -52,15 +57,16 @@ def create_app(config: Optional[Dynaconf] = None):
     @contextlib.asynccontextmanager
     async def lifespan(app):
         del app
-        nonlocal db, nextline
+        nonlocal db, engine, nextline
 
         logger = getLogger(__name__)
 
-        try:
-            db, _ = init_db(config.db)
-        except BaseException:
-            logger.exception("failed to initialize DB ")
-            db = None
+        if not db:
+            try:
+                db, engine = init_db(config.db)
+            except BaseException:
+                logger.exception("failed to initialize DB ")
+                db = None
 
         try:
             run_no_start_from = determine_first_run_no(db)
@@ -70,7 +76,11 @@ def create_app(config: Optional[Dynaconf] = None):
             run_no_start_from = 1
             db = None
 
-        nextline = Nextline(statement, run_no_start_from)
+        if nextline:
+            nextline.reset(run_no_start_from=run_no_start_from)
+        else:
+            nextline = Nextline(statement, run_no_start_from)
+
         if db:
             task = asyncio.create_task(write_db(nextline, db))
         else:
