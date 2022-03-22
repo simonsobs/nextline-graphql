@@ -3,7 +3,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from alembic.config import Config
 from alembic.migration import MigrationContext
-from alembic import command
+from alembic.script import ScriptDirectory
+from alembic.runtime.environment import EnvironmentContext
 from logging import getLogger
 
 from . import models
@@ -17,12 +18,12 @@ def init_db(url: str):
     logger = getLogger(__name__)
     logger.info(f"SQLAlchemy DB URL: {url}")
 
-    run_alembic_upgrade()
-
     engine = create_engine(
         url,
         connect_args={"check_same_thread": False},
     )
+
+    run_alembic_upgrade(engine)
 
     with engine.connect() as connection:
         context = MigrationContext.configure(connection)
@@ -33,10 +34,33 @@ def init_db(url: str):
     return sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-def run_alembic_upgrade():
+def run_alembic_upgrade(engine):
     here = Path(__file__).resolve().parent
     config_path = here.joinpath("alembic.ini")
     config = Config(str(config_path))
+
     # TODO: Arrange config so that logging doesn't need to be conditionally
     # configured in alembic/env.py
-    command.upgrade(config, "head")
+
+    # from alembic import command
+    # command.upgrade(config, "head")
+
+    # NOTE: The commented out lines of command.upgrade() above would work fine
+    # for a persistent DB. Here, the following code is instead used so that the
+    # migration actually takes place for an in-memory DB as well for testing.
+
+    script = ScriptDirectory.from_config(config)
+
+    def upgrade(rev, context):
+        del context
+        return script._upgrade_revs("head", rev)
+
+    context = EnvironmentContext(config, script, fn=upgrade)
+    with engine.connect() as connection:
+        context.configure(
+            connection=connection,
+            target_metadata=models.Base.metadata,
+            render_as_batch=True,
+        )
+        with context.begin_transaction():
+            context.run_migrations()
