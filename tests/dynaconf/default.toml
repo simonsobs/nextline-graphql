@@ -1,0 +1,12 @@
+# Default settings
+#
+# Syntax can be learned from Dynaconf examples 
+# https://github.com/rochacbruno/learndynaconf/tree/main/configs
+
+[default]
+
+[default.db]
+url = "sqlite:///default.sqlite3"
+
+[default.db.connect_args]
+check_same_thread = false
