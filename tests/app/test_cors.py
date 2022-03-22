@@ -53,13 +53,3 @@ async def test_cors_preflight():
         resp = await client.options("/", headers=headers)
         assert "*" == resp.headers["access-control-allow-origin"]
         assert resp.status_code == 200
-
-
-@pytest.mark.asyncio
-async def test_graphiql():
-    """test if the graphiql is returned for the get request"""
-    async with TestClient(create_app()) as client:
-        resp = await client.get("/")
-        assert resp.status_code == 200
-        assert "text/html" in (resp.headers["content-type"].lower())
-        assert "graphiql" in resp.text.lower()
