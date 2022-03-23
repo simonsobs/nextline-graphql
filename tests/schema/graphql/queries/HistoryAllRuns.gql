@@ -1,0 +1,24 @@
+query HistoryAllRuns(
+  $before: String
+  $after: String
+  $first: Int
+  $last: Int
+) {
+  history {
+    allRuns(before: $before, after: $after, first: $first, last: $last) {
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+      edges {
+        cursor
+        node {
+          id
+          runNo
+        }
+      }
+    }
+  }
+}
