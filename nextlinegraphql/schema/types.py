@@ -2,9 +2,32 @@ from __future__ import annotations
 
 import datetime
 import strawberry
-from typing import List, Optional, Type
+from typing import List, Optional, Type, TypeVar, Generic
 
 from ..db import models as db_models
+
+
+_T = TypeVar("_T")
+
+
+@strawberry.type
+class Edge(Generic[_T]):
+    node: _T
+    cursor: str
+
+
+@strawberry.type
+class PageInfo:
+    has_next_page: bool
+    has_previous_page: bool
+    start_cursor: Optional[str] = None
+    end_cursor: Optional[str] = None
+
+
+@strawberry.type
+class Connection(Generic[_T]):
+    page_info: PageInfo
+    edges: list[Edge[_T]]
 
 
 @strawberry.type
@@ -34,7 +57,7 @@ class RunHistory:
     def from_model(cls: Type["RunHistory"], model: db_models.Run):
         return cls(
             _model=model,
-            id=model.run_no,
+            id=model.id,
             run_no=model.run_no,
             state=model.state,
             started_at=model.started_at,
