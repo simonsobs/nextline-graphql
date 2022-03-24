@@ -1,4 +1,5 @@
 from async_asgi_testclient import TestClient
+from async_asgi_testclient.response import Response
 
 
 from typing import AsyncGenerator, Optional, Dict, Any, TypedDict
@@ -41,14 +42,23 @@ async def gql_request(
     variables: Optional[Dict[str, Any]] = None,
 ) -> Any:
 
+    resp = await gql_request_response(client, query, variables)
+    return resp.json()["data"]
+
+
+async def gql_request_response(
+    client: TestClient,
+    query: str,
+    variables: Optional[Dict[str, Any]] = None,
+) -> Response:
+
     request = PostRequest(query=query)
     if variables:
         request["variables"] = variables
 
     headers = {"Content-Type:": "application/json"}
 
-    resp = await client.post("/", json=request, headers=headers)
-    return resp.json()["data"]
+    return await client.post("/", json=request, headers=headers)
 
 
 async def gql_subscribe(
