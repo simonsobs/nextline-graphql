@@ -80,6 +80,14 @@ def query_stdouts(info: Info) -> List[types.StdoutHistory]:
     return [types.StdoutHistory.from_model(m) for m in models]
 
 
+def create_cursor(o: types.RunHistory):
+    return base64.b64encode(f"{o.id}".encode()).decode()
+
+
+def decode_cursor(cursor: str):
+    return int(base64.b64decode(cursor).decode())
+
+
 def query_all_runs(
     info: Info,
     before: Optional[str] = None,
@@ -89,12 +97,6 @@ def query_all_runs(
 ) -> types.Connection[types.RunHistory]:
 
     # https://relay.dev/graphql/connections.htm
-
-    def create_cursor(o: types.RunHistory):
-        return base64.b64encode(f"{o.id}".encode()).decode()
-
-    def decode_cursor(cursor: str):
-        return int(base64.b64decode(cursor).decode())
 
     session = info.context["session"]
     session = cast(Session, session)
