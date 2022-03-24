@@ -98,31 +98,105 @@ def query_all_runs(
 
     # https://relay.dev/graphql/connections.htm
 
-    if (after or (first is not None)) and (before or (last is not None)):
+    forward = after or (first is not None)
+    backward = before or (last is not None)
+
+    if forward and backward:
         raise ValueError("Only either after/first or before/last is allowed")
+
+    if forward:
+        return query_all_runs_forward(info, after, first)
+
+    if backward:
+        return query_all_runs_backward(info, before, last)
+
+    return query_all_runs_all(info)
+
+
+def query_all_runs_all(info: Info) -> types.Connection[types.RunHistory]:
+
+    session = info.context["session"]
+    session = cast(Session, session)
+
+    stmt = select(db_models.Run)
+    stmt = stmt.order_by(db_models.Run.id)
+    models = session.scalars(stmt)
+    objs = [types.RunHistory.from_model(m) for m in models]
+
+    edges = [types.Edge(node=t, cursor=create_cursor(t)) for t in objs]
+
+    page_info = types.PageInfo(
+        has_previous_page=False,
+        has_next_page=False,
+        start_cursor=edges[0].cursor if edges else None,
+        end_cursor=edges[-1].cursor if edges else None,
+    )
+
+    return types.Connection(page_info=page_info, edges=edges)
+
+
+def query_all_runs_forward(
+    info: Info,
+    after: Optional[str] = None,
+    first: Optional[int] = None,
+) -> types.Connection[types.RunHistory]:
 
     session = info.context["session"]
     session = cast(Session, session)
 
     id_after = after and decode_cursor(after)
-    id_before = before and decode_cursor(before)
 
     stmt = select(func.count(db_models.Run.id))
     if id_after:
         stmt = stmt.where(db_models.Run.id > id_after)
-    if id_before:
-        stmt = stmt.where(db_models.Run.id < id_before)
     stmt = stmt.order_by(db_models.Run.id)
     count = session.execute(stmt).scalar_one()
 
     stmt = select(db_models.Run)
     if id_after:
         stmt = stmt.where(db_models.Run.id > id_after)
-    if id_before:
-        stmt = stmt.where(db_models.Run.id < id_before)
     stmt = stmt.order_by(db_models.Run.id)
     if first is not None:
         stmt = stmt.limit(first)
+    print("-" * 100)
+    print(stmt)
+    print("-" * 100)
+    models = session.scalars(stmt)
+    objs = [types.RunHistory.from_model(m) for m in models]
+
+    edges = [types.Edge(node=t, cursor=create_cursor(t)) for t in objs]
+
+    page_info = types.PageInfo(
+        has_previous_page=bool(after),
+        has_next_page=((first is not None) and count > first),
+        start_cursor=edges[0].cursor if edges else None,
+        end_cursor=edges[-1].cursor if edges else None,
+    )
+
+    return types.Connection(page_info=page_info, edges=edges)
+
+
+def query_all_runs_backward(
+    info: Info,
+    before: Optional[str] = None,
+    last: Optional[int] = None,
+) -> types.Connection[types.RunHistory]:
+
+    session = info.context["session"]
+    session = cast(Session, session)
+
+    id_before = before and decode_cursor(before)
+
+    stmt = select(func.count(db_models.Run.id))
+    if id_before:
+        stmt = stmt.where(db_models.Run.id < id_before)
+    stmt = stmt.order_by(db_models.Run.id)
+    count = session.execute(stmt).scalar_one()
+
+    stmt = select(db_models.Run)
+    if id_before:
+        stmt = stmt.where(db_models.Run.id < id_before)
+    stmt = stmt.order_by(db_models.Run.id)
     if last is not None:
         sub = stmt.subquery()
         sub = aliased(db_models.Run, sub)
@@ -142,8 +216,8 @@ def query_all_runs(
     edges = [types.Edge(node=t, cursor=create_cursor(t)) for t in objs]
 
     page_info = types.PageInfo(
-        has_previous_page=bool(after) or ((last is not None) and count > last),
-        has_next_page=bool(before) or ((first is not None) and count > first),
+        has_previous_page=(last is not None) and count > last,
+        has_next_page=bool(before),
         start_cursor=edges[0].cursor if edges else None,
         end_cursor=edges[-1].cursor if edges else None,
     )
