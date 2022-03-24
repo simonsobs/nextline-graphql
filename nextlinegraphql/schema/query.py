@@ -98,6 +98,9 @@ def query_all_runs(
 
     # https://relay.dev/graphql/connections.htm
 
+    if (after or (first is not None)) and (before or (last is not None)):
+        raise ValueError("Only either after/first or before/last is allowed")
+
     session = info.context["session"]
     session = cast(Session, session)
 

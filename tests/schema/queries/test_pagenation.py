@@ -12,7 +12,7 @@ from nextlinegraphql.db import init_db
 from nextlinegraphql.db.models import Run
 
 from ..graphql import QUERY_HISTORY_ALL_RUNS
-from ..funcs import gql_request
+from ..funcs import gql_request, gql_request_response
 
 
 def Cursor(i: int):
@@ -255,154 +255,6 @@ async def test_backward_with_before(sample, client, variables, expected):
     await assert_results(client, variables, expected)
 
 
-params = [
-    pytest.param(
-        Variables(before=Cursor(100), after=Cursor(1)),
-        (True, True, Cursor(2), Cursor(99)),
-        id="start-end",
-    ),
-    pytest.param(
-        Variables(before=Cursor(80), after=Cursor(20)),
-        (True, True, Cursor(21), Cursor(79)),
-        id="middle",
-    ),
-    pytest.param(
-        Variables(before=Cursor(20), after=Cursor(20)),
-        (True, True, None, None),
-        id="same",
-    ),
-    pytest.param(
-        Variables(before=Cursor(20), after=Cursor(80)),
-        (True, True, None, None),
-        id="no-overlap",
-    ),
-    pytest.param(
-        Variables(before=Cursor(80), after=Cursor(20), first=10),
-        (True, True, Cursor(21), Cursor(30)),
-        id="first",
-    ),
-    pytest.param(
-        Variables(before=Cursor(31), after=Cursor(20), first=9),
-        (True, True, Cursor(21), Cursor(29)),
-        id="first-fewer-than-count-by-one",
-    ),
-    pytest.param(
-        Variables(before=Cursor(31), after=Cursor(20), first=10),
-        (True, True, Cursor(21), Cursor(30)),
-        id="first-exactly-count",
-    ),
-    pytest.param(
-        Variables(before=Cursor(31), after=Cursor(20), first=11),
-        (True, True, Cursor(21), Cursor(30)),
-        id="first-more-than-count-by-one",
-    ),
-    pytest.param(
-        Variables(before=Cursor(81), after=Cursor(20), last=10),
-        (True, True, Cursor(71), Cursor(80)),
-        id="last",
-    ),
-    pytest.param(
-        Variables(before=Cursor(81), after=Cursor(70), last=9),
-        (True, True, Cursor(72), Cursor(80)),
-        id="last-fewer-than-count-by-one",
-    ),
-    pytest.param(
-        Variables(before=Cursor(81), after=Cursor(70), last=10),
-        (True, True, Cursor(71), Cursor(80)),
-        id="last-exactly-count",
-    ),
-    pytest.param(
-        Variables(before=Cursor(81), after=Cursor(70), last=11),
-        (True, True, Cursor(71), Cursor(80)),
-        id="last-more-than-count-by-one",
-    ),
-    pytest.param(
-        Variables(before=Cursor(31), after=Cursor(20), first=5, last=5),
-        (True, True, Cursor(21), Cursor(25)),
-        id="first-and-last",
-    ),
-    pytest.param(
-        Variables(before=Cursor(31), after=Cursor(20), first=5, last=3),
-        (True, True, Cursor(23), Cursor(25)),
-        id="first-more-than-last",
-    ),
-    pytest.param(
-        Variables(before=Cursor(31), after=Cursor(20), first=3, last=5),
-        (True, True, Cursor(21), Cursor(23)),
-        id="first-fewer-than-last",
-    ),
-    pytest.param(
-        Variables(before=Cursor(31), after=Cursor(20), first=5, last=0),
-        (True, True, None, None),
-        id="first-and-last-zero",
-    ),
-    pytest.param(
-        Variables(before=Cursor(31), after=Cursor(20), first=0, last=5),
-        (True, True, None, None),
-        id="first-zero-and-last",
-    ),
-    pytest.param(
-        Variables(before=Cursor(31), after=Cursor(20), first=0, last=0),
-        (True, True, None, None),
-        id="first-zero-and-last-zero",
-    ),
-    pytest.param(
-        Variables(before=Cursor(20), after=Cursor(80), first=0),
-        (True, True, None, None),
-        id="no-overlap-first-zero",
-    ),
-    pytest.param(
-        Variables(before=Cursor(20), after=Cursor(80), last=0),
-        (True, True, None, None),
-        id="no-overlap-last-zero",
-    ),
-    pytest.param(
-        Variables(before=Cursor(20), first=10),
-        (False, True, Cursor(1), Cursor(10)),
-        id="before-and-first",
-    ),
-    pytest.param(
-        Variables(before=Cursor(20), first=0),
-        (False, True, None, None),
-        id="before-and-first-zero",
-    ),
-    pytest.param(
-        Variables(before=Cursor(1), first=10),
-        (False, True, None, None),
-        id="before-start-and-first",
-    ),
-    pytest.param(
-        Variables(before=Cursor(1), first=0),
-        (False, True, None, None),
-        id="before-start-and-first-zero",
-    ),
-    pytest.param(
-        Variables(after=Cursor(80), last=10),
-        (True, False, Cursor(91), Cursor(100)),
-        id="after-and-last",
-    ),
-    pytest.param(
-        Variables(after=Cursor(80), last=0),
-        (True, False, None, None),
-        id="after-and-last-zero",
-    ),
-    pytest.param(
-        Variables(after=Cursor(100), last=10),
-        (True, False, None, None),
-        id="after-end-and-last",
-    ),
-    pytest.param(
-        Variables(after=Cursor(100), last=0),
-        (True, False, None, None),
-        id="after-end-and-last-zero",
-    ),
-]
-
-
-@pytest.mark.parametrize("variables, expected", params)
-async def test_mix(sample, client, variables, expected):
-    del sample
-    await assert_results(client, variables, expected)
 
 
 params = [
@@ -441,31 +293,6 @@ params = [
         (False, True, None, None),
         id="backward-before-one-last-one",
     ),
-    pytest.param(
-        Variables(first=1, last=1),
-        (False, False, Cursor(1), Cursor(1)),
-        id="mix-first-one-and-last-one",
-    ),
-    pytest.param(
-        Variables(after=Cursor(1), last=1),
-        (True, False, None, None),
-        id="mix-after-one-last-one",
-    ),
-    pytest.param(
-        Variables(before=Cursor(1), first=1),
-        (False, True, None, None),
-        id="mix-before-one-first-one",
-    ),
-    pytest.param(
-        Variables(before=Cursor(1), after=Cursor(1)),
-        (True, True, None, None),
-        id="mix-before-one-after-one",
-    ),
-    pytest.param(
-        Variables(before=Cursor(1), after=Cursor(1), first=1, last=1),
-        (True, True, None, None),
-        id="mix-all-one",
-    ),
 ]
 
 
@@ -475,15 +302,13 @@ async def test_one(sample_one, client, variables, expected):
     await assert_results(client, variables, expected)
 
 
-@pytest.mark.parametrize("first", [None, 0, 1, 5])
-@pytest.mark.parametrize("last", [None, 0, 1, 5])
-async def test_empty(sample_empty, client, first, last):
+@pytest.mark.parametrize("first_or_last", ["first", "last"])
+@pytest.mark.parametrize("number", [None, 0, 1, 5])
+async def test_empty(sample_empty, client, first_or_last, number):
     del sample_empty
     variables = {}
-    if first is not None:
-        variables["first"] = first
-    if last is not None:
-        variables["last"] = last
+    if number is not None:
+        variables[first_or_last] = number
     expected = (False, False, None, None)
     await assert_results(client, variables, expected)
 
@@ -524,6 +349,42 @@ async def assert_results(client: TestClient, variables, expected):
     else:
         assert not edges
 
+params = [
+    pytest.param(
+        Variables(first=5, last=5),
+        id="first-and-last",
+    ),
+    pytest.param(
+        Variables(before=Cursor(31), first=5),
+        id="before-and-first",
+    ),
+    pytest.param(
+        Variables(after=Cursor(20), last=5),
+        id="after-and-last",
+    ),
+    pytest.param(
+        Variables(before=Cursor(31), after=Cursor(20)),
+        id="before-and-after",
+    ),
+    pytest.param(
+        Variables(before=Cursor(31), after=Cursor(20), first=5, last=5),
+        id="all",
+    ),
+]
+
+
+@pytest.mark.parametrize("variables", params)
+async def test_error_forward_and_backward(sample, client, variables):
+    del sample
+
+    resp = await gql_request_response(
+        client,
+        QUERY_HISTORY_ALL_RUNS,
+        variables=variables,
+    )
+    result = resp.json()
+    assert result["data"] is None
+    assert result["errors"]
 
 @pytest.fixture
 def sample(db_engine):
