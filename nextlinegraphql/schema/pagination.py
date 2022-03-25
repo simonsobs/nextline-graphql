@@ -104,18 +104,20 @@ def load_edges(
     first: Optional[int] = None,
     last: Optional[int] = None,
 ):
-    forward = after or (first is not None)
-    backward = before or (last is not None)
 
-    if forward and backward:
-        raise ValueError("Only either after/first or before/last is allowed")
+    stmt = compose_statement(
+        Model,
+        id_field,
+        before=before,
+        after=after,
+        first=first,
+        last=last,
+    )
 
-    if forward:
-        models = load_models_forward(info, Model, id_field, after, first)
-    elif backward:
-        models = load_models_backward(info, Model, id_field, before, last)
-    else:
-        models = load_models_all(info, Model, id_field)
+    session = info.context["session"]
+    session = cast(Session, session)
+
+    models = session.scalars(stmt)
 
     nodes = [create_node_from_model(m) for m in models]
     edges = [
@@ -126,20 +128,37 @@ def load_edges(
     return edges
 
 
-def load_models_all(info, Model, id_field):
-    session = info.context["session"]
-    session = cast(Session, session)
+def compose_statement(
+    Model: db_models.ModelType,
+    id_field: str,
+    *,
+    before: Optional[str] = None,
+    after: Optional[str] = None,
+    first: Optional[int] = None,
+    last: Optional[int] = None,
+):
+    forward = after or (first is not None)
+    backward = before or (last is not None)
 
+    if forward and backward:
+        raise ValueError("Only either after/first or before/last is allowed")
+
+    if forward:
+        stmt = compose_statement_forward(Model, id_field, after, first)
+    elif backward:
+        stmt = compose_statement_backward(Model, id_field, before, last)
+    else:
+        stmt = compose_statement_all(Model, id_field)
+    return stmt
+
+
+def compose_statement_all(Model, id_field):
     stmt = select(Model)
     stmt = stmt.order_by(getattr(Model, id_field))
-    models = session.scalars(stmt)
-    return models
+    return stmt
 
 
-def load_models_forward(info, Model, id_field, after, first):
-    session = info.context["session"]
-    session = cast(Session, session)
-
+def compose_statement_forward(Model, id_field, after, first):
     stmt = select(Model)
     if after:
         stmt = stmt.where(getattr(Model, id_field) > decode_id(after))
@@ -147,15 +166,10 @@ def load_models_forward(info, Model, id_field, after, first):
 
     if first is not None:
         stmt = stmt.limit(first)
-
-    models = session.scalars(stmt)
-    return models
+    return stmt
 
 
-def load_models_backward(info, Model, id_field, before, last):
-    session = info.context["session"]
-    session = cast(Session, session)
-
+def compose_statement_backward(Model, id_field, before, last):
     stmt = select(Model)
     if before:
         stmt = stmt.where(getattr(Model, id_field) < decode_id(before))
@@ -174,6 +188,4 @@ def load_models_backward(info, Model, id_field, before, last):
         Alias = aliased(Model, subq.subquery())
 
         stmt = select(Alias).order_by(getattr(Alias, id_field))
-
-    models = session.scalars(stmt)
-    return models
+    return stmt
