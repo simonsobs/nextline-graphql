@@ -13,6 +13,8 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 
+from typing import Union, Type
+
 # https://docs.sqlalchemy.org/en/14/core/constraints.html#configuring-a-naming-convention-for-a-metadata-collection
 # https://github.com/simonsobs/acondbs/blob/7b4e5ab967ce/acondbs/db/sa.py
 convention = {
@@ -118,3 +120,7 @@ class Stdout(Base):
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.text!r}>"
+
+
+ModelType = Union[Type[Run], Type[Trace], Type[Prompt], Type[Stdout]]
+# https://python-forum.io/thread-27697.html

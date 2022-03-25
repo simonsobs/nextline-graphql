@@ -79,11 +79,11 @@ def query_stdouts(info: Info) -> List[types.StdoutHistory]:
     return [types.StdoutHistory.from_model(m) for m in models]
 
 
-def create_cursor(o: types.RunHistory):
-    return base64.b64encode(f"{o.id}".encode()).decode()
+def encode_id(id: int) -> str:
+    return base64.b64encode(f"{id}".encode()).decode()
 
 
-def decode_cursor(cursor: str):
+def decode_id(cursor: str) -> int:
     return int(base64.b64decode(cursor).decode())
 
 
@@ -103,26 +103,41 @@ def query_all_runs(
     if forward and backward:
         raise ValueError("Only either after/first or before/last is allowed")
 
+    Model = db_models.Run
+    id_field = "id"
+    create_node_from_model = types.RunHistory.from_model
+
     if forward:
-        return query_all_runs_forward(info, after, first)
+        return query_all_runs_forward(
+            info,
+            Model,
+            id_field,
+            create_node_from_model,
+            after,
+            first,
+        )
 
     if backward:
-        return query_all_runs_backward(info, before, last)
+        return query_all_runs_backward(
+            info,
+            Model,
+            id_field,
+            create_node_from_model,
+            before,
+            last,
+        )
 
-    return query_all_runs_all(info)
+    return query_all_runs_all(info, Model, id_field, create_node_from_model)
 
 
-def query_all_runs_all(info: Info) -> types.Connection[types.RunHistory]:
+def query_all_runs_all(
+    info: Info,
+    Model: db_models.ModelType,
+    id_field: str,
+    create_node_from_model,
+):
 
-    session = info.context["session"]
-    session = cast(Session, session)
-
-    stmt = select(db_models.Run)
-    stmt = stmt.order_by(db_models.Run.id)
-    models = session.scalars(stmt)
-    objs = [types.RunHistory.from_model(m) for m in models]
-
-    edges = [types.Edge(node=t, cursor=create_cursor(t)) for t in objs]
+    edges = get_edges(info, Model, id_field, create_node_from_model)
 
     page_info = types.PageInfo(
         has_previous_page=False,
@@ -136,26 +151,21 @@ def query_all_runs_all(info: Info) -> types.Connection[types.RunHistory]:
 
 def query_all_runs_forward(
     info: Info,
+    Model: db_models.ModelType,
+    id_field: str,
+    create_node_from_model,
     after: Optional[str] = None,
     first: Optional[int] = None,
 ) -> types.Connection[types.RunHistory]:
 
-    session = info.context["session"]
-    session = cast(Session, session)
-
-    stmt = select(db_models.Run)
-    if after:
-        stmt = stmt.where(db_models.Run.id > decode_cursor(after))
-    stmt = stmt.order_by(db_models.Run.id)
-
-    if first is not None:
-        stmt = stmt.limit(first + 1)  # add one for has_next_page
-
-    models = session.scalars(stmt)
-
-    objs = [types.RunHistory.from_model(m) for m in models]
-
-    edges = [types.Edge(node=t, cursor=create_cursor(t)) for t in objs]
+    edges = get_edges_forward(
+        info,
+        Model,
+        id_field,
+        create_node_from_model,
+        after,
+        first + 1 if first is not None else None,  # add one for has_next_page
+    )
 
     has_previous_page = not not after
     has_next_page = (first is not None) and len(edges) == first + 1
@@ -178,37 +188,21 @@ def query_all_runs_forward(
 
 def query_all_runs_backward(
     info: Info,
+    Model: db_models.ModelType,
+    id_field: str,
+    create_node_from_model,
     before: Optional[str] = None,
     last: Optional[int] = None,
 ) -> types.Connection[types.RunHistory]:
 
-    session = info.context["session"]
-    session = cast(Session, session)
-
-    stmt = select(db_models.Run)
-    if before:
-        stmt = stmt.where(db_models.Run.id < decode_cursor(before))
-
-    if last is None:
-        stmt = stmt.order_by(db_models.Run.id)
-
-    else:
-        # use subquery to limit from last
-        # https://stackoverflow.com/a/12125925/7309855
-        subq = stmt.order_by(db_models.Run.id.desc())
-        subq = subq.limit(last + 1)  # add one for has_previous_page
-
-        # alias to refer a subquery as an ORM
-        # https://docs.sqlalchemy.org/en/20/tutorial/data_select.html#orm-entity-subqueries-ctes
-        alias = aliased(db_models.Run, subq.subquery())
-
-        stmt = select(alias).order_by(alias.id)
-
-    models = session.scalars(stmt)
-
-    objs = [types.RunHistory.from_model(m) for m in models]
-
-    edges = [types.Edge(node=t, cursor=create_cursor(t)) for t in objs]
+    edges = get_edges_backward(
+        info,
+        Model,
+        id_field,
+        create_node_from_model,
+        before,
+        last + 1 if last is not None else None,  # add 1 for has_previous_page
+    )
 
     has_previous_page = (last is not None) and len(edges) == last + 1
     has_next_page = not not before
@@ -227,6 +221,103 @@ def query_all_runs_backward(
     )
 
     return types.Connection(page_info=page_info, edges=edges)
+
+
+def get_edges(
+    info: Info,
+    Model: db_models.ModelType,
+    id_field: str,
+    create_node_from_model,
+):
+
+    session = info.context["session"]
+    session = cast(Session, session)
+
+    stmt = select(Model)
+    stmt = stmt.order_by(getattr(Model, id_field))
+    models = session.scalars(stmt)
+    nodes = [create_node_from_model(m) for m in models]
+
+    edges = [
+        types.Edge(node=n, cursor=encode_id(getattr(n, id_field)))
+        for n in nodes
+    ]
+
+    return edges
+
+
+def get_edges_forward(
+    info: Info,
+    Model: db_models.ModelType,
+    id_field: str,
+    create_node_from_model,
+    after: Optional[str] = None,
+    first: Optional[int] = None,
+):
+    session = info.context["session"]
+    session = cast(Session, session)
+
+    stmt = select(Model)
+    if after:
+        stmt = stmt.where(getattr(Model, id_field) > decode_id(after))
+    stmt = stmt.order_by(getattr(Model, id_field))
+
+    if first is not None:
+        stmt = stmt.limit(first)
+
+    models = session.scalars(stmt)
+
+    nodes = [create_node_from_model(m) for m in models]
+
+    edges = [
+        types.Edge(node=n, cursor=encode_id(getattr(n, id_field)))
+        for n in nodes
+    ]
+
+    return edges
+
+
+def get_edges_backward(
+    info: Info,
+    Model: db_models.ModelType,
+    id_field: str,
+    create_node_from_model,
+    before: Optional[str] = None,
+    last: Optional[int] = None,
+):
+
+    session = info.context["session"]
+    session = cast(Session, session)
+
+    stmt = select(Model)
+    if before:
+        stmt = stmt.where(getattr(Model, id_field) < decode_id(before))
+
+    if last is None:
+        stmt = stmt.order_by(getattr(Model, id_field))
+
+    else:
+        # use subquery to limit from last
+        # https://stackoverflow.com/a/12125925/7309855
+        subq = stmt.order_by(getattr(Model, id_field).desc())
+        subq = subq.limit(last)
+
+        # alias to refer a subquery as an ORM
+        # https://docs.sqlalchemy.org/en/20/tutorial/data_select.html#orm-entity-subqueries-ctes
+        Alias = aliased(Model, subq.subquery())
+
+        stmt = select(Alias).order_by(getattr(Alias, id_field))
+
+    models = session.scalars(stmt)
+
+    nodes = [create_node_from_model(m) for m in models]
+
+    edges = [
+        types.Edge(node=n, cursor=encode_id(getattr(n, id_field)))
+        for n in nodes
+    ]
+
+    return edges
 
 
 @strawberry.type
