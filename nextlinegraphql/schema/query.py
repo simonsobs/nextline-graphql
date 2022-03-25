@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, List, Optional, cast
 
 from ..db import models as db_models
 from . import types
-from .pagination.pagination import load_connection
+from .pagination.db import load_connection
 
 if TYPE_CHECKING:
     from nextline import Nextline
