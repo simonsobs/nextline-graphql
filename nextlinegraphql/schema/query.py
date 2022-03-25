@@ -99,6 +99,29 @@ def query_all_runs(
     id_field = "id"
     create_node_from_model = types.RunHistory.from_model
 
+    return load_connection(
+        info,
+        Model,
+        id_field,
+        create_node_from_model,
+        before=before,
+        after=after,
+        first=first,
+        last=last,
+    )
+
+
+def load_connection(
+    info: Info,
+    Model: db_models.ModelType,
+    id_field: str,
+    create_node_from_model,
+    *,
+    before: Optional[str] = None,
+    after: Optional[str] = None,
+    first: Optional[int] = None,
+    last: Optional[int] = None,
+):
     def query_edges(
         info: Info,
         *,
@@ -107,7 +130,7 @@ def query_all_runs(
         first: Optional[int] = None,
         last: Optional[int] = None,
     ):
-        return get_edges(
+        return load_edges(
             info,
             Model,
             id_field,
@@ -240,7 +263,7 @@ def query_connection_backward(
     return types.Connection(page_info=page_info, edges=edges)
 
 
-def get_edges(
+def load_edges(
     info: Info,
     Model: db_models.ModelType,
     id_field: str,
@@ -258,19 +281,19 @@ def get_edges(
         raise ValueError("Only either after/first or before/last is allowed")
 
     if forward:
-        return get_edges_forward(
+        return load_edges_forward(
             info, Model, id_field, create_node_from_model, after, first
         )
 
     if backward:
-        return get_edges_backward(
+        return load_edges_backward(
             info, Model, id_field, create_node_from_model, before, last
         )
 
-    return get_edges_all(info, Model, id_field, create_node_from_model)
+    return load_edges_all(info, Model, id_field, create_node_from_model)
 
 
-def get_edges_all(
+def load_edges_all(
     info: Info,
     Model: db_models.ModelType,
     id_field: str,
@@ -293,7 +316,7 @@ def get_edges_all(
     return edges
 
 
-def get_edges_forward(
+def load_edges_forward(
     info: Info,
     Model: db_models.ModelType,
     id_field: str,
@@ -324,7 +347,7 @@ def get_edges_forward(
     return edges
 
 
-def get_edges_backward(
+def load_edges_backward(
     info: Info,
     Model: db_models.ModelType,
     id_field: str,
