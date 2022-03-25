@@ -28,7 +28,8 @@ def load_connection(
     after: Optional[str] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
-):
+) -> types.Connection:
+
     query_edges = partial(
         load_edges,
         Model=Model,
