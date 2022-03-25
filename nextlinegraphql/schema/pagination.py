@@ -107,6 +107,36 @@ def load_edges(
     last: Optional[int] = None,
 ) -> List[types.Edge]:
 
+    models = load_models(
+        info,
+        Model,
+        id_field,
+        before=before,
+        after=after,
+        first=first,
+        last=last,
+    )
+
+    nodes = [create_node_from_model(m) for m in models]
+
+    edges = [
+        types.Edge(node=n, cursor=encode_id(getattr(n, id_field)))
+        for n in nodes
+    ]
+
+    return edges
+
+
+def load_models(
+    info: Info,
+    Model: db_models.ModelType,
+    id_field: str,
+    *,
+    before: Optional[str] = None,
+    after: Optional[str] = None,
+    first: Optional[int] = None,
+    last: Optional[int] = None,
+):
     stmt = compose_statement(
         Model,
         id_field,
@@ -120,14 +150,7 @@ def load_edges(
     session = cast(Session, session)
 
     models = session.scalars(stmt)
-
-    nodes = [create_node_from_model(m) for m in models]
-    edges = [
-        types.Edge(node=n, cursor=encode_id(getattr(n, id_field)))
-        for n in nodes
-    ]
-
-    return edges
+    return models
 
 
 def compose_statement(
