@@ -255,8 +255,6 @@ async def test_backward_with_before(sample, client, variables, expected):
     await assert_results(client, variables, expected)
 
 
-
-
 params = [
     pytest.param(
         Variables(),
@@ -349,6 +347,7 @@ async def assert_results(client: TestClient, variables, expected):
     else:
         assert not edges
 
+
 params = [
     pytest.param(
         Variables(first=5, last=5),
@@ -385,6 +384,7 @@ async def test_error_forward_and_backward(sample, client, variables):
     result = resp.json()
     assert result["data"] is None
     assert result["errors"]
+
 
 @pytest.fixture
 def sample(db_engine):
