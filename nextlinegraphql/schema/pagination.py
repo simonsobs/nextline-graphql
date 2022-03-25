@@ -4,7 +4,8 @@ import base64
 from strawberry.types import Info
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session, aliased
-from typing import Optional, cast
+from sqlalchemy.sql.selectable import Select
+from typing import List, Optional, cast
 
 from . import types
 from ..db import models as db_models
@@ -54,7 +55,8 @@ def query_connection(
     after: Optional[str] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
-):
+) -> types.Connection:
+
     # https://strawberry.rocks/docs/guides/pagination
     # https://relay.dev/graphql/connections.htm
 
@@ -103,7 +105,7 @@ def load_edges(
     after: Optional[str] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
-):
+) -> List[types.Edge]:
 
     stmt = compose_statement(
         Model,
@@ -136,7 +138,9 @@ def compose_statement(
     after: Optional[str] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
-):
+) -> Select:
+    """Return a SELECT statement object to be given to session.scalars"""
+
     forward = after or (first is not None)
     backward = before or (last is not None)
 
