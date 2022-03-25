@@ -2,7 +2,6 @@ from __future__ import annotations
 import base64
 import traceback
 import strawberry
-from sqlalchemy import func
 from strawberry.types import Info
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session, aliased
@@ -144,33 +143,34 @@ def query_all_runs_forward(
     session = info.context["session"]
     session = cast(Session, session)
 
-    id_after = after and decode_cursor(after)
-
-    stmt = select(func.count(db_models.Run.id))
-    if id_after:
-        stmt = stmt.where(db_models.Run.id > id_after)
-    stmt = stmt.order_by(db_models.Run.id)
-    count = session.execute(stmt).scalar_one()
-
     stmt = select(db_models.Run)
-    if id_after:
-        stmt = stmt.where(db_models.Run.id > id_after)
+    if after:
+        stmt = stmt.where(db_models.Run.id > decode_cursor(after))
     stmt = stmt.order_by(db_models.Run.id)
+
     if first is not None:
-        stmt = stmt.limit(first)
-    print("-" * 100)
-    print(stmt)
-    print("-" * 100)
+        stmt = stmt.limit(first + 1)  # add one for has_next_page
+
     models = session.scalars(stmt)
+
     objs = [types.RunHistory.from_model(m) for m in models]
 
     edges = [types.Edge(node=t, cursor=create_cursor(t)) for t in objs]
 
+    has_previous_page = not not after
+    has_next_page = (first is not None) and len(edges) == first + 1
+
+    if has_next_page:
+        edges = edges[:-1]
+
+    start_cursor = edges[0].cursor if edges else None
+    end_cursor = edges[-1].cursor if edges else None
+
     page_info = types.PageInfo(
-        has_previous_page=bool(after),
-        has_next_page=((first is not None) and count > first),
-        start_cursor=edges[0].cursor if edges else None,
-        end_cursor=edges[-1].cursor if edges else None,
+        has_previous_page=has_previous_page,
+        has_next_page=has_next_page,
+        start_cursor=start_cursor,
+        end_cursor=end_cursor,
     )
 
     return types.Connection(page_info=page_info, edges=edges)
@@ -185,41 +185,45 @@ def query_all_runs_backward(
     session = info.context["session"]
     session = cast(Session, session)
 
-    id_before = before and decode_cursor(before)
-
-    stmt = select(func.count(db_models.Run.id))
-    if id_before:
-        stmt = stmt.where(db_models.Run.id < id_before)
-    stmt = stmt.order_by(db_models.Run.id)
-    count = session.execute(stmt).scalar_one()
-
     stmt = select(db_models.Run)
-    if id_before:
-        stmt = stmt.where(db_models.Run.id < id_before)
-    stmt = stmt.order_by(db_models.Run.id)
-    if last is not None:
-        sub = stmt.subquery()
-        sub = aliased(db_models.Run, sub)
-        stmt = select(sub)
-        stmt = stmt.order_by(sub.id.desc())
-        stmt = stmt.limit(last)
-        sub = stmt.subquery()
-        sub = aliased(db_models.Run, sub)
-        stmt = select(sub)
-        stmt = stmt.order_by(sub.id)
-    print("-" * 100)
-    print(stmt)
-    print("-" * 100)
+    if before:
+        stmt = stmt.where(db_models.Run.id < decode_cursor(before))
+
+    if last is None:
+        stmt = stmt.order_by(db_models.Run.id)
+
+    else:
+        # use subquery to limit from last
+        # https://stackoverflow.com/a/12125925/7309855
+        subq = stmt.order_by(db_models.Run.id.desc())
+        subq = subq.limit(last + 1)  # add one for has_previous_page
+
+        # alias to refer a subquery as an ORM
+        # https://docs.sqlalchemy.org/en/20/tutorial/data_select.html#orm-entity-subqueries-ctes
+        alias = aliased(db_models.Run, subq.subquery())
+
+        stmt = select(alias).order_by(alias.id)
+
     models = session.scalars(stmt)
+
     objs = [types.RunHistory.from_model(m) for m in models]
 
     edges = [types.Edge(node=t, cursor=create_cursor(t)) for t in objs]
 
+    has_previous_page = (last is not None) and len(edges) == last + 1
+    has_next_page = not not before
+
+    if has_previous_page:
+        edges = edges[1:]
+
+    start_cursor = edges[0].cursor if edges else None
+    end_cursor = edges[-1].cursor if edges else None
+
     page_info = types.PageInfo(
-        has_previous_page=(last is not None) and count > last,
-        has_next_page=bool(before),
-        start_cursor=edges[0].cursor if edges else None,
-        end_cursor=edges[-1].cursor if edges else None,
+        has_previous_page=has_previous_page,
+        has_next_page=has_next_page,
+        start_cursor=start_cursor,
+        end_cursor=end_cursor,
     )
 
     return types.Connection(page_info=page_info, edges=edges)
