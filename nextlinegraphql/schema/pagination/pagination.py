@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session, aliased
 from sqlalchemy.sql.selectable import Select
 from typing import Callable, List, TypeVar, Optional, cast
 
-from . import types
-from ..db import models as db_models
+from .. import types
+from ...db import models as db_models
 
 
 def encode_id(id: int) -> str:
