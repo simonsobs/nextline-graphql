@@ -7,9 +7,8 @@ from sqlalchemy.orm import Session, aliased
 from sqlalchemy.sql.selectable import Select
 from typing import Callable, List, TypeVar, Optional, cast
 
-from .. import types
 from ...db import models as db_models
-from .connection import query_connection
+from .connection import query_connection, Connection, Edge
 
 
 def encode_id(id: int) -> str:
@@ -33,7 +32,7 @@ def load_connection(
     after: Optional[str] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
-) -> types.Connection[_T]:
+) -> Connection[_T]:
 
     query_edges = partial(
         load_edges,
@@ -62,7 +61,7 @@ def load_edges(
     after: Optional[str] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
-) -> List[types.Edge[_T]]:
+) -> List[Edge[_T]]:
 
     models = load_models(
         info,
@@ -77,8 +76,7 @@ def load_edges(
     nodes = [create_node_from_model(m) for m in models]
 
     edges = [
-        types.Edge(node=n, cursor=encode_id(getattr(n, id_field)))
-        for n in nodes
+        Edge(node=n, cursor=encode_id(getattr(n, id_field))) for n in nodes
     ]
 
     return edges

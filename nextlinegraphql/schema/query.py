@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, List, Optional, cast
 
 from ..db import models as db_models
 from . import types
-from .pagination.db import load_connection
+from .pagination import load_connection, Connection
 
 if TYPE_CHECKING:
     from nextline import Nextline
@@ -85,7 +85,7 @@ def query_all_runs(
     after: Optional[str] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
-) -> types.Connection[types.RunHistory]:
+) -> Connection[types.RunHistory]:
 
     Model = db_models.Run
     id_field = "id"
@@ -114,7 +114,7 @@ class History:
         resolver=query_stdouts
     )
 
-    all_runs: types.Connection[types.RunHistory] = strawberry.field(
+    all_runs: Connection[types.RunHistory] = strawberry.field(
         resolver=query_all_runs
     )
 
