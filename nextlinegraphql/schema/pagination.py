@@ -5,7 +5,7 @@ from strawberry.types import Info
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy.sql.selectable import Select
-from typing import List, Optional, cast
+from typing import Callable, List, TypeVar, Optional, cast
 
 from . import types
 from ..db import models as db_models
@@ -19,17 +19,20 @@ def decode_id(cursor: str) -> int:
     return int(base64.b64decode(cursor).decode())
 
 
+_T = TypeVar("_T")
+
+
 def load_connection(
     info: Info,
     Model: db_models.ModelType,
     id_field: str,
-    create_node_from_model,
+    create_node_from_model: Callable[..., _T],
     *,
     before: Optional[str] = None,
     after: Optional[str] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
-) -> types.Connection:
+) -> types.Connection[_T]:
 
     query_edges = partial(
         load_edges,
@@ -50,12 +53,12 @@ def load_connection(
 
 def query_connection(
     info: Info,
-    query_edges,
+    query_edges: Callable[..., List[types.Edge[_T]]],
     before: Optional[str] = None,
     after: Optional[str] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
-) -> types.Connection:
+) -> types.Connection[_T]:
 
     # https://strawberry.rocks/docs/guides/pagination
     # https://relay.dev/graphql/connections.htm
@@ -99,13 +102,13 @@ def load_edges(
     info: Info,
     Model: db_models.ModelType,
     id_field: str,
-    create_node_from_model,
+    create_node_from_model: Callable[..., _T],
     *,
     before: Optional[str] = None,
     after: Optional[str] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
-) -> List[types.Edge]:
+) -> List[types.Edge[_T]]:
 
     models = load_models(
         info,
