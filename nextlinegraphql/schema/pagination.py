@@ -54,7 +54,7 @@ def query_connection(
     first: Optional[int] = None,
     last: Optional[int] = None,
 ):
-
+    # https://strawberry.rocks/docs/guides/pagination
     # https://relay.dev/graphql/connections.htm
 
     forward = after or (first is not None)
@@ -66,40 +66,29 @@ def query_connection(
     if forward:
         if first is not None:
             first += 1  # add one for has_next_page
-
         edges = query_edges(info=info, after=after, first=first)
-
         has_previous_page = not not after
         has_next_page = (first is not None) and len(edges) == first
-
         if has_next_page:
             edges = edges[:-1]
-
     elif backward:
         if last is not None:
             last += 1  # add one for has_previous_page
-
         edges = query_edges(info=info, before=before, last=last)
-
         has_previous_page = (last is not None) and len(edges) == last
         has_next_page = not not before
-
         if has_previous_page:
             edges = edges[1:]
-
     else:
         edges = query_edges(info)
         has_previous_page = False
         has_next_page = False
 
-    start_cursor = edges[0].cursor if edges else None
-    end_cursor = edges[-1].cursor if edges else None
-
     page_info = types.PageInfo(
         has_previous_page=has_previous_page,
         has_next_page=has_next_page,
-        start_cursor=start_cursor,
-        end_cursor=end_cursor,
+        start_cursor=edges[0].cursor if edges else None,
+        end_cursor=edges[-1].cursor if edges else None,
     )
 
     return types.Connection(page_info=page_info, edges=edges)
