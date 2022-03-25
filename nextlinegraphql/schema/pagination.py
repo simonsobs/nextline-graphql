@@ -64,86 +64,33 @@ def query_connection(
         raise ValueError("Only either after/first or before/last is allowed")
 
     if forward:
-        return query_connection_forward(
-            info,
-            query_edges,
-            after,
-            first,
-        )
+        if first is not None:
+            first += 1  # add one for has_next_page
 
-    if backward:
-        return query_connection_backward(
-            info,
-            query_edges,
-            before,
-            last,
-        )
+        edges = query_edges(info=info, after=after, first=first)
 
-    return query_connection_all(info, query_edges)
+        has_previous_page = not not after
+        has_next_page = (first is not None) and len(edges) == first
 
+        if has_next_page:
+            edges = edges[:-1]
 
-def query_connection_all(info: Info, query_edges):
+    elif backward:
+        if last is not None:
+            last += 1  # add one for has_previous_page
 
-    edges = query_edges(info)
+        edges = query_edges(info=info, before=before, last=last)
 
-    page_info = types.PageInfo(
-        has_previous_page=False,
-        has_next_page=False,
-        start_cursor=edges[0].cursor if edges else None,
-        end_cursor=edges[-1].cursor if edges else None,
-    )
+        has_previous_page = (last is not None) and len(edges) == last
+        has_next_page = not not before
 
-    return types.Connection(page_info=page_info, edges=edges)
+        if has_previous_page:
+            edges = edges[1:]
 
-
-def query_connection_forward(
-    info: Info,
-    query_edges,
-    after: Optional[str] = None,
-    first: Optional[int] = None,
-):
-
-    if first is not None:
-        first += 1  # add one for has_next_page
-
-    edges = query_edges(info=info, after=after, first=first)
-
-    has_previous_page = not not after
-    has_next_page = (first is not None) and len(edges) == first
-
-    if has_next_page:
-        edges = edges[:-1]
-
-    start_cursor = edges[0].cursor if edges else None
-    end_cursor = edges[-1].cursor if edges else None
-
-    page_info = types.PageInfo(
-        has_previous_page=has_previous_page,
-        has_next_page=has_next_page,
-        start_cursor=start_cursor,
-        end_cursor=end_cursor,
-    )
-
-    return types.Connection(page_info=page_info, edges=edges)
-
-
-def query_connection_backward(
-    info: Info,
-    query_edges,
-    before: Optional[str] = None,
-    last: Optional[int] = None,
-):
-
-    if last is not None:
-        last += 1  # add one for has_previous_page
-
-    edges = query_edges(info=info, before=before, last=last)
-
-    has_previous_page = (last is not None) and len(edges) == last
-    has_next_page = not not before
-
-    if has_previous_page:
-        edges = edges[1:]
+    else:
+        edges = query_edges(info)
+        has_previous_page = False
+        has_next_page = False
 
     start_cursor = edges[0].cursor if edges else None
     end_cursor = edges[-1].cursor if edges else None
