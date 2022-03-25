@@ -99,11 +99,28 @@ def query_all_runs(
     id_field = "id"
     create_node_from_model = types.RunHistory.from_model
 
+    def query_edges(
+        info: Info,
+        *,
+        before: Optional[str] = None,
+        after: Optional[str] = None,
+        first: Optional[int] = None,
+        last: Optional[int] = None,
+    ):
+        return get_edges(
+            info,
+            Model,
+            id_field,
+            create_node_from_model,
+            before=before,
+            after=after,
+            first=first,
+            last=last,
+        )
+
     return query_connection(
         info,
-        Model,
-        id_field,
-        create_node_from_model,
+        query_edges,
         before,
         after,
         first,
@@ -113,9 +130,7 @@ def query_all_runs(
 
 def query_connection(
     info: Info,
-    Model: db_models.ModelType,
-    id_field: str,
-    create_node_from_model,
+    query_edges,
     before: Optional[str] = None,
     after: Optional[str] = None,
     first: Optional[int] = None,
@@ -133,9 +148,7 @@ def query_connection(
     if forward:
         return query_connection_forward(
             info,
-            Model,
-            id_field,
-            create_node_from_model,
+            query_edges,
             after,
             first,
         )
@@ -143,24 +156,17 @@ def query_connection(
     if backward:
         return query_connection_backward(
             info,
-            Model,
-            id_field,
-            create_node_from_model,
+            query_edges,
             before,
             last,
         )
 
-    return query_connection_all(info, Model, id_field, create_node_from_model)
+    return query_connection_all(info, query_edges)
 
 
-def query_connection_all(
-    info: Info,
-    Model: db_models.ModelType,
-    id_field: str,
-    create_node_from_model,
-):
+def query_connection_all(info: Info, load_edges):
 
-    edges = get_edges(info, Model, id_field, create_node_from_model)
+    edges = load_edges(info)
 
     page_info = types.PageInfo(
         has_previous_page=False,
@@ -174,24 +180,18 @@ def query_connection_all(
 
 def query_connection_forward(
     info: Info,
-    Model: db_models.ModelType,
-    id_field: str,
-    create_node_from_model,
+    load_edges,
     after: Optional[str] = None,
     first: Optional[int] = None,
 ):
 
-    edges = get_edges_forward(
-        info,
-        Model,
-        id_field,
-        create_node_from_model,
-        after,
-        first + 1 if first is not None else None,  # add one for has_next_page
-    )
+    if first is not None:
+        first += 1  # add one for has_next_page
+
+    edges = load_edges(info=info, after=after, first=first)
 
     has_previous_page = not not after
-    has_next_page = (first is not None) and len(edges) == first + 1
+    has_next_page = (first is not None) and len(edges) == first
 
     if has_next_page:
         edges = edges[:-1]
@@ -211,23 +211,17 @@ def query_connection_forward(
 
 def query_connection_backward(
     info: Info,
-    Model: db_models.ModelType,
-    id_field: str,
-    create_node_from_model,
+    load_edges,
     before: Optional[str] = None,
     last: Optional[int] = None,
 ):
 
-    edges = get_edges_backward(
-        info,
-        Model,
-        id_field,
-        create_node_from_model,
-        before,
-        last + 1 if last is not None else None,  # add 1 for has_previous_page
-    )
+    if last is not None:
+        last += 1  # add one for has_previous_page
 
-    has_previous_page = (last is not None) and len(edges) == last + 1
+    edges = load_edges(info=info, before=before, last=last)
+
+    has_previous_page = (last is not None) and len(edges) == last
     has_next_page = not not before
 
     if has_previous_page:
@@ -247,6 +241,36 @@ def query_connection_backward(
 
 
 def get_edges(
+    info: Info,
+    Model: db_models.ModelType,
+    id_field: str,
+    create_node_from_model,
+    *,
+    before: Optional[str] = None,
+    after: Optional[str] = None,
+    first: Optional[int] = None,
+    last: Optional[int] = None,
+):
+    forward = after or (first is not None)
+    backward = before or (last is not None)
+
+    if forward and backward:
+        raise ValueError("Only either after/first or before/last is allowed")
+
+    if forward:
+        return get_edges_forward(
+            info, Model, id_field, create_node_from_model, after, first
+        )
+
+    if backward:
+        return get_edges_backward(
+            info, Model, id_field, create_node_from_model, before, last
+        )
+
+    return get_edges_all(info, Model, id_field, create_node_from_model)
+
+
+def get_edges_all(
     info: Info,
     Model: db_models.ModelType,
     id_field: str,
