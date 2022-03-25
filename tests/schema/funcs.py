@@ -43,7 +43,10 @@ async def gql_request(
 ) -> Any:
 
     resp = await gql_request_response(client, query, variables)
-    return resp.json()["data"]
+    result = resp.json()
+    if err := result.get("errors"):
+        raise Exception(err)
+    return result["data"]
 
 
 async def gql_request_response(
