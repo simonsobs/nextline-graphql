@@ -143,49 +143,33 @@ def compose_statement(
     if forward and backward:
         raise ValueError("Only either after/first or before/last is allowed")
 
+    stmt = select(Model)
+
     if forward:
-        stmt = compose_statement_forward(Model, id_field, after, first)
+        if after:
+            stmt = stmt.where(getattr(Model, id_field) > decode_id(after))
+        stmt = stmt.order_by(getattr(Model, id_field))
+        if first is not None:
+            stmt = stmt.limit(first)
+
     elif backward:
-        stmt = compose_statement_backward(Model, id_field, before, last)
+        if before:
+            stmt = stmt.where(getattr(Model, id_field) < decode_id(before))
+        if last is None:
+            stmt = stmt.order_by(getattr(Model, id_field))
+        else:
+            # use subquery to limit from last
+            # https://stackoverflow.com/a/12125925/7309855
+            subq = stmt.order_by(getattr(Model, id_field).desc())
+            subq = subq.limit(last)
+
+            # alias to refer a subquery as an ORM
+            # https://docs.sqlalchemy.org/en/20/tutorial/data_select.html#orm-entity-subqueries-ctes
+            Alias = aliased(Model, subq.subquery())
+
+            stmt = select(Alias).order_by(getattr(Alias, id_field))
+
     else:
-        stmt = compose_statement_all(Model, id_field)
-    return stmt
-
-
-def compose_statement_all(Model, id_field):
-    stmt = select(Model)
-    stmt = stmt.order_by(getattr(Model, id_field))
-    return stmt
-
-
-def compose_statement_forward(Model, id_field, after, first):
-    stmt = select(Model)
-    if after:
-        stmt = stmt.where(getattr(Model, id_field) > decode_id(after))
-    stmt = stmt.order_by(getattr(Model, id_field))
-
-    if first is not None:
-        stmt = stmt.limit(first)
-    return stmt
-
-
-def compose_statement_backward(Model, id_field, before, last):
-    stmt = select(Model)
-    if before:
-        stmt = stmt.where(getattr(Model, id_field) < decode_id(before))
-
-    if last is None:
         stmt = stmt.order_by(getattr(Model, id_field))
 
-    else:
-        # use subquery to limit from last
-        # https://stackoverflow.com/a/12125925/7309855
-        subq = stmt.order_by(getattr(Model, id_field).desc())
-        subq = subq.limit(last)
-
-        # alias to refer a subquery as an ORM
-        # https://docs.sqlalchemy.org/en/20/tutorial/data_select.html#orm-entity-subqueries-ctes
-        Alias = aliased(Model, subq.subquery())
-
-        stmt = select(Alias).order_by(getattr(Alias, id_field))
     return stmt
