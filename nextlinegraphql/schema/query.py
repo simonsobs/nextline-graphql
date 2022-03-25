@@ -1,4 +1,5 @@
 from __future__ import annotations
+from functools import partial
 import base64
 import traceback
 import strawberry
@@ -122,24 +123,12 @@ def load_connection(
     first: Optional[int] = None,
     last: Optional[int] = None,
 ):
-    def query_edges(
-        info: Info,
-        *,
-        before: Optional[str] = None,
-        after: Optional[str] = None,
-        first: Optional[int] = None,
-        last: Optional[int] = None,
-    ):
-        return load_edges(
-            info,
-            Model,
-            id_field,
-            create_node_from_model,
-            before=before,
-            after=after,
-            first=first,
-            last=last,
-        )
+    query_edges = partial(
+        load_edges,
+        Model=Model,
+        id_field=id_field,
+        create_node_from_model=create_node_from_model,
+    )
 
     return query_connection(
         info,
