@@ -27,7 +27,7 @@ class PageInfo:
 @strawberry.type
 class Connection(Generic[_T]):
     page_info: PageInfo
-    edges: list[Edge[_T]]
+    edges: List[Edge[_T]]
 
 
 @strawberry.type
