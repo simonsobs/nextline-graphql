@@ -82,9 +82,9 @@ def query_connection(
     return query_connection_all(info, query_edges)
 
 
-def query_connection_all(info: Info, load_edges):
+def query_connection_all(info: Info, query_edges):
 
-    edges = load_edges(info)
+    edges = query_edges(info)
 
     page_info = types.PageInfo(
         has_previous_page=False,
@@ -98,7 +98,7 @@ def query_connection_all(info: Info, load_edges):
 
 def query_connection_forward(
     info: Info,
-    load_edges,
+    query_edges,
     after: Optional[str] = None,
     first: Optional[int] = None,
 ):
@@ -106,7 +106,7 @@ def query_connection_forward(
     if first is not None:
         first += 1  # add one for has_next_page
 
-    edges = load_edges(info=info, after=after, first=first)
+    edges = query_edges(info=info, after=after, first=first)
 
     has_previous_page = not not after
     has_next_page = (first is not None) and len(edges) == first
@@ -129,7 +129,7 @@ def query_connection_forward(
 
 def query_connection_backward(
     info: Info,
-    load_edges,
+    query_edges,
     before: Optional[str] = None,
     last: Optional[int] = None,
 ):
@@ -137,7 +137,7 @@ def query_connection_backward(
     if last is not None:
         last += 1  # add one for has_previous_page
 
-    edges = load_edges(info=info, before=before, last=last)
+    edges = query_edges(info=info, before=before, last=last)
 
     has_previous_page = (last is not None) and len(edges) == last
     has_next_page = not not before
