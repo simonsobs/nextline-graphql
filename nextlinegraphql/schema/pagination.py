@@ -68,14 +68,14 @@ def query_connection(
             first += 1  # add one for has_next_page
         edges = query_edges(info=info, after=after, first=first)
         has_previous_page = not not after
-        has_next_page = (first is not None) and len(edges) == first
+        has_next_page = len(edges) == first
         if has_next_page:
             edges = edges[:-1]
     elif backward:
         if last is not None:
             last += 1  # add one for has_previous_page
         edges = query_edges(info=info, before=before, last=last)
-        has_previous_page = (last is not None) and len(edges) == last
+        has_previous_page = len(edges) == last
         has_next_page = not not before
         if has_previous_page:
             edges = edges[1:]
