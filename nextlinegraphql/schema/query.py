@@ -95,6 +95,33 @@ def query_all_runs(
     last: Optional[int] = None,
 ) -> types.Connection[types.RunHistory]:
 
+    Model = db_models.Run
+    id_field = "id"
+    create_node_from_model = types.RunHistory.from_model
+
+    return query_connection(
+        info,
+        Model,
+        id_field,
+        create_node_from_model,
+        before,
+        after,
+        first,
+        last,
+    )
+
+
+def query_connection(
+    info: Info,
+    Model: db_models.ModelType,
+    id_field: str,
+    create_node_from_model,
+    before: Optional[str] = None,
+    after: Optional[str] = None,
+    first: Optional[int] = None,
+    last: Optional[int] = None,
+):
+
     # https://relay.dev/graphql/connections.htm
 
     forward = after or (first is not None)
@@ -103,12 +130,8 @@ def query_all_runs(
     if forward and backward:
         raise ValueError("Only either after/first or before/last is allowed")
 
-    Model = db_models.Run
-    id_field = "id"
-    create_node_from_model = types.RunHistory.from_model
-
     if forward:
-        return query_all_runs_forward(
+        return query_connection_forward(
             info,
             Model,
             id_field,
@@ -118,7 +141,7 @@ def query_all_runs(
         )
 
     if backward:
-        return query_all_runs_backward(
+        return query_connection_backward(
             info,
             Model,
             id_field,
@@ -127,10 +150,10 @@ def query_all_runs(
             last,
         )
 
-    return query_all_runs_all(info, Model, id_field, create_node_from_model)
+    return query_connection_all(info, Model, id_field, create_node_from_model)
 
 
-def query_all_runs_all(
+def query_connection_all(
     info: Info,
     Model: db_models.ModelType,
     id_field: str,
@@ -149,14 +172,14 @@ def query_all_runs_all(
     return types.Connection(page_info=page_info, edges=edges)
 
 
-def query_all_runs_forward(
+def query_connection_forward(
     info: Info,
     Model: db_models.ModelType,
     id_field: str,
     create_node_from_model,
     after: Optional[str] = None,
     first: Optional[int] = None,
-) -> types.Connection[types.RunHistory]:
+):
 
     edges = get_edges_forward(
         info,
@@ -186,14 +209,14 @@ def query_all_runs_forward(
     return types.Connection(page_info=page_info, edges=edges)
 
 
-def query_all_runs_backward(
+def query_connection_backward(
     info: Info,
     Model: db_models.ModelType,
     id_field: str,
     create_node_from_model,
     before: Optional[str] = None,
     last: Optional[int] = None,
-) -> types.Connection[types.RunHistory]:
+):
 
     edges = get_edges_backward(
         info,
