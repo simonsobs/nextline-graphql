@@ -111,33 +111,13 @@ def load_edges(
         raise ValueError("Only either after/first or before/last is allowed")
 
     if forward:
-        return load_edges_forward(
-            info, Model, id_field, create_node_from_model, after, first
-        )
+        models = load_models_forward(info, Model, id_field, after, first)
+    elif backward:
+        models = load_models_backward(info, Model, id_field, before, last)
+    else:
+        models = load_models_all(info, Model, id_field)
 
-    if backward:
-        return load_edges_backward(
-            info, Model, id_field, create_node_from_model, before, last
-        )
-
-    return load_edges_all(info, Model, id_field, create_node_from_model)
-
-
-def load_edges_all(
-    info: Info,
-    Model: db_models.ModelType,
-    id_field: str,
-    create_node_from_model,
-):
-
-    session = info.context["session"]
-    session = cast(Session, session)
-
-    stmt = select(Model)
-    stmt = stmt.order_by(getattr(Model, id_field))
-    models = session.scalars(stmt)
     nodes = [create_node_from_model(m) for m in models]
-
     edges = [
         types.Edge(node=n, cursor=encode_id(getattr(n, id_field)))
         for n in nodes
@@ -146,14 +126,17 @@ def load_edges_all(
     return edges
 
 
-def load_edges_forward(
-    info: Info,
-    Model: db_models.ModelType,
-    id_field: str,
-    create_node_from_model,
-    after: Optional[str] = None,
-    first: Optional[int] = None,
-):
+def load_models_all(info, Model, id_field):
+    session = info.context["session"]
+    session = cast(Session, session)
+
+    stmt = select(Model)
+    stmt = stmt.order_by(getattr(Model, id_field))
+    models = session.scalars(stmt)
+    return models
+
+
+def load_models_forward(info, Model, id_field, after, first):
     session = info.context["session"]
     session = cast(Session, session)
 
@@ -166,26 +149,10 @@ def load_edges_forward(
         stmt = stmt.limit(first)
 
     models = session.scalars(stmt)
-
-    nodes = [create_node_from_model(m) for m in models]
-
-    edges = [
-        types.Edge(node=n, cursor=encode_id(getattr(n, id_field)))
-        for n in nodes
-    ]
-
-    return edges
+    return models
 
 
-def load_edges_backward(
-    info: Info,
-    Model: db_models.ModelType,
-    id_field: str,
-    create_node_from_model,
-    before: Optional[str] = None,
-    last: Optional[int] = None,
-):
-
+def load_models_backward(info, Model, id_field, before, last):
     session = info.context["session"]
     session = cast(Session, session)
 
@@ -209,12 +176,4 @@ def load_edges_backward(
         stmt = select(Alias).order_by(getattr(Alias, id_field))
 
     models = session.scalars(stmt)
-
-    nodes = [create_node_from_model(m) for m in models]
-
-    edges = [
-        types.Edge(node=n, cursor=encode_id(getattr(n, id_field)))
-        for n in nodes
-    ]
-
-    return edges
+    return models
