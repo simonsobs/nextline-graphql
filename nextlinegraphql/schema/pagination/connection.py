@@ -1,3 +1,8 @@
+"""Pagination based on the example code in strawberry doc
+
+Strawberry doc: https://strawberry.rocks/docs/guides/pagination
+Relay doc: https://relay.dev/graphql/connections.htm
+"""
 from __future__ import annotations
 import strawberry
 from strawberry.types import Info
@@ -35,9 +40,6 @@ def query_connection(
     first: Optional[int] = None,
     last: Optional[int] = None,
 ) -> Connection[_T]:
-
-    # https://strawberry.rocks/docs/guides/pagination
-    # https://relay.dev/graphql/connections.htm
 
     forward = after or (first is not None)
     backward = before or (last is not None)
