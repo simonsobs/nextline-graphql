@@ -46,6 +46,7 @@ setup(
             "async-asgi-testclient>=1.4",
         ],
         "dev": [
+            "tox",
             "twine",
             "flake8",
             "black",
