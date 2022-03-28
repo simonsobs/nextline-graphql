@@ -389,7 +389,8 @@ async def test_error_forward_and_backward(sample, client, variables):
 @pytest.fixture
 def sample(db_engine):
     db, _ = db_engine
-    with db() as session:
+    # with db() as session:
+    with db.begin() as session:  # commit automatically at exit
         session = cast(Session, session)
         for run_no in range(11, 111):
             model = Run(
@@ -400,13 +401,13 @@ def sample(db_engine):
                 script="pass",
             )
             session.add(model)
-        session.commit()
 
 
 @pytest.fixture
 def sample_one(db_engine):
     db, _ = db_engine
-    with db() as session:
+    # with db() as session:
+    with db.begin() as session:  # commit automatically at exit
         session = cast(Session, session)
         run_no = 10
         model = Run(
@@ -417,7 +418,6 @@ def sample_one(db_engine):
             script="pass",
         )
         session.add(model)
-        session.commit()
 
 
 @pytest.fixture
