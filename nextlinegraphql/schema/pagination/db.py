@@ -69,8 +69,8 @@ def load_edges(
         session,
         Model,
         id_field,
-        before=before,
-        after=after,
+        before=before is not None and decode_id(before),
+        after=after is not None and decode_id(after),
         first=first,
         last=last,
     )
@@ -89,8 +89,8 @@ def load_models(
     Model: db_models.ModelType,
     id_field: str,
     *,
-    before: Optional[str] = None,
-    after: Optional[str] = None,
+    before: Optional[int] = None,
+    after: Optional[int] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
 ):
@@ -111,8 +111,8 @@ def compose_statement(
     Model: db_models.ModelType,
     id_field: str,
     *,
-    before: Optional[str] = None,
-    after: Optional[str] = None,
+    before: Optional[int] = None,
+    after: Optional[int] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
 ) -> Select:
@@ -128,14 +128,14 @@ def compose_statement(
 
     if forward:
         if after:
-            stmt = stmt.where(getattr(Model, id_field) > decode_id(after))
+            stmt = stmt.where(getattr(Model, id_field) > after)
         stmt = stmt.order_by(getattr(Model, id_field))
         if first is not None:
             stmt = stmt.limit(first)
 
     elif backward:
         if before:
-            stmt = stmt.where(getattr(Model, id_field) < decode_id(before))
+            stmt = stmt.where(getattr(Model, id_field) < before)
         if last is None:
             stmt = stmt.order_by(getattr(Model, id_field))
         else:
