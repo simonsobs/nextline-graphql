@@ -1,12 +1,14 @@
 from __future__ import annotations
 from functools import partial
 import base64
-from strawberry.types import Info
-from typing import Callable, List, TypeVar, Optional
+from typing import TYPE_CHECKING, Callable, List, TypeVar, Optional
 
 from ...db.pagination import load_models
-from ...db import models as db_models
 from .connection import query_connection, Connection, Edge
+
+if TYPE_CHECKING:
+    from strawberry.types import Info
+    from ...db import models as db_models
 
 
 def encode_id(id: int) -> str:
