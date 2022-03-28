@@ -3,9 +3,9 @@ from functools import partial
 import base64
 from strawberry.types import Info
 from sqlalchemy.future import select
-from sqlalchemy.orm import Session, aliased
+from sqlalchemy.orm import aliased
 from sqlalchemy.sql.selectable import Select
-from typing import Callable, List, TypeVar, Optional, cast
+from typing import Callable, List, TypeVar, Optional
 
 from ...db import models as db_models
 from .connection import query_connection, Connection, Edge
@@ -63,8 +63,10 @@ def load_edges(
     last: Optional[int] = None,
 ) -> List[Edge[_T]]:
 
+    session = info.context["session"]
+
     models = load_models(
-        info,
+        session,
         Model,
         id_field,
         before=before,
@@ -83,7 +85,7 @@ def load_edges(
 
 
 def load_models(
-    info: Info,
+    session,
     Model: db_models.ModelType,
     id_field: str,
     *,
@@ -100,9 +102,6 @@ def load_models(
         first=first,
         last=last,
     )
-
-    session = info.context["session"]
-    session = cast(Session, session)
 
     models = session.scalars(stmt)
     return models
