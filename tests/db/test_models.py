@@ -54,16 +54,18 @@ def test_one(db, run_nextline, statement):
 
 @pytest.fixture
 def monkey_patch_syspath(monkeypatch):
-    pwd = Path(__file__).resolve().parent
-    monkeypatch.syspath_prepend(str(pwd))
+    here = Path(__file__).resolve().parent
+    path = here.joinpath("example_script")
+    monkeypatch.syspath_prepend(str(path))
     yield
 
 
 @pytest.fixture
 def statement(monkey_patch_syspath):
     del monkey_patch_syspath
-    pwd = Path(__file__).resolve().parent
-    return pwd.joinpath("script.py").read_text()
+    here = Path(__file__).resolve().parent
+    path = here.joinpath("example_script")
+    return path.joinpath("script.py").read_text()
 
 
 @pytest.fixture
