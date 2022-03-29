@@ -78,5 +78,11 @@ def test_sort(session):
     stmt = stmt.order_by(Alias.id)
     stmt = stmt.where(subq.c.row_number > subq.c.mark)
     print(stmt)
-    models = session.execute(stmt)
-    print(models.all())
+    # models = session.execute(stmt)
+    models = session.scalars(stmt)
+
+    # models = models.all()
+    # print(models)
+
+    expected = [6, 1, 2, 3]
+    assert expected == [m.id for m in models]
