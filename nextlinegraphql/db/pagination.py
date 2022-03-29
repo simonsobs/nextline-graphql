@@ -76,9 +76,7 @@ def compose_statement(
         ]
 
     if not (forward or backward):
-        stmt = select(Model)
-        stmt = stmt.order_by(*sorting_fields(Model))
-        return stmt
+        return select(Model).order_by(*sorting_fields(Model))
 
     if cursor := after or before:
         cte = select(
@@ -101,20 +99,16 @@ def compose_statement(
         else:  # before
             stmt = stmt.where(cte.c.row_number < subq.c.cursor)
     else:
-        stmt = select(Model)
-        stmt = stmt.order_by(*sorting_fields(Model))
+        stmt = select(Model).order_by(*sorting_fields(Model))
 
     if first is not None:
         stmt = stmt.limit(first)
     elif last is not None:
-        subq = stmt.subquery()
-        Alias = aliased(Model, subq)
-        stmt = select(Alias)
-        stmt = stmt.order_by(*sorting_fields(Alias, reverse=True))
+        Alias = aliased(Model, stmt.subquery())
+        stmt = select(Alias).order_by(*sorting_fields(Alias, reverse=True))
         stmt = stmt.limit(last)
 
         Alias = aliased(Model, stmt.subquery())
-        stmt = select(Alias)
-        stmt = stmt.order_by(*sorting_fields(Alias))
+        stmt = select(Alias).order_by(*sorting_fields(Alias))
 
     return stmt
