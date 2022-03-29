@@ -13,71 +13,51 @@ from .models import Entity
 def test_sort(session):
     after = 5
     Model = Entity
-    stmt = select(Model)
-    stmt = stmt.order_by(Model.num)
-    stmt = stmt.order_by(Model.id)
-    print()
-    print(stmt)
-    models = session.scalars(stmt)
-    print(list(models))
+    id_field = "id"
+    order_by = [("num", False)]
 
+    if id_field not in [f for f, _ in order_by]:
+        order_by.append((id_field, False))
+
+    def order_by_arg(Model):
+        return [
+            getattr(Model, f).desc() if d else getattr(Model, f)
+            for f, d in order_by
+        ]
+
+    # sort and add row number
     stmt = select(
         Model,
         func.row_number()
-        .over(order_by=[Model.num, Model.id])
+        .over(order_by=order_by_arg(Model))
         .label("row_number"),
     )
-    # stmt = stmt.order_by(Model.num)
-    # stmt = stmt.order_by(Model.id)
-    # stmt = stmt.where(Model.id <= 2)
-    print()
-    print(stmt)
-    models = session.execute(stmt)
-    print(models.all())
-    print("-" * 100)
 
+    # find the row number of "after"
     subq = stmt.subquery()
     Alias = aliased(Model, subq)
 
-    # stmt = select(Alias, subq.c.row_number)
     stmt = select(subq.c.row_number)
-    stmt = stmt.order_by(subq.c.row_number)
     stmt = stmt.where(Alias.id == after)
-    print(stmt)
-    models = session.execute(stmt)
-    print(models.all())
-    print("-" * 100)
 
+    # add the row number of "after" to all rows
     subq = stmt.subquery()
-
     stmt = select(
         Model,
         func.row_number()
-        .over(order_by=[Model.num, Model.id])
+        .over(order_by=order_by_arg(Model))
         .label("row_number"),
         subq.c.row_number.label("mark"),
     )
-    # stmt = select(Model, subq.c.row_number)
-    stmt = stmt.join(subq, True)
-    # stmt = stmt.where(text("row_number > mark"))
-    # print(stmt)
-    # models = session.execute(stmt)
-    # print(models.all())
+    stmt = stmt.join(subq, True)  # cross join
 
-    # stmt = select(Model)
-    # stmt = stmt.join(subq, Model.id == subq.c.id)
-    # stmt = stmt.order_by(subq.c.row_number)
-    # print(stmt)
-    # models = session.execute(stmt)
-    # print(models.all())
-
+    # select rows with row numbers greater than that of "after"
     subq = stmt.subquery()
     Alias = aliased(Model, subq)
     stmt = select(Alias, subq.c.row_number, subq.c.mark)
-    stmt = stmt.order_by(Alias.num)
-    stmt = stmt.order_by(Alias.id)
+    stmt = stmt.order_by(*order_by_arg(Alias))  # might be unnecessary
     stmt = stmt.where(subq.c.row_number > subq.c.mark)
-    print(stmt)
+
     # models = session.execute(stmt)
     models = session.scalars(stmt)
 
