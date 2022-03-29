@@ -6,6 +6,12 @@ from typing import Optional, List, NamedTuple
 
 from . import models as db_models
 
+import sqlparse
+
+
+def format_sql(sql):
+    return sqlparse.format(str(sql), reindent=True, keyword_case="upper")
+
 
 class SortField(NamedTuple):
     field: str
@@ -69,65 +75,46 @@ def compose_statement(
             for f, d in [(getattr(Model, s.field), s.desc) for s in sort]
         ]
 
-    stmt = select(Model)
-
-    if forward:
-        if after:
-            cte = select(
-                Model,
-                func.row_number()
-                .over(order_by=sorting_fields(Model))
-                .label("row_number"),
-            ).cte()
-
-            subq = select(cte.c.row_number.label("cursor"))
-            subq = subq.where(getattr(cte.c, id_field) == after)
-            subq = subq.subquery()
-
-            Alias = aliased(Model, cte)
-            stmt = select(Alias).select_from(cte)
-            stmt = stmt.join(subq, True)  # cartesian product
-            stmt = stmt.order_by(*sorting_fields(Alias))  # unnecessary?
-            stmt = stmt.where(cte.c.row_number > subq.c.cursor)
-        else:
-            stmt = stmt.order_by(*sorting_fields(Model))
-        if first is not None:
-            stmt = stmt.limit(first)
-
-    elif backward:
-        if before:
-            cte = select(
-                Model,
-                func.row_number()
-                .over(order_by=sorting_fields(Model))
-                .label("row_number"),
-            ).cte()
-
-            subq = select(cte.c.row_number.label("cursor"))
-            subq = subq.where(getattr(cte.c, id_field) == before)
-            subq = subq.subquery()
-
-            Alias = aliased(Model, cte)
-            stmt = select(Alias).select_from(cte)
-            stmt = stmt.join(subq, True)  # cartesian product
-            stmt = stmt.order_by(*sorting_fields(Alias))  # unnecessary?
-            stmt = stmt.where(cte.c.row_number < subq.c.cursor)
-
-        else:
-            stmt = stmt.order_by(*sorting_fields(Model))
-
-        if last is not None:
-            subq = stmt.subquery()
-            Alias = aliased(Model, subq)
-            stmt = select(Alias)
-            stmt = stmt.order_by(*sorting_fields(Alias, reverse=True))
-            stmt = stmt.limit(last)
-
-            Alias = aliased(Model, stmt.subquery())
-            stmt = select(Alias)
-            stmt = stmt.order_by(*sorting_fields(Alias))
-
-    else:
+    if not (forward or backward):
+        stmt = select(Model)
         stmt = stmt.order_by(*sorting_fields(Model))
+        return stmt
+
+    if cursor := after or before:
+        cte = select(
+            Model,
+            func.row_number()
+            .over(order_by=sorting_fields(Model))
+            .label("row_number"),
+        ).cte()
+
+        subq = select(cte.c.row_number.label("cursor"))
+        subq = subq.where(getattr(cte.c, id_field) == cursor)
+        subq = subq.subquery()
+
+        Alias = aliased(Model, cte)
+        stmt = select(Alias).select_from(cte)
+        stmt = stmt.join(subq, True)  # cartesian product
+        stmt = stmt.order_by(*sorting_fields(Alias))  # unnecessary?
+        if after:
+            stmt = stmt.where(cte.c.row_number > subq.c.cursor)
+        else:  # before
+            stmt = stmt.where(cte.c.row_number < subq.c.cursor)
+    else:
+        stmt = select(Model)
+        stmt = stmt.order_by(*sorting_fields(Model))
+
+    if first is not None:
+        stmt = stmt.limit(first)
+    elif last is not None:
+        subq = stmt.subquery()
+        Alias = aliased(Model, subq)
+        stmt = select(Alias)
+        stmt = stmt.order_by(*sorting_fields(Alias, reverse=True))
+        stmt = stmt.limit(last)
+
+        Alias = aliased(Model, stmt.subquery())
+        stmt = select(Alias)
+        stmt = stmt.order_by(*sorting_fields(Alias))
 
     return stmt
