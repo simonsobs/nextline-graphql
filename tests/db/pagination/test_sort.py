@@ -14,15 +14,16 @@ def test_sort(session):
     after = 5
     Model = Entity
     id_field = "id"
-    order_by = [("num", False)]
+    sort = [("num", False)]
+    expected = [6, 1, 2, 3]
 
-    if id_field not in [f for f, _ in order_by]:
-        order_by.append((id_field, False))
+    if id_field not in [f for f, _ in sort]:
+        sort.append((id_field, False))
 
     def order_by_arg(Model):
         return [
             getattr(Model, f).desc() if d else getattr(Model, f)
-            for f, d in order_by
+            for f, d in sort
         ]
 
     # sort and add row number
@@ -64,5 +65,4 @@ def test_sort(session):
     # models = models.all()
     # print(models)
 
-    expected = [6, 1, 2, 3]
     assert expected == [m.id for m in models]
