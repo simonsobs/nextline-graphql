@@ -96,20 +96,34 @@ def compose_statement(
 
     elif backward:
         if before:
-            stmt = stmt.where(getattr(Model, id_field) < before)
-        if last is None:
-            stmt = stmt.order_by(*sorting_fields(Model))
+            cte = select(
+                Model,
+                func.row_number()
+                .over(order_by=sorting_fields(Model))
+                .label("row_number"),
+            ).cte()
+
+            subq = select(cte.c.row_number.label("cursor"))
+            subq = subq.where(getattr(cte.c, id_field) == before)
+            subq = subq.subquery()
+
+            Alias = aliased(Model, cte)
+            stmt = select(Alias).select_from(cte)
+            stmt = stmt.join(subq, True)  # cartesian product
+            stmt = stmt.order_by(*sorting_fields(Alias))  # unnecessary?
+            stmt = stmt.where(cte.c.row_number < subq.c.cursor)
+
         else:
-            # use subquery to limit from last
-            # https://stackoverflow.com/a/12125925/7309855
-            # subq = stmt.order_by(getattr(Model, id_field).desc())
-            subq = stmt.order_by(*sorting_fields(Model, reverse=True))
-            subq = subq.limit(last)
+            stmt = stmt.order_by(*sorting_fields(Model))
 
-            # alias to refer a subquery as an ORM
-            # https://docs.sqlalchemy.org/en/20/tutorial/data_select.html#orm-entity-subqueries-ctes
-            Alias = aliased(Model, subq.subquery())
+        if last is not None:
+            subq = stmt.subquery()
+            Alias = aliased(Model, subq)
+            stmt = select(Alias)
+            stmt = stmt.order_by(*sorting_fields(Alias, reverse=True))
+            stmt = stmt.limit(last)
 
+            Alias = aliased(Model, stmt.subquery())
             stmt = select(Alias)
             stmt = stmt.order_by(*sorting_fields(Alias))
 
