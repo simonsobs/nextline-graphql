@@ -2,7 +2,7 @@ from sqlalchemy import func
 from sqlalchemy.future import select
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql.selectable import Select
-from typing import Optional, List, NamedTuple
+from typing import Optional, List, NamedTuple, TypeVar
 
 from . import models as db_models
 
@@ -20,6 +20,8 @@ class SortField(NamedTuple):
 
 Sort = List[SortField]
 
+_Id = TypeVar("_Id")
+
 
 def load_models(
     session,
@@ -27,8 +29,8 @@ def load_models(
     id_field: str,
     *,
     sort: Optional[Sort] = None,
-    before: Optional[int] = None,
-    after: Optional[int] = None,
+    before: Optional[_Id] = None,
+    after: Optional[_Id] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
 ):
@@ -51,15 +53,15 @@ def compose_statement(
     id_field: str,
     *,
     sort: Optional[Sort] = None,
-    before: Optional[int] = None,
-    after: Optional[int] = None,
+    before: Optional[_Id] = None,
+    after: Optional[_Id] = None,
     first: Optional[int] = None,
     last: Optional[int] = None,
 ) -> Select:
     """Return a SELECT statement object to be given to session.scalars"""
 
-    forward = after or (first is not None)
-    backward = before or (last is not None)
+    forward = (after is not None) or (first is not None)
+    backward = (before is not None) or (last is not None)
 
     if forward and backward:
         raise ValueError("Only either after/first or before/last is allowed")
@@ -78,7 +80,13 @@ def compose_statement(
     if not (forward or backward):
         return select(Model).order_by(*sorting_fields(Model))
 
-    if cursor := after or before:
+    cursor = None
+    if after is not None:
+        cursor = after
+    elif before is not None:
+        cursor = before
+
+    if cursor is not None:
         cte = select(
             Model,
             func.row_number()
@@ -94,7 +102,7 @@ def compose_statement(
         stmt = select(Alias).select_from(cte)
         stmt = stmt.join(subq, True)  # cartesian product
         stmt = stmt.order_by(*sorting_fields(Alias))  # unnecessary?
-        if after:
+        if after is not None:
             stmt = stmt.where(cte.c.row_number > subq.c.cursor)
         else:  # before
             stmt = stmt.where(cte.c.row_number < subq.c.cursor)
