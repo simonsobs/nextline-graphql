@@ -69,8 +69,8 @@ def load_edges(
         session,
         Model,
         id_field,
-        before=before is not None and decode_id(before),
-        after=after is not None and decode_id(after),
+        before=before if before is None else decode_id(before),
+        after=after if after is None else decode_id(after),
         first=first,
         last=last,
     )
