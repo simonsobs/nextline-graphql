@@ -33,8 +33,24 @@ params = [
         [6, 1, 2],
     ),
     pytest.param(
+        dict(sort=[SortField("num")], first=3),
+        [7, 8, 9],
+    ),
+    pytest.param(
         dict(sort=[SortField("num", True)], after=5),
         [6, 7, 8, 9, 10],
+    ),
+    pytest.param(
+        dict(sort=[SortField("num")], before=5),
+        [7, 8, 9, 10, 4],
+    ),
+    pytest.param(
+        dict(sort=[SortField("num")], before=5, last=3),
+        [9, 10, 4],
+    ),
+    pytest.param(
+        dict(sort=[SortField("num")], last=3),
+        [1, 2, 3],
     ),
     pytest.param(
         dict(after=5),
