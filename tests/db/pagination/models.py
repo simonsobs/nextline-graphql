@@ -1,4 +1,4 @@
-from sqlalchemy import MetaData, Column, Integer
+from sqlalchemy import MetaData, Column, Integer, Text
 from sqlalchemy.ext.declarative import declarative_base
 
 from typing import Type
@@ -21,9 +21,10 @@ class Entity(Base):
     __tablename__ = "entity"
     id = Column(Integer, primary_key=True, index=True)
     num = Column(Integer)
+    txt = Column(Text)
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} {self.id!r}, {self.num!r}>"
+        return f"<{self.__class__.__name__} {self.id!r}, {self.num!r}, {self.txt!r}>"
 
 
 ModelType = Type[Entity]

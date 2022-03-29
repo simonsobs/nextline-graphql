@@ -2,6 +2,8 @@ from sqlalchemy import func
 from sqlalchemy.orm import aliased
 from sqlalchemy.future import select
 
+import sqlparse
+
 import pytest
 
 
@@ -9,13 +11,32 @@ from nextlinegraphql.db.pagination import load_models
 
 from .models import Entity
 
+params = [
+    pytest.param(
+        dict(sort=[("num", False)], after=5),
+        [6, 1, 2, 3],
+    ),
+    pytest.param(
+        dict(sort=[("num", True)], after=5),
+        [6, 7, 8, 9, 10],
+    ),
+    pytest.param(
+        dict(after=5),
+        [6, 7, 8, 9, 10],
+    ),
+    pytest.param(
+        dict(sort=[("num", False), ("txt", False)], after=5),
+        [1, 3, 2],
+    ),
+]
 
-def test_sort(session):
-    after = 5
+
+@pytest.mark.parametrize("kwargs, expected", params)
+def test_sort(session, kwargs, expected):
+    after = kwargs.get("after")
+    sort = kwargs.get("sort", [])
     Model = Entity
     id_field = "id"
-    sort = [("num", False)]
-    expected = [6, 1, 2, 3]
 
     if id_field not in [f for f, _ in sort]:
         sort.append((id_field, False))
@@ -27,42 +48,41 @@ def test_sort(session):
         ]
 
     # sort and add row number
-    stmt = select(
+    cte = select(
         Model,
         func.row_number()
         .over(order_by=order_by_arg(Model))
         .label("row_number"),
     )
+    cte = cte.cte()
 
     # find the row number of "after"
-    subq = stmt.subquery()
-    Alias = aliased(Model, subq)
+    subq = select(cte.c.row_number.label("cursor"))
+    subq = subq.where(getattr(cte.c, id_field) == after)
+    subq = subq.subquery()
 
-    stmt = select(subq.c.row_number)
-    stmt = stmt.where(Alias.id == after)
-
-    # add the row number of "after" to all rows
-    subq = stmt.subquery()
-    stmt = select(
-        Model,
-        func.row_number()
-        .over(order_by=order_by_arg(Model))
-        .label("row_number"),
-        subq.c.row_number.label("mark"),
-    )
-    stmt = stmt.join(subq, True)  # cross join
-
-    # select rows with row numbers greater than that of "after"
-    subq = stmt.subquery()
-    Alias = aliased(Model, subq)
-    stmt = select(Alias, subq.c.row_number, subq.c.mark)
+    Alias = aliased(Model, cte)
+    stmt = select(Alias).select_from(cte)
+    stmt = stmt.join(subq, True)  # cartesian product
     stmt = stmt.order_by(*order_by_arg(Alias))  # might be unnecessary
-    stmt = stmt.where(subq.c.row_number > subq.c.mark)
+    stmt = stmt.where(cte.c.row_number > subq.c.cursor)
+
+    print()
+    print("-" * 100)
+    print(format_sql(str(stmt)))
+    models = session.execute(stmt)
+    models = models.all()
+    print(models)
+    # return
 
     # models = session.execute(stmt)
     models = session.scalars(stmt)
 
-    # models = models.all()
-    # print(models)
+    models = models.all()
+    print(models)
 
     assert expected == [m.id for m in models]
+
+
+def format_sql(sql):
+    return sqlparse.format(str(sql), reindent=True, keyword_case="upper")
