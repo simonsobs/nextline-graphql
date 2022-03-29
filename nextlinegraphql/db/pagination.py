@@ -80,17 +80,16 @@ def compose_statement(
     if not (forward or backward):
         return select(Model).order_by(*sorting_fields(Model))
 
-    cursor = None
-    if after is not None:
-        cursor = after
-    elif before is not None:
-        cursor = before
+    cursor = after if forward else before
+    limit = first if forward else last
 
-    if cursor is not None:
+    if cursor is None:
+        stmt = select(Model).order_by(*sorting_fields(Model, reverse=backward))
+    else:
         cte = select(
             Model,
             func.row_number()
-            .over(order_by=sorting_fields(Model))
+            .over(order_by=sorting_fields(Model, reverse=backward))
             .label("row_number"),
         ).cte()
 
@@ -101,21 +100,13 @@ def compose_statement(
         Alias = aliased(Model, cte)
         stmt = select(Alias).select_from(cte)
         stmt = stmt.join(subq, True)  # cartesian product
-        stmt = stmt.order_by(*sorting_fields(Alias))  # unnecessary?
-        if after is not None:
-            stmt = stmt.where(cte.c.row_number > subq.c.cursor)
-        else:  # before
-            stmt = stmt.where(cte.c.row_number < subq.c.cursor)
-    else:
-        stmt = select(Model).order_by(*sorting_fields(Model))
+        stmt = stmt.order_by(*sorting_fields(Alias, reverse=backward))
+        stmt = stmt.where(cte.c.row_number > subq.c.cursor)
 
-    if first is not None:
-        stmt = stmt.limit(first)
-    elif last is not None:
-        Alias = aliased(Model, stmt.subquery())
-        stmt = select(Alias).order_by(*sorting_fields(Alias, reverse=True))
-        stmt = stmt.limit(last)
+    if limit is not None:
+        stmt = stmt.limit(limit)
 
+    if backward:
         Alias = aliased(Model, stmt.subquery())
         stmt = select(Alias).order_by(*sorting_fields(Alias))
 
