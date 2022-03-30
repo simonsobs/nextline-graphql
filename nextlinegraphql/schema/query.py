@@ -79,7 +79,7 @@ def query_stdouts(info: Info) -> List[types.StdoutHistory]:
     return [types.StdoutHistory.from_model(m) for m in models]
 
 
-def query_all_runs(
+def query_connection_run(
     info: Info,
     before: Optional[str] = None,
     after: Optional[str] = None,
@@ -115,7 +115,7 @@ class History:
     )
 
     all_runs: Connection[types.RunHistory] = strawberry.field(
-        resolver=query_all_runs
+        resolver=query_connection_run
     )
 
 
