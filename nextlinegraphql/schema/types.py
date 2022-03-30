@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+from sqlalchemy import inspect
 import strawberry
 from strawberry.types import Info
 from typing import Optional, Type, TypeVar
@@ -82,7 +83,9 @@ def query_connection(
     NodeType: Type[_T],
 ) -> Connection[_T]:
 
-    id_field = "id"
+    id_field = inspect(Model).primary_key[0].name
+    # TODO: handle multiple primary keys
+
     create_node_from_model = NodeType.from_model  # type: ignore
 
     return load_connection(
