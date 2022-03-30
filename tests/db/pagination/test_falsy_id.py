@@ -57,6 +57,5 @@ def sample(db):
         num = [3, 3, 3, 2, 2, 2, 1, 1, 1, 1]
         txt = ["", "A", "B", "C", "D", "E", "F", "G", "H", "I"]
         for i in range(10):
-            print(i)
             model = Entity(id=i, num=num[i], txt=txt[i])
             session.add(model)
