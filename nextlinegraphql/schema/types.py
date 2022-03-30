@@ -187,3 +187,75 @@ def query_connection_run(
         first=first,
         last=last,
     )
+
+
+def query_connection_trace(
+    info: Info,
+    before: Optional[str] = None,
+    after: Optional[str] = None,
+    first: Optional[int] = None,
+    last: Optional[int] = None,
+) -> Connection[TraceHistory]:
+
+    Model = db_models.Trace
+    id_field = "id"
+    create_node_from_model = TraceHistory.from_model
+
+    return load_connection(
+        info,
+        Model,
+        id_field,
+        create_node_from_model,
+        before=before,
+        after=after,
+        first=first,
+        last=last,
+    )
+
+
+def query_connection_prompt(
+    info: Info,
+    before: Optional[str] = None,
+    after: Optional[str] = None,
+    first: Optional[int] = None,
+    last: Optional[int] = None,
+) -> Connection[PromptHistory]:
+
+    Model = db_models.Prompt
+    id_field = "id"
+    create_node_from_model = PromptHistory.from_model
+
+    return load_connection(
+        info,
+        Model,
+        id_field,
+        create_node_from_model,
+        before=before,
+        after=after,
+        first=first,
+        last=last,
+    )
+
+
+def query_connection_stdout(
+    info: Info,
+    before: Optional[str] = None,
+    after: Optional[str] = None,
+    first: Optional[int] = None,
+    last: Optional[int] = None,
+) -> Connection[StdoutHistory]:
+
+    Model = db_models.Stdout
+    id_field = "id"
+    create_node_from_model = StdoutHistory.from_model
+
+    return load_connection(
+        info,
+        Model,
+        id_field,
+        create_node_from_model,
+        before=before,
+        after=after,
+        first=first,
+        last=last,
+    )

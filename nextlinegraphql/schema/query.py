@@ -2,11 +2,8 @@ from __future__ import annotations
 import traceback
 import strawberry
 from strawberry.types import Info
-from sqlalchemy.future import select
-from sqlalchemy.orm import Session
-from typing import TYPE_CHECKING, List, Optional, cast
+from typing import TYPE_CHECKING, List, Optional
 
-from ..db import models as db_models
 from . import types
 from .pagination import Connection
 
@@ -51,38 +48,19 @@ def query_exception(info: Info) -> Optional[str]:
     return None
 
 
-def query_traces(info: Info) -> List[types.TraceHistory]:
-    session = info.context["session"]
-    session = cast(Session, session)
-    models = session.scalars(select(db_models.Trace))
-    return [types.TraceHistory.from_model(m) for m in models]
-
-
-def query_prompt(info: Info) -> List[types.PromptHistory]:
-    session = info.context["session"]
-    session = cast(Session, session)
-    models = session.scalars(select(db_models.Prompt))
-    return [types.PromptHistory.from_model(m) for m in models]
-
-
-def query_stdouts(info: Info) -> List[types.StdoutHistory]:
-    session = info.context["session"]
-    session = cast(Session, session)
-    models = session.scalars(select(db_models.Stdout))
-    return [types.StdoutHistory.from_model(m) for m in models]
-
-
 @strawberry.type
 class History:
     runs: Connection[types.RunHistory] = strawberry.field(
         resolver=types.query_connection_run
     )
-    traces: List[types.TraceHistory] = strawberry.field(resolver=query_traces)
-    prompts: List[types.PromptHistory] = strawberry.field(
-        resolver=query_prompt
+    traces: Connection[types.TraceHistory] = strawberry.field(
+        resolver=types.query_connection_trace
     )
-    stdouts: List[types.StdoutHistory] = strawberry.field(
-        resolver=query_stdouts
+    prompts: Connection[types.PromptHistory] = strawberry.field(
+        resolver=types.query_connection_prompt
+    )
+    stdouts: Connection[types.StdoutHistory] = strawberry.field(
+        resolver=types.query_connection_stdout
     )
 
 

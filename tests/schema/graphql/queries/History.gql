@@ -15,21 +15,31 @@ query History {
       }
     }
     traces {
-      id
-      runNo
-      traceNo
-      startedAt
-      endedAt
+      edges {
+        cursor
+        node {
+          id
+          runNo
+          traceNo
+          startedAt
+          endedAt
+        }
+      }
     }
     prompts {
-      id
-      runNo
-      traceNo
-      promptNo
-      event
-      startedAt
-      fileName
-      lineNo
+      edges {
+        cursor
+        node {
+          id
+          runNo
+          traceNo
+          promptNo
+          event
+          startedAt
+          fileName
+          lineNo
+        }
+      }
     }
   }
 }
