@@ -10,6 +10,14 @@ from .pagination import load_connection, Connection
 
 
 @strawberry.type
+class PromptingData:
+    prompting: int
+    file_name: str
+    line_no: int
+    trace_event: str
+
+
+@strawberry.type
 class RunHistory:
     _model: strawberry.Private[db_models.Run]
     id: int
@@ -44,30 +52,6 @@ class RunHistory:
             script=model.script,
             exception=model.exception,
         )
-
-
-def query_connection_run(
-    info: Info,
-    before: Optional[str] = None,
-    after: Optional[str] = None,
-    first: Optional[int] = None,
-    last: Optional[int] = None,
-) -> Connection[RunHistory]:
-
-    Model = db_models.Run
-    id_field = "id"
-    create_node_from_model = RunHistory.from_model
-
-    return load_connection(
-        info,
-        Model,
-        id_field,
-        create_node_from_model,
-        before=before,
-        after=after,
-        first=first,
-        last=last,
-    )
 
 
 @strawberry.type
@@ -181,9 +165,25 @@ class StdoutHistory:
         )
 
 
-@strawberry.type
-class PromptingData:
-    prompting: int
-    file_name: str
-    line_no: int
-    trace_event: str
+def query_connection_run(
+    info: Info,
+    before: Optional[str] = None,
+    after: Optional[str] = None,
+    first: Optional[int] = None,
+    last: Optional[int] = None,
+) -> Connection[RunHistory]:
+
+    Model = db_models.Run
+    id_field = "id"
+    create_node_from_model = RunHistory.from_model
+
+    return load_connection(
+        info,
+        Model,
+        id_field,
+        create_node_from_model,
+        before=before,
+        after=after,
+        first=first,
+        last=last,
+    )
