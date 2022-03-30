@@ -1,13 +1,18 @@
 query History {
   history {
     runs {
-      id
-      runNo
-      state
-      startedAt
-      endedAt
-      script
-      exception
+      edges {
+        cursor
+        node {
+          id
+          runNo
+          state
+          startedAt
+          endedAt
+          script
+          exception
+        }
+      }
     }
     traces {
       id

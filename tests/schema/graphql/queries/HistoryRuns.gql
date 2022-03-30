@@ -1,11 +1,11 @@
-query HistoryAllRuns(
+query HistoryRuns(
   $before: String
   $after: String
   $first: Int
   $last: Int
 ) {
   history {
-    allRuns(before: $before, after: $after, first: $first, last: $last) {
+    runs(before: $before, after: $after, first: $first, last: $last) {
       pageInfo {
         startCursor
         endCursor

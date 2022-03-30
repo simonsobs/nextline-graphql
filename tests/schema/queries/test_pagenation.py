@@ -11,7 +11,7 @@ from typing import Optional, cast, TypedDict
 from nextlinegraphql.db import init_db
 from nextlinegraphql.db.models import Run
 
-from ..graphql import QUERY_HISTORY_ALL_RUNS
+from ..graphql import QUERY_HISTORY_RUNS
 from ..funcs import gql_request, gql_request_response
 
 
@@ -321,10 +321,10 @@ async def assert_results(client: TestClient, variables, expected):
     )
 
     data = await gql_request(
-        client, QUERY_HISTORY_ALL_RUNS, variables=variables
+        client, QUERY_HISTORY_RUNS, variables=variables
     )
 
-    all_runs = data["history"]["allRuns"]
+    all_runs = data["history"]["runs"]
     page_info = all_runs["pageInfo"]
     edges = all_runs["edges"]
 
@@ -378,7 +378,7 @@ async def test_error_forward_and_backward(sample, client, variables):
 
     resp = await gql_request_response(
         client,
-        QUERY_HISTORY_ALL_RUNS,
+        QUERY_HISTORY_RUNS,
         variables=variables,
     )
     result = resp.json()

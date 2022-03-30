@@ -51,13 +51,6 @@ def query_exception(info: Info) -> Optional[str]:
     return None
 
 
-def query_runs(info: Info) -> List[types.RunHistory]:
-    session = info.context["session"]
-    session = cast(Session, session)
-    models = session.scalars(select(db_models.Run))
-    return [types.RunHistory.from_model(m) for m in models]
-
-
 def query_traces(info: Info) -> List[types.TraceHistory]:
     session = info.context["session"]
     session = cast(Session, session)
@@ -81,17 +74,15 @@ def query_stdouts(info: Info) -> List[types.StdoutHistory]:
 
 @strawberry.type
 class History:
-    runs: List[types.RunHistory] = strawberry.field(resolver=query_runs)
+    runs: Connection[types.RunHistory] = strawberry.field(
+        resolver=types.query_connection_run
+    )
     traces: List[types.TraceHistory] = strawberry.field(resolver=query_traces)
     prompts: List[types.PromptHistory] = strawberry.field(
         resolver=query_prompt
     )
     stdouts: List[types.StdoutHistory] = strawberry.field(
         resolver=query_stdouts
-    )
-
-    all_runs: Connection[types.RunHistory] = strawberry.field(
-        resolver=types.query_connection_run
     )
 
 
