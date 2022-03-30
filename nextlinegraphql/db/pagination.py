@@ -6,11 +6,11 @@ from typing import Optional, List, NamedTuple, TypeVar
 
 from . import models as db_models
 
-import sqlparse
+# import sqlparse
 
 
-def format_sql(sql):
-    return sqlparse.format(str(sql), reindent=True, keyword_case="upper")
+# def format_sql(sql):
+#     return sqlparse.format(str(sql), reindent=True, keyword_case="upper")
 
 
 class SortField(NamedTuple):
