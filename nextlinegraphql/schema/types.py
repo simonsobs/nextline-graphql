@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 import strawberry
 from strawberry.types import Info
-from typing import Optional, Type
+from typing import Optional, Type, TypeVar
 
 from ..db import models as db_models
 from .pagination import load_connection, Connection
@@ -26,19 +26,8 @@ def query_connection_run(
 ) -> Connection[RunHistory]:
 
     Model = db_models.Run
-    id_field = "id"
-    create_node_from_model = RunHistory.from_model
-
-    return load_connection(
-        info,
-        Model,
-        id_field,
-        create_node_from_model,
-        before=before,
-        after=after,
-        first=first,
-        last=last,
-    )
+    NodeType = RunHistory
+    return query_connection(info, before, after, first, last, Model, NodeType)
 
 
 def query_connection_trace(
@@ -50,19 +39,8 @@ def query_connection_trace(
 ) -> Connection[TraceHistory]:
 
     Model = db_models.Trace
-    id_field = "id"
-    create_node_from_model = TraceHistory.from_model
-
-    return load_connection(
-        info,
-        Model,
-        id_field,
-        create_node_from_model,
-        before=before,
-        after=after,
-        first=first,
-        last=last,
-    )
+    NodeType = TraceHistory
+    return query_connection(info, before, after, first, last, Model, NodeType)
 
 
 def query_connection_prompt(
@@ -74,19 +52,8 @@ def query_connection_prompt(
 ) -> Connection[PromptHistory]:
 
     Model = db_models.Prompt
-    id_field = "id"
-    create_node_from_model = PromptHistory.from_model
-
-    return load_connection(
-        info,
-        Model,
-        id_field,
-        create_node_from_model,
-        before=before,
-        after=after,
-        first=first,
-        last=last,
-    )
+    NodeType = PromptHistory
+    return query_connection(info, before, after, first, last, Model, NodeType)
 
 
 def query_connection_stdout(
@@ -98,8 +65,25 @@ def query_connection_stdout(
 ) -> Connection[StdoutHistory]:
 
     Model = db_models.Stdout
+    NodeType = StdoutHistory
+    return query_connection(info, before, after, first, last, Model, NodeType)
+
+
+_T = TypeVar("_T")
+
+
+def query_connection(
+    info: Info,
+    before: Optional[str],
+    after: Optional[str],
+    first: Optional[int],
+    last: Optional[int],
+    Model,
+    NodeType: Type[_T],
+) -> Connection[_T]:
+
     id_field = "id"
-    create_node_from_model = StdoutHistory.from_model
+    create_node_from_model = NodeType.from_model  # type: ignore
 
     return load_connection(
         info,
