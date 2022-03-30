@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import datetime
 import strawberry
+from strawberry.types import Info
 from typing import List, Optional, Type
 
 from ..db import models as db_models
+from .pagination import load_connection, Connection
 
 
 @strawberry.type
@@ -42,6 +44,30 @@ class RunHistory:
             script=model.script,
             exception=model.exception,
         )
+
+
+def query_connection_run(
+    info: Info,
+    before: Optional[str] = None,
+    after: Optional[str] = None,
+    first: Optional[int] = None,
+    last: Optional[int] = None,
+) -> Connection[RunHistory]:
+
+    Model = db_models.Run
+    id_field = "id"
+    create_node_from_model = RunHistory.from_model
+
+    return load_connection(
+        info,
+        Model,
+        id_field,
+        create_node_from_model,
+        before=before,
+        after=after,
+        first=first,
+        last=last,
+    )
 
 
 @strawberry.type
