@@ -53,6 +53,7 @@ setup(
             "mypy",
             "sqlalchemy-stubs",
             "logging_tree",
+            "uvicorn",
         ],
     },
 )
