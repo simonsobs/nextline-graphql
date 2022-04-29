@@ -18,6 +18,7 @@ async def test_get(client: TestClient):
 
     headers = {
         "ORIGIN": "https://foo.example",
+        "Accept": "text/html",
     }
 
     resp = await client.get("/", headers=headers)
