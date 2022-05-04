@@ -4,7 +4,7 @@ import datetime
 from sqlalchemy import inspect
 import strawberry
 from strawberry.types import Info
-from typing import Optional, Type, TypeVar
+from typing import Optional, Type, TypeVar, List
 
 from ..db import models as db_models
 from .pagination import load_connection, Connection
@@ -111,15 +111,27 @@ class RunHistory:
     script: Optional[str]
     exception: Optional[str]
 
-    traces: Connection[TraceHistory] = strawberry.field(
-        resolver=query_connection_trace
-    )
-    prompts: Connection[PromptHistory] = strawberry.field(
-        resolver=query_connection_prompt
-    )
-    stdouts: Connection[StdoutHistory] = strawberry.field(
-        resolver=query_connection_stdout
-    )
+    # traces: Connection[TraceHistory] = strawberry.field(
+    #     resolver=query_connection_trace
+    # )
+    # prompts: Connection[PromptHistory] = strawberry.field(
+    #     resolver=query_connection_prompt
+    # )
+    # stdouts: Connection[StdoutHistory] = strawberry.field(
+    #     resolver=query_connection_stdout
+    # )
+
+    @strawberry.field
+    def traces(self) -> List["TraceHistory"]:
+        return [TraceHistory.from_model(m) for m in self._model.traces]  # type: ignore
+
+    @strawberry.field
+    def prompts(self) -> List["PromptHistory"]:
+        return [PromptHistory.from_model(m) for m in self._model.prompts]  # type: ignore
+
+    @strawberry.field
+    def stdouts(self) -> List["StdoutHistory"]:
+        return [StdoutHistory.from_model(m) for m in self._model.stdouts]  # type: ignore
 
     @classmethod
     def from_model(cls: Type["RunHistory"], model: db_models.Run):
@@ -151,13 +163,21 @@ class TraceHistory:
     def run(self) -> RunHistory:
         return RunHistory.from_model(self._model.run)
 
-    prompts: Connection[PromptHistory] = strawberry.field(
-        resolver=query_connection_prompt
-    )
+    # prompts: Connection[PromptHistory] = strawberry.field(
+    #     resolver=query_connection_prompt
+    # )
 
-    stdouts: Connection[StdoutHistory] = strawberry.field(
-        resolver=query_connection_stdout
-    )
+    # stdouts: Connection[StdoutHistory] = strawberry.field(
+    #     resolver=query_connection_stdout
+    # )
+
+    @strawberry.field
+    def prompts(self) -> List["PromptHistory"]:
+        return [PromptHistory.from_model(m) for m in self._model.prompts]  # type: ignore
+
+    @strawberry.field
+    def stdouts(self) -> List["StdoutHistory"]:
+        return [StdoutHistory.from_model(m) for m in self._model.stdouts]  # type: ignore
 
     @classmethod
     def from_model(cls: Type[TraceHistory], model: db_models.Trace):
