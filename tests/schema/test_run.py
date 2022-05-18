@@ -41,7 +41,7 @@ async def test_run(client: TestClient):
         task_subscribe_state,
         task_control_execution,
     )
-    assert ["initialized", "running", "exited", "finished"] == states
+    assert ["initialized", "running", "finished"] == states
 
     data = await gql_request(client, QUERY_STATE)
     assert "finished" == data["state"]
