@@ -1,6 +1,5 @@
 from __future__ import annotations
 import asyncio
-import dataclasses
 import strawberry
 from strawberry.types import Info
 from typing import TYPE_CHECKING, AsyncGenerator, List
@@ -38,8 +37,17 @@ async def subscribe_prompting(
     info: Info, trace_id: int
 ) -> AGen[PromptingData, None]:
     nextline: Nextline = info.context["nextline"]
-    async for y in nextline.subscribe_prompting(trace_id):
-        yield PromptingData(**dataclasses.asdict(y))
+    async for y in nextline.subscribe_prompt_info_for(trace_id):
+        if not y.file_name:
+            # the initial yield at the beginning of a thread or task
+            continue
+        y = PromptingData(
+            prompting=y.prompt_no if y.open else 0,
+            file_name=y.file_name,
+            line_no=y.line_no,
+            trace_event=y.event,
+        )
+        yield y
 
 
 async def subscribe_stdout(info: Info) -> AGen[str, None]:
