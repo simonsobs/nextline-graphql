@@ -1,5 +1,5 @@
 import asyncio
-from typing import Optional, Set
+from typing import List, Optional, Set
 from async_asgi_testclient import TestClient
 
 from nextline.utils import agen_with_wait
@@ -8,6 +8,7 @@ from ..funcs import gql_request, gql_subscribe
 
 from ..graphql import (
     QUERY_STATE,
+    SUBSCRIBE_STATE,
     SUBSCRIBE_TRACE_IDS,
     SUBSCRIBE_PROMPTING,
     MUTATE_RESET,
@@ -21,6 +22,8 @@ async def run_statement(client, statement: Optional[str] = None):
     data = await gql_request(client, MUTATE_RESET, variables=variables)
     assert data["reset"]
 
+    task_subscribe_state = asyncio.create_task(subscribe_state(client))
+
     data = await gql_request(client, QUERY_STATE)
     assert "initialized" == data["state"]
 
@@ -33,12 +36,26 @@ async def run_statement(client, statement: Optional[str] = None):
     data = await gql_request(client, MUTATE_EXEC)
     assert data["exec"]
 
-    await task_control_execution
+    states, *_ = await asyncio.gather(
+        task_subscribe_state,
+        task_control_execution,
+    )
+    assert ["initialized", "running", "finished"] == states
 
     data = await gql_request(client, QUERY_STATE)
     assert "finished" == data["state"]
 
     await asyncio.sleep(0.01)
+
+
+async def subscribe_state(client: TestClient) -> List[str]:
+    ret = []
+    async for data in gql_subscribe(client, SUBSCRIBE_STATE):
+        s = data["state"]
+        ret.append(s)
+        if s == "finished":
+            break
+    return ret
 
 
 async def control_execution(client: TestClient):
