@@ -87,6 +87,8 @@ async def subscribe_trace_info(nextline: Nextline, db):
 
 async def subscribe_prompt_info(nextline: Nextline, db):
     async for prompt_info in nextline.subscribe_prompt_info():
+        if prompt_info.trace_call_end:  # TODO: remove when unnecessary
+            continue
         with db() as session:
             session = cast(Session, session)
             stmt = select(db_models.Run).filter_by(run_no=prompt_info.run_no)
