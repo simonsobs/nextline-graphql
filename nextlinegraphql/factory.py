@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+import multiprocessing as mp
 from dynaconf import Dynaconf
 from logging import getLogger
 
@@ -21,6 +22,8 @@ from .schema import schema
 from .db import init_db, write_db, models as db_models
 from .example_script import statement
 from .logging import configure_logging
+
+mp.set_start_method("spawn")
 
 
 def create_app(
