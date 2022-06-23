@@ -78,20 +78,24 @@ async def control_execution(client: TestClient):
     await asyncio.gather(*pending)
 
 
-async def control_trace(client: TestClient, trace_id: int) -> None:
+async def control_trace(client: TestClient, trace_no: int) -> None:
     # print(f'control_trace({trace_id})')
 
     async for data in gql_subscribe(
         client,
         SUBSCRIBE_PROMPTING,
-        variables={"traceId": trace_id},
+        variables={"traceId": trace_no},
     ):
         state = data["prompting"]
         # print(state)
         if state["prompting"]:
             await asyncio.sleep(0.001)
             command = "continue"
-            variables = {"traceId": trace_id, "command": command}
+            variables = {
+                "command": command,
+                "promptNo": state["prompting"],
+                "traceNo": trace_no,
+            }
             data = await gql_request(
                 client,
                 MUTATE_SEND_PDB_COMMAND,

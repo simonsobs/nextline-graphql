@@ -77,15 +77,15 @@ async def control_execution(client: TestClient):
     await asyncio.gather(*pending)
 
 
-async def control_trace(client: TestClient, trace_id: int) -> None:
-    # print(f'control_trace({trace_id})')
+async def control_trace(client: TestClient, trace_no: int) -> None:
+    # print(f'control_trace({trace_no})')
 
     to_step = ["script_threading.run()", "script_asyncio.run()"]
 
     async for data in gql_subscribe(
         client,
         SUBSCRIBE_PROMPTING,
-        variables={"traceId": trace_id},
+        variables={"traceId": trace_no},
     ):
         state = data["prompting"]
         # print(state)
@@ -111,8 +111,9 @@ async def control_trace(client: TestClient, trace_id: int) -> None:
                 client,
                 MUTATE_SEND_PDB_COMMAND,
                 variables={
-                    "traceId": trace_id,
                     "command": command,
+                    "promptNo": state["prompting"],
+                    "traceNo": trace_no,
                 },
             )
             assert data["sendPdbCommand"]
