@@ -1,8 +1,6 @@
-import pytest
 from async_asgi_testclient import TestClient
 
 
-@pytest.mark.asyncio
 async def test_one(client: TestClient):
     """Assert GraphQL IDE for the HTTP get request"""
     headers = {"Accept": "text/html"}

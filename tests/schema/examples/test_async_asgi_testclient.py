@@ -1,12 +1,9 @@
 from async_asgi_testclient import TestClient
 
-import pytest
-
 from nextlinegraphql import create_app
 
 
 ##__________________________________________________________________||
-@pytest.mark.asyncio
 async def test_query():
 
     query = """
@@ -27,7 +24,6 @@ async def test_query():
 
 
 ##__________________________________________________________________||
-@pytest.mark.asyncio
 async def test_subscription():
 
     query = """

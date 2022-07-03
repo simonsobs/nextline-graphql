@@ -1,7 +1,6 @@
 import asyncio
 from async_asgi_testclient import TestClient
 
-import pytest
 
 from typing import List, Set
 
@@ -20,7 +19,6 @@ from .graphql import (
 )
 
 
-@pytest.mark.asyncio
 async def test_run(client: TestClient):
 
     task_subscribe_state = asyncio.create_task(subscribe_state(client))

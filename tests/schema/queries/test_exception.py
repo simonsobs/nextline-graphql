@@ -1,4 +1,3 @@
-import pytest
 from async_asgi_testclient import TestClient
 
 from ..funcs import gql_request
@@ -11,7 +10,6 @@ raise Exception('foo', 'bar')
 """.strip()
 
 
-@pytest.mark.asyncio
 async def test_one(client: TestClient):
 
     statement = SOURCE_RAISE

@@ -20,7 +20,6 @@ params = [
 
 
 @pytest.mark.parametrize("statement", params)
-@pytest.mark.asyncio
 async def test_reset(snapshot, statement):
 
     headers = {"Content-Type:": "application/json"}

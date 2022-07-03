@@ -23,7 +23,6 @@ params = [
 
 
 @pytest.mark.parametrize("file_name", params)
-@pytest.mark.asyncio
 async def test_source(client: TestClient, snapshot, file_name):
 
     variables = {}

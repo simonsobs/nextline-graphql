@@ -1,8 +1,6 @@
-import pytest
 from async_asgi_testclient import TestClient
 
 
-@pytest.mark.asyncio
 async def test_get(client: TestClient):
     """test if CORSMiddleware is in effect
 
@@ -26,7 +24,6 @@ async def test_get(client: TestClient):
     assert resp.status_code == 200
 
 
-@pytest.mark.asyncio
 async def test_preflight(client: TestClient):
     """test if CORSMiddleware is in effect with the preflighted request
 
