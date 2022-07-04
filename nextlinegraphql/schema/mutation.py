@@ -19,9 +19,9 @@ async def mutate_exec(info: Info) -> bool:
     return True
 
 
-def mutate_reset(info: Info, statement: Optional[str] = None):
+async def mutate_reset(info: Info, statement: Optional[str] = None):
     nextline: Nextline = info.context["nextline"]
-    nextline.reset(statement=statement)
+    await nextline.reset(statement=statement)
     return True
 
 

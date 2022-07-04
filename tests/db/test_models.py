@@ -86,7 +86,7 @@ async def run_nextline(db, statement):
 
 async def run_statement(nextline: Nextline, statement: Optional[str] = None):
     await asyncio.sleep(0.01)
-    nextline.reset(statement=statement)
+    await nextline.reset(statement=statement)
     await asyncio.sleep(0.01)
     await nextline.run()
     await asyncio.sleep(0.01)
