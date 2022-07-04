@@ -80,6 +80,7 @@ def create_app(
             nextline.reset(run_no_start_from=run_no_start_from)
         else:
             nextline = Nextline(statement, run_no_start_from)
+            await nextline.start()
 
         if db:
             task = asyncio.create_task(write_db(nextline, db))
