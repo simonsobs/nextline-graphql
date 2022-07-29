@@ -39,9 +39,23 @@ def mutate_interrupt(info: Info) -> bool:
     return True
 
 
+def mutate_terminate(info: Info) -> bool:
+    nextline: Nextline = info.context["nextline"]
+    nextline.terminate()
+    return True
+
+
+def mutate_kill(info: Info) -> bool:
+    nextline: Nextline = info.context["nextline"]
+    nextline.kill()
+    return True
+
+
 @strawberry.type
 class Mutation:
     exec: bool = strawberry.field(resolver=mutate_exec)
     reset: bool = strawberry.field(resolver=mutate_reset)
     send_pdb_command: bool = strawberry.field(resolver=mutate_send_pdb_command)
     interrupt: bool = strawberry.field(resolver=mutate_interrupt)
+    terminate: bool = strawberry.field(resolver=mutate_terminate)
+    kill: bool = strawberry.field(resolver=mutate_kill)
