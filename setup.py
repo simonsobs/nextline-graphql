@@ -28,7 +28,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "nextline>=0.3.0",
-        "strawberry-graphql>=0.103",
+        "strawberry-graphql>=0.128",
         "starlette==0.16.0",
         "websockets>=10.2",
         "janus>=0.6",
