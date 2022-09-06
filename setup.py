@@ -29,7 +29,7 @@ setup(
     install_requires=[
         "nextline>=0.3.0",
         "strawberry-graphql>=0.128",
-        "starlette==0.16.0",
+        "starlette>=0.20.4",
         "websockets>=10.2",
         "janus>=0.6",
         "SQLAlchemy>=1.4",
