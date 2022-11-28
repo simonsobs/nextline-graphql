@@ -79,7 +79,8 @@ def create_app(
 
         if not nextline:
             nextline = Nextline(script, run_no)
-            await nextline.start()
+
+        await nextline.start()
 
         if db:
             task = asyncio.create_task(write_db(nextline, db))
