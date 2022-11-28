@@ -27,7 +27,7 @@ setup(
     packages=find_packages(exclude=["docs", "tests"]),
     include_package_data=True,
     install_requires=[
-        "nextline>=0.3.0",
+        "nextline>=0.3.1",
         "strawberry-graphql>=0.128",
         "starlette>=0.20.4",
         "websockets>=10.2",
