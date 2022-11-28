@@ -77,9 +77,7 @@ def create_app(
 
         run_no = run_no + 1
 
-        if nextline:
-            nextline.reset(script, run_no)
-        else:
+        if not nextline:
             nextline = Nextline(script, run_no)
             await nextline.start()
 
