@@ -54,19 +54,13 @@ def create_app(
 
     app_ = EGraphQL(schema)
 
-    @contextlib.asynccontextmanager
-    async def lifespan(app):
-        del app
-        nonlocal db, engine, nextline
-
-        logger = getLogger(__name__)
-
-        if not db:
-            try:
-                db, engine = init_db(config.db)
-            except BaseException:
-                logger.exception("failed to initialize DB ")
-                db = None
+    if not db:
+        try:
+            db, engine = init_db(config.db)
+        except BaseException:
+            logger = getLogger(__name__)
+            logger.exception("failed to initialize DB ")
+            db = None
 
         try:
             run_no, script = get_last_run_no_and_script(db)
@@ -80,11 +74,17 @@ def create_app(
         if not nextline:
             nextline = Nextline(script, run_no)
 
+    @contextlib.asynccontextmanager
+    async def lifespan(app):
+        del app
+        nonlocal db, engine, nextline
+
         await nextline.start()
 
         if db:
             task = asyncio.create_task(write_db(nextline, db))
         else:
+            logger = getLogger(__name__)
             logger.error("Starting without DB")
             task = None
 
