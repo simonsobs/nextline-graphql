@@ -33,14 +33,21 @@ async def subscribe_run_info(nextline: Nextline, db):
         run_no = run_info.run_no
         with db() as session:
             session = cast(Session, session)
-            if run_info.state == "running":
+            if run_info.state == "initialized":
                 model = db_models.Run(
                     run_no=run_no,
                     state=run_info.state,
-                    started_at=run_info.started_at,
                     script=run_info.script,
                 )
                 session.add(model)
+            elif run_info.state == "running":
+                stmt = select(db_models.Run).filter_by(run_no=run_no)
+                while not (
+                    model := session.execute(stmt).scalar_one_or_none()
+                ):
+                    await asyncio.sleep(0)
+                model.state = run_info.state
+                model.started_at = run_info.started_at
             elif run_info.state == "finished":
                 stmt = select(db_models.Run).filter_by(run_no=run_no)
                 while not (
