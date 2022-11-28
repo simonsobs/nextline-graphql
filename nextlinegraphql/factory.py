@@ -12,7 +12,7 @@ from sqlalchemy import func
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
 
-from typing import Optional, Any
+from typing import Optional, Tuple, Any
 
 from nextline import Nextline
 
@@ -69,17 +69,18 @@ def create_app(
                 db = None
 
         try:
-            run_no_start_from = determine_first_run_no(db)
+            run_no, script = get_last_run_no_and_script(db)
         except BaseException:
-            msg = "failed to obtain the last run number in the DB"
-            logger.exception(msg)
-            run_no_start_from = 1
-            db = None
+            logger.exception("failed to get the last run info in the DB")
+            run_no = 0
+            script = statement
+
+        run_no = run_no + 1
 
         if nextline:
-            nextline.reset(run_no_start_from=run_no_start_from)
+            nextline.reset(script, run_no)
         else:
-            nextline = Nextline(statement, run_no_start_from)
+            nextline = Nextline(script, run_no)
             await nextline.start()
 
         if db:
@@ -110,17 +111,15 @@ def create_app(
     return app
 
 
-def determine_first_run_no(db) -> int:
-
-    if not db:
-        return 1
+def get_last_run_no_and_script(db) -> Tuple[int, str]:
+    """Get the last run number and the script from the DB"""
 
     with db() as session:
         stmt = select(db_models.Run, func.max(db_models.Run.run_no))
         if model := session.execute(stmt).scalar_one_or_none():
-            return model.run_no + 1
+            return model.run_no, model.script
         else:
             logger = getLogger(__name__)
             msg = "No previous runs were found in the DB"
             logger.info(msg)
-            return 1
+            return 0, statement
