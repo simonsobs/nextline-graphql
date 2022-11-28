@@ -23,6 +23,33 @@ from .example_script import statement
 from .logging import configure_logging
 
 
+class EGraphQL(GraphQL):
+    """Extend the strawberry GraphQL app
+
+    https://strawberry.rocks/docs/integrations/asgi
+    """
+
+    def __init__(
+        self,
+        nextline: Nextline,
+        db: Optional[sessionmaker] = None,
+        engine: Optional[Engine] = None,
+    ):
+        super().__init__(schema)
+        self._nextline = nextline
+        self._db = db
+        self._engine = engine
+
+    async def get_context(self, request, response=None) -> Optional[Any]:
+        return {
+            "request": request,
+            "response": response,
+            "db": self._db,
+            "engine": self._engine,
+            "nextline": self._nextline,
+        }
+
+
 def create_app(
     config: Optional[Dynaconf] = None,
     db: Optional[sessionmaker] = None,
@@ -36,23 +63,6 @@ def create_app(
         config = settings
 
     configure_logging(config.logging)
-
-    class EGraphQL(GraphQL):
-        """Extend the strawberry GraphQL app
-
-        https://strawberry.rocks/docs/integrations/asgi
-        """
-
-        async def get_context(self, request, response=None) -> Optional[Any]:
-            return {
-                "request": request,
-                "response": response,
-                "db": db,
-                "engine": engine,
-                "nextline": nextline,
-            }
-
-    app_ = EGraphQL(schema)
 
     if not db:
         try:
@@ -73,6 +83,8 @@ def create_app(
 
         if not nextline:
             nextline = Nextline(script, run_no)
+
+    app_ = EGraphQL(nextline, db, engine)
 
     @contextlib.asynccontextmanager
     async def lifespan(app):
