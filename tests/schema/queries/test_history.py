@@ -15,7 +15,7 @@ async def test_one(client: TestClient):
     runs = data["history"]["runs"]
     edges = runs["edges"]
     # assert 2 == len(runs)
-    run = edges[0]["node"]
+    run = edges[1]["node"]
     assert 2 == run["runNo"]
     assert "finished" == run["state"]
     assert run["startedAt"]

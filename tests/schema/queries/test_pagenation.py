@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 import pytest
 from async_asgi_testclient import TestClient
 
-from typing import Optional, cast, TypedDict
+from typing import Optional, cast, TypedDict, Any
 
 from nextlinegraphql.db import init_db
 from nextlinegraphql.db.models import Run
@@ -320,16 +320,14 @@ async def assert_results(client: TestClient, variables, expected):
         endCursor=expected[3],
     )
 
-    data = await gql_request(
-        client, QUERY_HISTORY_RUNS, variables=variables
-    )
+    data = await gql_request(client, QUERY_HISTORY_RUNS, variables=variables)
 
     all_runs = data["history"]["runs"]
     page_info = all_runs["pageInfo"]
     edges = all_runs["edges"]
 
     # print(page_info)
-    # print(edges)
+    print(edges)
 
     assert expected_page_info == page_info
 
@@ -423,6 +421,39 @@ def sample_one(db_engine):
 @pytest.fixture
 def sample_empty(db_engine):
     del db_engine
+
+
+@pytest.fixture
+def app(db_engine, nextline):
+    # NOTE: Overriding the app fixture from conftest.py because it adds an
+    # entry in the DB. The factory.create_app() needs to be refactored so this
+    # override is not needed.
+    from starlette.applications import Starlette
+    from nextlinegraphql.strawberry_fix import GraphQL
+    from nextlinegraphql.schema import schema
+
+    db, engine = db_engine
+
+    class EGraphQL(GraphQL):
+        """Extend the strawberry GraphQL app
+
+        https://strawberry.rocks/docs/integrations/asgi
+        """
+
+        async def get_context(self, request, response=None) -> Optional[Any]:
+            return {
+                "request": request,
+                "response": response,
+                "db": db,
+                "engine": engine,
+                "nextline": nextline,
+            }
+
+    app_ = EGraphQL(schema)
+
+    ret = Starlette(debug=True)
+    ret.mount("/", app_)
+    return ret
 
 
 @pytest.fixture
