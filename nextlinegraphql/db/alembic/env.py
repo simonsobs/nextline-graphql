@@ -16,11 +16,11 @@ if config.config_file_name:
     # from logging_tree import printout
     # printout()
     if "nextlinegraphql" not in logging.root.manager.loggerDict:
-        # Presumably, the alembic command is being executed. If programtically
+        # Presumably, the alembic command is being executed. If programmatically
         # called, "nextlinegraphql" is in loggerDict and logging shouldn't be
         # configured here because it will override the logging configuration.
         # TODO: rearrange how configuration files are read so that this
-        # conditional coonfiguration of logging becomes cleaner or deleted.
+        # conditional configuration of logging becomes cleaner or deleted.
         logging.config.fileConfig(config.config_file_name)
 
 target_metadata = models.Base.metadata
