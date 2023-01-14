@@ -1,17 +1,8 @@
-from typing import Type, Union
+from datetime import datetime
+from typing import List, Type, Union
 
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    ForeignKey,
-    Integer,
-    MetaData,
-    String,
-    Text,
-    UniqueConstraint,
-)
-from sqlalchemy.orm import DeclarativeBase, relationship
+from sqlalchemy import ForeignKey, MetaData, UniqueConstraint
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 # https://docs.sqlalchemy.org/en/14/core/constraints.html#configuring-a-naming-convention-for-a-metadata-collection
 # https://github.com/simonsobs/acondbs/blob/7b4e5ab967ce/acondbs/db/sa.py
@@ -32,23 +23,23 @@ class Base(DeclarativeBase):
 
 class Hello(Base):
     __tablename__ = "hello"
-    id = Column(Integer, primary_key=True, index=True)
-    message = Column(String)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    message: Mapped[Union[str, None]]
 
 
 class Run(Base):
     __tablename__ = "run"
-    id = Column(Integer, primary_key=True, index=True)
-    run_no = Column(Integer, unique=True, nullable=False)
-    state = Column(String)
-    started_at = Column(DateTime)
-    ended_at = Column(DateTime)
-    script = Column(Text)
-    exception = Column(Text)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    run_no: Mapped[int] = mapped_column(unique=True)
+    state: Mapped[Union[str, None]]
+    started_at: Mapped[Union[datetime, None]]
+    ended_at: Mapped[Union[datetime, None]]
+    script: Mapped[Union[str, None]]
+    exception: Mapped[Union[str, None]]
 
-    traces = relationship("Trace", back_populates="run")
-    prompts = relationship("Prompt", back_populates="run")
-    stdouts = relationship("Stdout", back_populates="run")
+    traces: Mapped[List["Trace"]] = relationship(back_populates="run")
+    prompts: Mapped[List["Prompt"]] = relationship(back_populates="run")
+    stdouts: Mapped[List["Stdout"]] = relationship(back_populates="run")
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.run_no!r}>"
@@ -56,20 +47,20 @@ class Run(Base):
 
 class Trace(Base):
     __tablename__ = "trace"
-    id = Column(Integer, primary_key=True, index=True)
-    run_no = Column(Integer, nullable=False)
-    trace_no = Column(Integer, nullable=False)
-    state = Column(String, nullable=False)
-    thread_no = Column(Integer, nullable=False)
-    task_no = Column(Integer)
-    started_at = Column(DateTime, nullable=False)
-    ended_at = Column(DateTime)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    run_no: Mapped[int]
+    trace_no: Mapped[int]
+    state: Mapped[str]
+    thread_no: Mapped[int]
+    task_no: Mapped[Union[int, None]]
+    started_at: Mapped[datetime]
+    ended_at: Mapped[Union[datetime, None]]
 
-    run_id = Column(Integer, ForeignKey("run.id"), nullable=False)
-    run = relationship("Run", back_populates="traces")
+    run_id: Mapped[int] = mapped_column(ForeignKey('run.id'))
+    run: Mapped[Run] = relationship(back_populates='traces')
 
-    prompts = relationship("Prompt", back_populates="trace")
-    stdouts = relationship("Stdout", back_populates="trace")
+    prompts: Mapped[List["Prompt"]] = relationship(back_populates="trace")
+    stdouts: Mapped[List["Stdout"]] = relationship(back_populates="trace")
 
     __table_args__ = (UniqueConstraint("run_no", "trace_no"),)
 
@@ -79,24 +70,24 @@ class Trace(Base):
 
 class Prompt(Base):
     __tablename__ = "prompt"
-    id = Column(Integer, primary_key=True, index=True)
-    run_no = Column(Integer, nullable=False)
-    trace_no = Column(Integer, nullable=False)
-    prompt_no = Column(Integer, nullable=False)
-    open = Column(Boolean, nullable=False)
-    event = Column(String, nullable=False)
-    started_at = Column(DateTime, nullable=False)
-    file_name = Column(String)
-    line_no = Column(Integer)
-    stdout = Column(String)
-    command = Column(String)
-    ended_at = Column(DateTime)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    run_no: Mapped[int]
+    trace_no: Mapped[int]
+    prompt_no: Mapped[int]
+    open: Mapped[bool]
+    event: Mapped[str]
+    started_at: Mapped[datetime]
+    file_name: Mapped[Union[str, None]]
+    line_no: Mapped[Union[int, None]]
+    stdout: Mapped[Union[str, None]]
+    command: Mapped[Union[str, None]]
+    ended_at: Mapped[Union[datetime, None]]
 
-    run_id = Column(Integer, ForeignKey("run.id"), nullable=False)
-    run = relationship("Run", back_populates="prompts")
+    run_id: Mapped[int] = mapped_column(ForeignKey('run.id'))
+    run: Mapped[Run] = relationship(back_populates='prompts')
 
-    trace_id = Column(Integer, ForeignKey("trace.id"), nullable=False)
-    trace = relationship("Trace", back_populates="prompts")
+    trace_id: Mapped[int] = mapped_column(ForeignKey('trace.id'))
+    trace: Mapped[Trace] = relationship(back_populates='prompts')
 
     __table_args__ = (UniqueConstraint("run_no", "prompt_no"),)
 
@@ -106,17 +97,17 @@ class Prompt(Base):
 
 class Stdout(Base):
     __tablename__ = "stdout"
-    id = Column(Integer, primary_key=True, index=True)
-    run_no = Column(Integer, nullable=False)
-    trace_no = Column(Integer, nullable=False)
-    text = Column(String)
-    written_at = Column(DateTime)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    run_no: Mapped[int]
+    trace_no: Mapped[int]
+    text: Mapped[Union[str, None]]
+    written_at: Mapped[Union[datetime, None]]
 
-    run_id = Column(Integer, ForeignKey("run.id"), nullable=False)
-    run = relationship("Run", back_populates="stdouts")
+    run_id: Mapped[int] = mapped_column(ForeignKey('run.id'))
+    run: Mapped[Run] = relationship(back_populates='stdouts')
 
-    trace_id = Column(Integer, ForeignKey("trace.id"), nullable=False)
-    trace = relationship("Trace", back_populates="stdouts")
+    trace_id: Mapped[int] = mapped_column(ForeignKey('trace.id'))
+    trace: Mapped[Trace] = relationship(back_populates='stdouts')
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.text!r}>"
