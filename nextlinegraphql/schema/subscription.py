@@ -33,9 +33,7 @@ def subscribe_trace_ids(info: Info) -> AGen[List[int], None]:
     return nextline.subscribe_trace_ids()
 
 
-async def subscribe_prompting(
-    info: Info, trace_id: int
-) -> AGen[PromptingData, None]:
+async def subscribe_prompting(info: Info, trace_id: int) -> AGen[PromptingData, None]:
     nextline: Nextline = info.context["nextline"]
     async for y in nextline.subscribe_prompt_info_for(trace_id):
         if not y.file_name:

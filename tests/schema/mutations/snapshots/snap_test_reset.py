@@ -28,16 +28,11 @@ snapshots['test_reset[no-statement] 1'] = {
             '',
             '',
             'import script_asyncio',
-            'script_asyncio.run()'
+            'script_asyncio.run()',
         ]
     }
 }
 
 snapshots['test_reset[statement] 1'] = {
-    'data': {
-        'source': [
-            'import time',
-            'time.sleep(0.1)'
-        ]
-    }
+    'data': {'source': ['import time', 'time.sleep(0.1)']}
 }

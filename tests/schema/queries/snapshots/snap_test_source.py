@@ -27,7 +27,7 @@ snapshots['test_source[default] 1'] = {
         '',
         '',
         'import script_asyncio',
-        'script_asyncio.run()'
+        'script_asyncio.run()',
     ]
 }
 
@@ -53,7 +53,7 @@ snapshots['test_source[path] 1'] = {
         '    for _ in range(5):',
         '        pass',
         '    return',
-        ''
+        '',
     ]
 }
 
@@ -77,6 +77,6 @@ snapshots['test_source[string] 1'] = {
         '',
         '',
         'import script_asyncio',
-        'script_asyncio.run()'
+        'script_asyncio.run()',
     ]
 }

@@ -10,9 +10,7 @@ from ..funcs import gql_request
 CWD = Path(__file__).resolve().parent
 PACKAGE_TOP = CWD.parent.parent.parent
 SCRIPT_PATH = str(
-    PACKAGE_TOP.joinpath(
-        "nextlinegraphql", "example_script", "script_threading.py"
-    )
+    PACKAGE_TOP.joinpath("nextlinegraphql", "example_script", "script_threading.py")
 )
 
 params = [

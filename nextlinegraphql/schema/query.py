@@ -32,9 +32,7 @@ def query_source(info: Info, file_name: Optional[str] = None) -> List[str]:
     return nextline.get_source(file_name)
 
 
-def query_source_line(
-    info: Info, line_no: int, file_name: Optional[str]
-) -> str:
+def query_source_line(info: Info, line_no: int, file_name: Optional[str]) -> str:
     nextline: Nextline = info.context["nextline"]
     return nextline.get_source_line(line_no, file_name)
 
@@ -42,9 +40,7 @@ def query_source_line(
 def query_exception(info: Info) -> Optional[str]:
     nextline: Nextline = info.context["nextline"]
     if exc := nextline.exception():
-        return "".join(
-            traceback.format_exception(type(exc), exc, exc.__traceback__)
-        )
+        return "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
     return None
 
 

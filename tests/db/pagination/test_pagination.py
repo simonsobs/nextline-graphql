@@ -16,9 +16,7 @@ params = [
     pytest.param(dict(first=3), [1, 2, 3], id="some"),
     pytest.param(dict(first=9), [1, 2, 3, 4, 5, 6, 7, 8, 9], id="one-fewer"),
     pytest.param(dict(first=10), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], id="exact"),
-    pytest.param(
-        dict(first=11), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], id="one-more"
-    ),
+    pytest.param(dict(first=11), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], id="one-more"),
 ]
 
 
@@ -55,9 +53,7 @@ params = [
     pytest.param(dict(last=3), [8, 9, 10], id="some"),
     pytest.param(dict(last=9), [2, 3, 4, 5, 6, 7, 8, 9, 10], id="one-fewer"),
     pytest.param(dict(last=10), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], id="exact"),
-    pytest.param(
-        dict(last=11), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], id="one-more"
-    ),
+    pytest.param(dict(last=11), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], id="one-more"),
 ]
 
 

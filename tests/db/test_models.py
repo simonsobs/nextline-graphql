@@ -99,10 +99,7 @@ async def control_execution(nextline: Nextline):
         ids = set(ids_)
         new_ids, prev_ids = ids - prev_ids, ids
 
-        tasks = {
-            asyncio.create_task(control_trace(nextline, id_))
-            for id_ in new_ids
-        }
+        tasks = {asyncio.create_task(control_trace(nextline, id_)) for id_ in new_ids}
         _, pending = await agen.asend(tasks)
 
     await asyncio.gather(*pending)
@@ -149,9 +146,7 @@ def extract_comment(line: str) -> Optional[str]:
 
     comments = [
         val
-        for type, val, *_ in tokenize.generate_tokens(
-            io.StringIO(line).readline
-        )
+        for type, val, *_ in tokenize.generate_tokens(io.StringIO(line).readline)
         if type == tokenize.COMMENT
     ]
     if comments:

@@ -77,8 +77,6 @@ def load_edges(
 
     nodes = [create_node_from_model(m) for m in models]
 
-    edges = [
-        Edge(node=n, cursor=encode_id(getattr(n, id_field))) for n in nodes
-    ]
+    edges = [Edge(node=n, cursor=encode_id(getattr(n, id_field))) for n in nodes]
 
     return edges

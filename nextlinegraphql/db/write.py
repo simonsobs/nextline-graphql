@@ -42,17 +42,13 @@ async def subscribe_run_info(nextline: Nextline, db):
                 session.add(model)
             elif run_info.state == "running":
                 stmt = select(db_models.Run).filter_by(run_no=run_no)
-                while not (
-                    model := session.execute(stmt).scalar_one_or_none()
-                ):
+                while not (model := session.execute(stmt).scalar_one_or_none()):
                     await asyncio.sleep(0)
                 model.state = run_info.state
                 model.started_at = run_info.started_at
             elif run_info.state == "finished":
                 stmt = select(db_models.Run).filter_by(run_no=run_no)
-                while not (
-                    model := session.execute(stmt).scalar_one_or_none()
-                ):
+                while not (model := session.execute(stmt).scalar_one_or_none()):
                     await asyncio.sleep(0)
                 model.state = run_info.state
                 model.ended_at = run_info.ended_at
@@ -83,9 +79,7 @@ async def subscribe_trace_info(nextline: Nextline, db):
                     run_no=trace_info.run_no,
                     trace_no=trace_info.trace_no,
                 )
-                while not (
-                    model := session.execute(stmt).scalar_one_or_none()
-                ):
+                while not (model := session.execute(stmt).scalar_one_or_none()):
                     await asyncio.sleep(0)
                 model.state = trace_info.state
                 model.ended_at = trace_info.ended_at
@@ -126,9 +120,7 @@ async def subscribe_prompt_info(nextline: Nextline, db):
                     run_no=prompt_info.run_no,
                     prompt_no=prompt_info.prompt_no,
                 )
-                while not (
-                    model := session.execute(stmt).scalar_one_or_none()
-                ):
+                while not (model := session.execute(stmt).scalar_one_or_none()):
                     await asyncio.sleep(0)
                 model.open = prompt_info.open
                 model.command = prompt_info.command
@@ -173,9 +165,7 @@ async def subscribe_stdout(nextline: Nextline, db):
                 stmt = select(db_models.Trace).filter_by(
                     run_no=info.run_no, trace_no=info.trace_no
                 )
-                while not (
-                    trace := session.execute(stmt).scalar_one_or_none()
-                ):
+                while not (trace := session.execute(stmt).scalar_one_or_none()):
                     await asyncio.sleep(0)
                 model = db_models.Stdout(
                     run_no=info.run_no,
