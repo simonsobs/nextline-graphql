@@ -1,5 +1,6 @@
 from threading import Thread
 
+
 def run():
     t1 = Thread(target=f1)
     t1.start()

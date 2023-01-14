@@ -1,4 +1,5 @@
 import time
+
 time.sleep(0.3)
 
 def f():
@@ -12,8 +13,10 @@ f()
 print('here!')
 
 import script_threading
+
 script_threading.run()
 
 
 import script_asyncio
+
 script_asyncio.run()

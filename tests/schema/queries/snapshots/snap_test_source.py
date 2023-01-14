@@ -9,6 +9,7 @@ snapshots = Snapshot()
 snapshots['test_source[default] 1'] = {
     'source': [
         'import time',
+        '',
         'time.sleep(0.3)',
         '',
         'def f():',
@@ -22,17 +23,21 @@ snapshots['test_source[default] 1'] = {
         "print('here!')",
         '',
         'import script_threading',
+        '',
         'script_threading.run()',
         '',
         '',
         'import script_asyncio',
+        '',
         'script_asyncio.run()',
+        ''
     ]
 }
 
 snapshots['test_source[path] 1'] = {
     'source': [
         'from threading import Thread',
+        '',
         '',
         'def run():',
         '    t1 = Thread(target=f1)',
@@ -52,13 +57,14 @@ snapshots['test_source[path] 1'] = {
         '    for _ in range(5):',
         '        pass',
         '    return',
-        '',
+        ''
     ]
 }
 
 snapshots['test_source[string] 1'] = {
     'source': [
         'import time',
+        '',
         'time.sleep(0.3)',
         '',
         'def f():',
@@ -72,10 +78,13 @@ snapshots['test_source[string] 1'] = {
         "print('here!')",
         '',
         'import script_threading',
+        '',
         'script_threading.run()',
         '',
         '',
         'import script_asyncio',
+        '',
         'script_asyncio.run()',
+        ''
     ]
 }

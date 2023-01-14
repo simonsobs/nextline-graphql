@@ -10,6 +10,7 @@ snapshots['test_reset[no-statement] 1'] = {
     'data': {
         'source': [
             'import time',
+            '',
             'time.sleep(0.3)',
             '',
             'def f():',
@@ -23,15 +24,23 @@ snapshots['test_reset[no-statement] 1'] = {
             "print('here!')",
             '',
             'import script_threading',
+            '',
             'script_threading.run()',
             '',
             '',
             'import script_asyncio',
+            '',
             'script_asyncio.run()',
+            ''
         ]
     }
 }
 
 snapshots['test_reset[statement] 1'] = {
-    'data': {'source': ['import time', 'time.sleep(0.1)']}
+    'data': {
+        'source': [
+            'import time',
+            'time.sleep(0.1)'
+        ]
+    }
 }
