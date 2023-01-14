@@ -61,8 +61,8 @@ async def subscribe_trace_info(nextline: Nextline, db):
     async for trace_info in nextline.subscribe_trace_info():
         with db() as session:
             session = cast(Session, session)
-            stmt = select(db_models.Run).filter_by(run_no=trace_info.run_no)
-            while not (run := session.execute(stmt).scalar_one_or_none()):
+            stmt_runs = select(db_models.Run).filter_by(run_no=trace_info.run_no)
+            while not (run := session.execute(stmt_runs).scalar_one_or_none()):
                 await asyncio.sleep(0)
             if trace_info.state == "running":
                 model = db_models.Trace(
@@ -76,11 +76,11 @@ async def subscribe_trace_info(nextline: Nextline, db):
                 )
                 session.add(model)
             elif trace_info.state == "finished":
-                stmt = select(db_models.Trace).filter_by(
+                stmt_traces = select(db_models.Trace).filter_by(
                     run_no=trace_info.run_no,
                     trace_no=trace_info.trace_no,
                 )
-                while not (model := session.execute(stmt).scalar_one_or_none()):
+                while not (model := session.execute(stmt_traces).scalar_one_or_none()):
                     await asyncio.sleep(0)
                 model.state = trace_info.state
                 model.ended_at = trace_info.ended_at
@@ -93,13 +93,13 @@ async def subscribe_prompt_info(nextline: Nextline, db):
             continue
         with db() as session:
             session = cast(Session, session)
-            stmt = select(db_models.Run).filter_by(run_no=prompt_info.run_no)
-            while not (run := session.execute(stmt).scalar_one_or_none()):
+            stmt_runs = select(db_models.Run).filter_by(run_no=prompt_info.run_no)
+            while not (run := session.execute(stmt_runs).scalar_one_or_none()):
                 await asyncio.sleep(0)
-            stmt = select(db_models.Trace).filter_by(
+            stmt_traces = select(db_models.Trace).filter_by(
                 run_no=prompt_info.run_no, trace_no=prompt_info.trace_no
             )
-            while not (trace := session.execute(stmt).scalar_one_or_none()):
+            while not (trace := session.execute(stmt_traces).scalar_one_or_none()):
                 await asyncio.sleep(0)
             if prompt_info.open:
                 model = db_models.Prompt(
@@ -117,11 +117,11 @@ async def subscribe_prompt_info(nextline: Nextline, db):
                 )
                 session.add(model)
             else:
-                stmt = select(db_models.Prompt).filter_by(
+                stmt_prompts = select(db_models.Prompt).filter_by(
                     run_no=prompt_info.run_no,
                     prompt_no=prompt_info.prompt_no,
                 )
-                while not (model := session.execute(stmt).scalar_one_or_none()):
+                while not (model := session.execute(stmt_prompts).scalar_one_or_none()):
                     await asyncio.sleep(0)
                 model.open = prompt_info.open
                 model.command = prompt_info.command
@@ -160,13 +160,13 @@ async def subscribe_stdout(nextline: Nextline, db):
         with db() as session:
             for info in to_save:
                 session = cast(Session, session)
-                stmt = select(db_models.Run).filter_by(run_no=info.run_no)
-                while not (run := session.execute(stmt).scalar_one_or_none()):
+                stmt_runs = select(db_models.Run).filter_by(run_no=info.run_no)
+                while not (run := session.execute(stmt_runs).scalar_one_or_none()):
                     await asyncio.sleep(0)
-                stmt = select(db_models.Trace).filter_by(
+                stmt_traces = select(db_models.Trace).filter_by(
                     run_no=info.run_no, trace_no=info.trace_no
                 )
-                while not (trace := session.execute(stmt).scalar_one_or_none()):
+                while not (trace := session.execute(stmt_traces).scalar_one_or_none()):
                     await asyncio.sleep(0)
                 model = db_models.Stdout(
                     run_no=info.run_no,
