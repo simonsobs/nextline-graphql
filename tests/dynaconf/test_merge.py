@@ -9,7 +9,7 @@ def test_merge(config: Dynaconf, envvar_url: bool, envvar_connect_args: bool):
 
     https://www.dynaconf.com/merging/
 
-    It was originally developed to check when overring db.url would delete
+    It was originally developed to check when overriding db.url would delete
     db.connect_args.check_same_thread.
 
     Note that the check_same_thread option can be provided as part of url.
