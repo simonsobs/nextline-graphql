@@ -1,5 +1,11 @@
 {
-  "editor.rulers": [80],
+{
+  "[markdown]": {
+    "editor.rulers": [80]
+  },
+  "[python]": {
+    "editor.rulers": [89]
+  },
   "prettier.printWidth": 79,
   "rewrap.wrappingColumn": 79,
   "python.formatting.provider": "black",
@@ -10,6 +16,7 @@
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "python.testing.pytestArgs": ["tests"],
+  "isort.check": true,
   "markdownlint.config": {
     "MD033": { "allowed_elements": ["i", "span", "a", "img"] },
     "MD041": false
