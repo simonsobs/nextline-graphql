@@ -11,7 +11,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import DeclarativeBase, relationship
 
 # https://docs.sqlalchemy.org/en/14/core/constraints.html#configuring-a-naming-convention-for-a-metadata-collection
 # https://github.com/simonsobs/acondbs/blob/7b4e5ab967ce/acondbs/db/sa.py
@@ -25,7 +25,9 @@ convention = {
 }
 metadata = MetaData(naming_convention=convention)
 
-Base = declarative_base(metadata=metadata)
+
+class Base(DeclarativeBase):
+    metadata = metadata
 
 
 class Hello(Base):

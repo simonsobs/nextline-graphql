@@ -1,7 +1,7 @@
 from typing import Type
 
 from sqlalchemy import Column, Integer, MetaData, Text
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import DeclarativeBase
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -13,7 +13,9 @@ convention = {
 }
 metadata = MetaData(naming_convention=convention)
 
-Base = declarative_base(metadata=metadata)
+
+class Base(DeclarativeBase):
+    metadata = metadata
 
 
 class Entity(Base):
