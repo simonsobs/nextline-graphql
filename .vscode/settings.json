@@ -3,7 +3,6 @@
   "prettier.printWidth": 79,
   "rewrap.wrappingColumn": 79,
   "python.formatting.provider": "black",
-  "python.formatting.blackArgs": ["--line-length", "79"],
   "python.linting.enabled": true,
   "python.linting.pylintEnabled": false,
   "python.linting.mypyEnabled": true,
