@@ -13,6 +13,7 @@ from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
+from .config import create_settings
 from .db import init_db
 from .db import models as db_models
 from .db import write_db
@@ -56,10 +57,7 @@ def create_app(
     nextline: Optional[Nextline] = None,
 ):
 
-    if config is None:
-        from .config import settings
-
-        config = settings
+    config = config or create_settings()
 
     configure_logging(config.logging)
 

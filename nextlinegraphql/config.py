@@ -14,13 +14,15 @@ def create_settings() -> Dynaconf:
     '''Return a Dynaconf settings after validation'''
     cwd = Path.cwd()
 
+    settings_files = [
+        str(HERE / 'config' / 'default.toml'),
+        str(cwd / 'nextline-graphql.toml'),
+        str(cwd / 'migration.toml'),  # for alembic to run in ./db/
+    ]
+
     settings = Dynaconf(
         envvar_prefix="NEXTLINE",
-        settings_files=[
-            str(HERE.joinpath("config", "default.toml")),
-            str(cwd.joinpath("nextline-graphql.toml")),
-            str(cwd.joinpath("migration.toml")),  # for alembic to run in ./db/
-        ],
+        settings_files=settings_files,
         environments=True,
     )
 
@@ -31,6 +33,3 @@ def create_settings() -> Dynaconf:
     settings.validators.validate()
 
     return settings
-
-
-settings = create_settings()
