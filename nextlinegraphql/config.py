@@ -17,8 +17,11 @@ def create_settings() -> Dynaconf:
     settings_files = [
         str(HERE / 'config' / 'default.toml'),
         str(cwd / 'nextline-graphql.toml'),
-        str(cwd / 'migration.toml'),  # for alembic to run in ./db/
     ]
+
+    if cwd == HERE / 'db':
+        # for alembic
+        settings_files.append(str(cwd / 'migration.toml'))
 
     settings = Dynaconf(
         envvar_prefix="NEXTLINE",
