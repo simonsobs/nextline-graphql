@@ -1,7 +1,8 @@
 import pytest
-from nextlinegraphql.db.pagination import load_models, SortField
-from .models import Entity
 
+from nextlinegraphql.db.pagination import SortField, load_models
+
+from .models import Entity
 
 params = [
     pytest.param(

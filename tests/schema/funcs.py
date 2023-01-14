@@ -1,8 +1,7 @@
+from typing import Any, AsyncGenerator, Dict, Optional, TypedDict
+
 from async_asgi_testclient import TestClient
 from async_asgi_testclient.response import Response
-
-
-from typing import AsyncGenerator, Optional, Dict, Any, TypedDict
 
 
 class PostRequest(TypedDict, total=False):

@@ -1,8 +1,7 @@
-from sqlalchemy import MetaData, Column, Integer, Text
-from sqlalchemy.ext.declarative import declarative_base
-
 from typing import Type
 
+from sqlalchemy import Column, Integer, MetaData, Text
+from sqlalchemy.ext.declarative import declarative_base
 
 convention = {
     "ix": "ix_%(column_0_label)s",

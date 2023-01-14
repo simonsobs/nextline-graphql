@@ -3,8 +3,9 @@
 Example: https://github.com/rochacbruno/learndynaconf/blob/main/config.py
 """
 
-from dynaconf import Dynaconf, Validator
 from pathlib import Path
+
+from dynaconf import Dynaconf, Validator
 
 here = Path(__file__).resolve().parent
 cwd = Path.cwd()

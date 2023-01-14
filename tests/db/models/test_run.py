@@ -1,10 +1,9 @@
 import datetime
-from sqlalchemy.orm import Session
-from sqlalchemy.future import select
+from typing import cast
 
 import pytest
-
-from typing import cast
+from sqlalchemy.future import select
+from sqlalchemy.orm import Session
 
 from nextlinegraphql.db import init_db
 from nextlinegraphql.db.models import Run

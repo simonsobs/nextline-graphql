@@ -1,8 +1,9 @@
+from typing import List, NamedTuple, Optional, TypeVar
+
 from sqlalchemy import func
 from sqlalchemy.future import select
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql.selectable import Select
-from typing import Optional, List, NamedTuple, TypeVar
 
 from . import models as db_models
 

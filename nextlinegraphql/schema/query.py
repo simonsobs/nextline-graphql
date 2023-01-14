@@ -1,8 +1,10 @@
 from __future__ import annotations
+
 import traceback
+from typing import TYPE_CHECKING, List, Optional
+
 import strawberry
 from strawberry.types import Info
-from typing import TYPE_CHECKING, List, Optional
 
 from . import types
 from .pagination import Connection

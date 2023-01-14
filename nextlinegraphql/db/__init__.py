@@ -1,14 +1,14 @@
+from logging import getLogger
 from pathlib import Path
+from typing import Dict, Tuple
+
+from alembic.config import Config
+from alembic.migration import MigrationContext
+from alembic.runtime.environment import EnvironmentContext
+from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
-from alembic.config import Config
-from alembic.migration import MigrationContext
-from alembic.script import ScriptDirectory
-from alembic.runtime.environment import EnvironmentContext
-from logging import getLogger
-
-from typing import Dict, Tuple
 
 from . import models
 from .write import write_db

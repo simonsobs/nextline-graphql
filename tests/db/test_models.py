@@ -1,13 +1,15 @@
 import asyncio
 from pathlib import Path
-from sqlalchemy.orm import Session
-from typing import Optional, Set
+from typing import Optional, Set, cast
+
 import pytest
-from typing import cast
 from nextline import Nextline
 from nextline.utils import agen_with_wait
+from sqlalchemy.orm import Session
 
-from nextlinegraphql.db import init_db, write_db, models as db_models
+from nextlinegraphql.db import init_db
+from nextlinegraphql.db import models as db_models
+from nextlinegraphql.db import write_db
 
 
 def test_one(db, run_nextline, statement):

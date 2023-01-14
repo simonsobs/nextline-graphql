@@ -1,13 +1,15 @@
 from __future__ import annotations
-from functools import partial
+
 import base64
-from typing import TYPE_CHECKING, Callable, List, TypeVar, Optional
+from functools import partial
+from typing import TYPE_CHECKING, Callable, List, Optional, TypeVar
 
 from ...db.pagination import load_models
-from .connection import query_connection, Connection, Edge
+from .connection import Connection, Edge, query_connection
 
 if TYPE_CHECKING:
     from strawberry.types import Info
+
     from ...db import models as db_models
 
 

@@ -1,26 +1,25 @@
 import asyncio
 import contextlib
-from dynaconf import Dynaconf
 from logging import getLogger
+from typing import Any, Optional, Tuple
 
+from dynaconf import Dynaconf
+from nextline import Nextline
+from sqlalchemy import func
+from sqlalchemy.engine.base import Engine
+from sqlalchemy.future import select
+from sqlalchemy.orm import sessionmaker
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
-from sqlalchemy.future import select
-from sqlalchemy import func
-from sqlalchemy.engine.base import Engine
-from sqlalchemy.orm import sessionmaker
-
-from typing import Optional, Tuple, Any
-
-from nextline import Nextline
-
-from .strawberry_fix import GraphQL
-from .schema import schema
-from .db import init_db, write_db, models as db_models
+from .db import init_db
+from .db import models as db_models
+from .db import write_db
 from .example_script import statement
 from .logging import configure_logging
+from .schema import schema
+from .strawberry_fix import GraphQL
 
 
 class EGraphQL(GraphQL):

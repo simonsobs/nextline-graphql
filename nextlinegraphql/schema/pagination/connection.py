@@ -4,10 +4,11 @@ Strawberry doc: https://strawberry.rocks/docs/guides/pagination
 Relay doc: https://relay.dev/graphql/connections.htm
 """
 from __future__ import annotations
+
+from typing import Callable, Generic, List, Optional, TypeVar
+
 import strawberry
 from strawberry.types import Info
-from typing import Callable, List, TypeVar, Optional, Generic
-
 
 _T = TypeVar("_T")
 

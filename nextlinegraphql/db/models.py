@@ -1,19 +1,18 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from sqlalchemy import MetaData
+from typing import Type, Union
 
 from sqlalchemy import (
-    Column,
     Boolean,
-    Integer,
-    String,
-    Text,
+    Column,
     DateTime,
     ForeignKey,
+    Integer,
+    MetaData,
+    String,
+    Text,
     UniqueConstraint,
 )
-
-from typing import Union, Type
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 # https://docs.sqlalchemy.org/en/14/core/constraints.html#configuring-a-naming-convention-for-a-metadata-collection
 # https://github.com/simonsobs/acondbs/blob/7b4e5ab967ce/acondbs/db/sa.py

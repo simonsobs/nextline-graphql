@@ -1,7 +1,7 @@
-from dynaconf import Dynaconf
 from pathlib import Path
 
 import pytest
+from dynaconf import Dynaconf
 
 
 def test_merge(config: Dynaconf, envvar_url: bool, envvar_connect_args: bool):

@@ -1,10 +1,9 @@
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.future import select
 from sqlalchemy.orm import sessionmaker
 
-import pytest
-
-from .models import Entity, Base
+from .models import Base, Entity
 
 
 @pytest.fixture

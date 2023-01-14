@@ -1,18 +1,16 @@
 import base64
 import datetime
-from sqlalchemy.orm import Session
-
+from typing import Any, Optional, TypedDict, cast
 
 import pytest
 from async_asgi_testclient import TestClient
-
-from typing import Optional, cast, TypedDict, Any
+from sqlalchemy.orm import Session
 
 from nextlinegraphql.db import init_db
 from nextlinegraphql.db.models import Run
 
-from ..graphql import QUERY_HISTORY_RUNS
 from ..funcs import gql_request, gql_request_response
+from ..graphql import QUERY_HISTORY_RUNS
 
 
 def Cursor(i: int):
@@ -429,8 +427,9 @@ def app(db_engine, nextline):
     # entry in the DB. The factory.create_app() needs to be refactored so this
     # override is not needed.
     from starlette.applications import Starlette
-    from nextlinegraphql.strawberry_fix import GraphQL
+
     from nextlinegraphql.schema import schema
+    from nextlinegraphql.strawberry_fix import GraphQL
 
     db, engine = db_engine
 

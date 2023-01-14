@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import datetime
-from sqlalchemy import inspect
+from typing import List, Optional, Type, TypeVar
+
 import strawberry
+from sqlalchemy import inspect
 from strawberry.types import Info
-from typing import Optional, Type, TypeVar, List
 
 from ..db import models as db_models
-from .pagination import load_connection, Connection
+from .pagination import Connection, load_connection
 
 
 @strawberry.type

@@ -1,5 +1,7 @@
 import pytest
+
 from nextlinegraphql.db.pagination import load_models
+
 from .models import Entity
 
 

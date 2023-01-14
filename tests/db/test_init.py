@@ -1,7 +1,9 @@
 import logging
-from sqlalchemy.orm.session import Session
-from sqlalchemy.engine.base import Connection
 from typing import cast
+
+from sqlalchemy.engine.base import Connection
+from sqlalchemy.orm.session import Session
+
 from nextlinegraphql.db import init_db
 
 

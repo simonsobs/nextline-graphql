@@ -1,7 +1,8 @@
 import logging
 import logging.config
-from sqlalchemy import create_engine
+
 from alembic import context
+from sqlalchemy import create_engine
 
 from nextlinegraphql.config import settings
 from nextlinegraphql.db import models

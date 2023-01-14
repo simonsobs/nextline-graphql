@@ -1,11 +1,10 @@
 from pathlib import Path
 
 import pytest
-
 from async_asgi_testclient import TestClient
 
-from ..graphql import QUERY_SOURCE
 from ..funcs import gql_request
+from ..graphql import QUERY_SOURCE
 
 CWD = Path(__file__).resolve().parent
 PACKAGE_TOP = CWD.parent.parent.parent

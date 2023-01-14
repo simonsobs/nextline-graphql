@@ -1,10 +1,9 @@
 import pytest
-
 from async_asgi_testclient import TestClient
 
 from nextlinegraphql import create_app
 
-from ..graphql import QUERY_SOURCE, MUTATE_RESET
+from ..graphql import MUTATE_RESET, QUERY_SOURCE
 
 ##__________________________________________________________________||
 SOURCE_ONE = """

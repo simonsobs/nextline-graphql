@@ -1,8 +1,10 @@
 from __future__ import annotations
+
 import asyncio
+from typing import TYPE_CHECKING, AsyncGenerator, List
+
 import strawberry
 from strawberry.types import Info
-from typing import TYPE_CHECKING, AsyncGenerator, List
 
 if TYPE_CHECKING:
     from nextline import Nextline

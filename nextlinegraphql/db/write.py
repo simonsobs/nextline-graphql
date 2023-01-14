@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 import asyncio
 from collections import deque
+from logging import getLogger
+from typing import TYPE_CHECKING, Deque, List, cast
+
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
-from logging import getLogger
-
-from typing import TYPE_CHECKING, Deque, List, cast
 
 from . import models as db_models
 
