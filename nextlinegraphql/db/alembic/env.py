@@ -4,8 +4,10 @@ import logging.config
 from alembic import context
 from sqlalchemy import create_engine
 
-from nextlinegraphql.config import settings
+from nextlinegraphql.config import create_settings
 from nextlinegraphql.db import models
+
+settings = create_settings()
 
 # Config in alembic.ini, only used to configure logger
 config = context.config
