@@ -1,4 +1,4 @@
-name: Docker image in GitHub Container registry
+name: Docker image
 
 on:
   # push:

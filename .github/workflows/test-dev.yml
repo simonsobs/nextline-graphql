@@ -1,4 +1,4 @@
-name: Test with nextline dev
+name: pytest with nextline dev
 
 # Test with nextline checked out from GitHub (rather than from PyPI)
 # coverage won't be run 
