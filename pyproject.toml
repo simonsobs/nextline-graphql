@@ -72,3 +72,18 @@ exclude = '''(?x)(
 
 [tool.isort]
 profile = "black"
+
+[tool.mypy]
+exclude = '''(?x)(
+    db/alembic/versions/.*\.py$
+    | example_script/.*\.py$
+)'''
+
+[[tool.mypy.overrides]]
+module = [
+    "dynaconf.*",
+    "async_asgi_testclient.*",
+    "snapshottest.*",
+    "sqlalchemy.future.*",
+]
+ignore_missing_imports = true
