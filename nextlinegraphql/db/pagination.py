@@ -3,6 +3,7 @@ from typing import List, NamedTuple, Optional, TypeVar
 from sqlalchemy import func
 from sqlalchemy.future import select
 from sqlalchemy.orm import aliased
+from sqlalchemy.sql.expression import literal
 from sqlalchemy.sql.selectable import Select
 
 from . import models as db_models
@@ -100,7 +101,7 @@ def compose_statement(
 
         Alias = aliased(Model, cte)
         stmt = select(Alias).select_from(cte)
-        stmt = stmt.join(subq, True)  # cartesian product
+        stmt = stmt.join(subq, literal(True))  # cartesian product
         stmt = stmt.order_by(*sorting_fields(Alias, reverse=backward))
         stmt = stmt.where(cte.c.row_number > subq.c.cursor)
 
