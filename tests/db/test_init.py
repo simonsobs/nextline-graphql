@@ -1,6 +1,7 @@
 import logging
 from typing import cast
 
+from alembic.migration import MigrationContext
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.session import Session
 
@@ -36,3 +37,15 @@ def print_logrecords(records):
         message = formatter.format(record)
         # print(message)
         del message
+
+
+def test_alembic():
+
+    config = {"url": "sqlite:///:memory:?check_same_thread=false"}
+
+    db, engine = init_db(config)
+
+    with engine.connect() as connection:
+        context = MigrationContext.configure(connection)
+        rev = context.get_current_revision()
+        assert rev
