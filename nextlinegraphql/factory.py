@@ -5,9 +5,8 @@ from typing import Any, Optional, Tuple
 
 from dynaconf import Dynaconf
 from nextline import Nextline
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.engine.base import Engine
-from sqlalchemy.future import select
 from sqlalchemy.orm import sessionmaker
 from starlette.applications import Starlette
 from starlette.middleware import Middleware

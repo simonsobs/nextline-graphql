@@ -2,7 +2,7 @@ import datetime
 from typing import cast
 
 import pytest
-from sqlalchemy.future import select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from nextlinegraphql.db import init_db

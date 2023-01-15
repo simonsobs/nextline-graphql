@@ -1,4 +1,4 @@
-from sqlalchemy.future import select
+from sqlalchemy import select
 
 from .models import Entity
 

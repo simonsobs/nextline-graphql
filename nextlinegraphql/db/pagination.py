@@ -1,7 +1,6 @@
 from typing import List, NamedTuple, Optional, Tuple, TypeVar, cast
 
-from sqlalchemy import func
-from sqlalchemy.future import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import literal
 from sqlalchemy.sql.selectable import Select

@@ -1,6 +1,5 @@
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.future import select
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 
 from .models import Base, Entity
