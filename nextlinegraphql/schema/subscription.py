@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, AsyncGenerator, List
+from typing import TYPE_CHECKING, AsyncIterator, List, Tuple
 
 import strawberry
 from strawberry.types import Info
@@ -11,68 +11,71 @@ if TYPE_CHECKING:
 
 from .types import PromptingData
 
-AGen = AsyncGenerator
 
-
-async def subscribe_counter() -> AGen[int, None]:
+async def subscribe_counter() -> AsyncIterator[int]:
     for i in range(5):
         await asyncio.sleep(0)
         yield i + 1
 
 
-def subscribe_state(info: Info) -> AGen[str, None]:
+def subscribe_state(info: Info) -> AsyncIterator[str]:
     nextline: Nextline = info.context["nextline"]
     return nextline.subscribe_state()
 
 
-def subscribe_run_no(info: Info) -> AGen[int, None]:
+def subscribe_run_no(info: Info) -> AsyncIterator[int]:
     nextline: Nextline = info.context["nextline"]
     return nextline.subscribe_run_no()
 
 
-def subscribe_trace_ids(info: Info) -> AGen[List[int], None]:
+def subscribe_trace_ids(info: Info) -> AsyncIterator[Tuple[int]]:
     nextline: Nextline = info.context["nextline"]
     return nextline.subscribe_trace_ids()
 
 
-async def subscribe_prompting(info: Info, trace_id: int) -> AGen[PromptingData, None]:
+async def subscribe_prompting(
+    info: Info, trace_id: int
+) -> AsyncIterator[PromptingData]:
     nextline: Nextline = info.context["nextline"]
-    async for y in nextline.subscribe_prompt_info_for(trace_id):
-        if not y.file_name:
+    async for i in nextline.subscribe_prompt_info_for(trace_id):
+        if not i.file_name:
             # the initial yield at the beginning of a thread or task
             continue
+        assert i.line_no is not None
+        assert i.event is not None
         y = PromptingData(
-            prompting=y.prompt_no if y.open else 0,
-            file_name=y.file_name,
-            line_no=y.line_no,
-            trace_event=y.event,
+            prompting=i.prompt_no if i.open else 0,
+            file_name=i.file_name,
+            line_no=i.line_no,
+            trace_event=i.event,
         )
         yield y
 
 
-async def subscribe_stdout(info: Info) -> AGen[str, None]:
+async def subscribe_stdout(info: Info) -> AsyncIterator[str]:
     nextline: Nextline = info.context["nextline"]
-    async for info in nextline.subscribe_stdout():
-        yield info.text  # type: ignore
+    async for i in nextline.subscribe_stdout():
+        assert i.text is not None
+        yield i.text
 
 
 @strawberry.type
 class Subscription:
-    counter: AGen[int, None] = strawberry.field(
+    counter: AsyncIterator[int] = strawberry.field(
         is_subscription=True, resolver=subscribe_counter
     )
-    state: AGen[str, None] = strawberry.field(
+    state: AsyncIterator[str] = strawberry.field(
         is_subscription=True, resolver=subscribe_state
     )
-    run_no: AGen[str, None] = strawberry.field(
+    run_no: AsyncIterator[str] = strawberry.field(
         is_subscription=True, resolver=subscribe_run_no
     )
-    trace_ids: AGen[List[int], None] = strawberry.field(
+    trace_ids: AsyncIterator[List[int]] = strawberry.field(
         is_subscription=True, resolver=subscribe_trace_ids
     )
-    prompting: AGen[PromptingData, None] = strawberry.field(
+    prompting: AsyncIterator[PromptingData] = strawberry.field(
         is_subscription=True, resolver=subscribe_prompting
     )
-    stdout: AGen[str, None] = strawberry.field(
+    stdout: AsyncIterator[str] = strawberry.field(
         is_subscription=True, resolver=subscribe_stdout
     )
