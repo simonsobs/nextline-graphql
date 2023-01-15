@@ -61,6 +61,9 @@ def create_app(
 
     configure_logging(config.logging)
 
+    run_no = 0
+    script = statement
+
     if not db:
         try:
             db, engine = init_db(config.db)
@@ -73,13 +76,11 @@ def create_app(
             run_no, script = get_last_run_no_and_script(db)
         except BaseException:
             logger.exception("failed to get the last run info in the DB")
-            run_no = 0
-            script = statement
 
-        run_no = run_no + 1
+    run_no = run_no + 1
 
-        if not nextline:
-            nextline = Nextline(script, run_no)
+    if not nextline:
+        nextline = Nextline(script, run_no)
 
     app_ = EGraphQL(nextline, db, engine)
 
