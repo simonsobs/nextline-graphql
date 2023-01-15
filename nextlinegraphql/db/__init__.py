@@ -25,7 +25,7 @@ def init_db(config: Dict) -> Tuple[sessionmaker, Engine]:
 
     engine = create_engine(url)
 
-    run_alembic_upgrade(engine)
+    migrate_to_head(engine)
 
     with engine.connect() as connection:
         context = MigrationContext.configure(connection)
@@ -37,10 +37,12 @@ def init_db(config: Dict) -> Tuple[sessionmaker, Engine]:
     return db, engine
 
 
-def run_alembic_upgrade(engine):
-    here = Path(__file__).resolve().parent
-    config_path = here.joinpath("alembic.ini")
-    config = Config(str(config_path))
+ALEMBIC_INI = str(Path(__file__).resolve().parent / 'alembic.ini')
+
+
+def migrate_to_head(engine):
+    '''Run alembic to upgrade the database to the latest version.'''
+    config = Config(ALEMBIC_INI)
 
     # TODO: Arrange config so that logging doesn't need to be conditionally
     # configured in alembic/env.py
@@ -54,9 +56,9 @@ def run_alembic_upgrade(engine):
 
     script = ScriptDirectory.from_config(config)
 
-    def upgrade(rev, context):
+    def upgrade(rev: str, context):
         del context
-        return script._upgrade_revs("head", rev)
+        return script._upgrade_revs('head', rev)
 
     context = EnvironmentContext(config, script, fn=upgrade)
     with engine.connect() as connection:
