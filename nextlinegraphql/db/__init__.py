@@ -1,14 +1,15 @@
+import contextlib
+from dataclasses import dataclass, field
 from logging import getLogger
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Callable, Dict, Iterator, Optional, Tuple
 
 from alembic.config import Config
 from alembic.migration import MigrationContext
 from alembic.runtime.environment import EnvironmentContext
 from alembic.script import ScriptDirectory
-from sqlalchemy import create_engine
-from sqlalchemy.engine.base import Engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Engine, create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 from . import models
 from .write import write_db
@@ -16,25 +17,73 @@ from .write import write_db
 __all__ = ["init_db", "write_db"]
 
 
-def init_db(config: Dict) -> Tuple[sessionmaker, Engine]:
+def create_tables(engine: Engine):
+    '''Define tables in the database based on the ORM models .
+
+    https://docs.sqlalchemy.org/en/20/orm/quickstart.html#emit-create-table-ddl
+    '''
+    models.Base.metadata.create_all(bind=engine)
+
+
+def init_db(config: Dict) -> Tuple[Callable[[], Session], Engine]:
 
     url = config["url"]
 
     logger = getLogger(__name__)
     logger.info(f"SQLAlchemy DB URL: {url}")
 
-    engine = create_engine(url)
+    db = DB(url=url)
+    engine = db.engine
 
-    migrate_to_head(engine)
+    # engine = create_engine(url)
+
+    # migrate_to_head(engine)
 
     with engine.connect() as connection:
         context = MigrationContext.configure(connection)
         rev = context.get_current_revision()
     logger.info(f"Alembic migration version: {rev!s}")
 
-    models.Base.metadata.create_all(bind=engine)
-    db = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    return db, engine
+    # models.Base.metadata.create_all(bind=engine)
+    db_ = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    return db_, engine
+
+
+@dataclass
+class DB:
+    '''The interface to the SQLAlchemy database.'''
+
+    url: str = 'sqlite://'
+    create_engine_kwargs: dict = field(default_factory=dict)
+    _engine: Optional[Engine] = field(init=False, repr=False, default=None)
+
+    @property
+    def engine(self) -> Engine:
+        '''The engine with the latest alembic migration version of the table definitions.
+
+        https://docs.sqlalchemy.org/en/20/orm/quickstart.html#create-an-engine
+        '''
+        if self._engine is None:
+            self._engine = create_engine(self.url, **self.create_engine_kwargs)
+            migrate_to_head(self._engine)
+            create_tables(self._engine)  # NOTE: unnecessary as alembic is used
+        return self._engine
+
+    @contextlib.contextmanager
+    def session(self) -> Iterator[Session]:
+        '''A database session with session event hooks.
+
+        The session is yielded within the outer context. The inner context, which exits
+        with commit or rollback, can be used as follows:
+
+            with db.session() as session:
+                with session.begin():
+                    ...
+
+        https://docs.sqlalchemy.org/en/20/orm/session_basics.html
+        '''
+        with Session(self.engine) as session:
+            yield session
 
 
 ALEMBIC_INI = str(Path(__file__).resolve().parent / 'alembic.ini')
