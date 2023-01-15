@@ -99,10 +99,10 @@ async def control_execution(nextline: Nextline):
     agen = agen_with_wait(nextline.subscribe_trace_ids())
     async for ids_ in agen:
         ids = set(ids_)
-        new_ids, prev_ids = ids - prev_ids, ids
+        new_ids, prev_ids = ids - prev_ids, ids  # type: ignore
 
         tasks = {asyncio.create_task(control_trace(nextline, id_)) for id_ in new_ids}
-        _, pending = await agen.asend(tasks)
+        _, pending = await agen.asend(tasks)  # type: ignore
 
     await asyncio.gather(*pending)
 
@@ -113,7 +113,7 @@ async def control_trace(nextline: Nextline, trace_no):
         if not s.open:
             continue
         if not file_name == s.file_name:
-            file_name = s.file_name
+            file_name = s.file_name  # type: ignore
             assert nextline.get_source(file_name)
         command = "next"
         if s.event == "line":
