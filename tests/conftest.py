@@ -30,7 +30,6 @@ def app(config, db_engine, nextline):
     return create_app(
         config=config,
         db=db,
-        engine=engine,
         nextline=nextline,
     )
 

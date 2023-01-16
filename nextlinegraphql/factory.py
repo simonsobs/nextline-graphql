@@ -45,7 +45,6 @@ class EGraphQL(GraphQL):
 def create_app(
     config: Optional[Dynaconf] = None,
     db: Optional[sessionmaker] = None,
-    engine: Optional[Engine] = None,
     nextline: Optional[Nextline] = None,
 ):
 
