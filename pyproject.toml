@@ -64,6 +64,10 @@ include = ["/nextlinegraphql"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 timeout = 60 
+addopts = "--doctest-modules"
+# doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE",]
+doctest_optionflags = ["ELLIPSIS"]
+norecursedirs = "nextlinegraphql/db/alembic"
 
 [tool.black]
 skip-string-normalization = true
