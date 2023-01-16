@@ -3,19 +3,20 @@ from __future__ import annotations
 import asyncio
 from collections import deque
 from logging import getLogger
-from typing import TYPE_CHECKING, Deque, List, cast
+from typing import TYPE_CHECKING, Deque, List, Union, cast
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import models as db_models
+from .db import DB
 
 if TYPE_CHECKING:
     from nextline import Nextline
     from nextline.types import StdoutInfo
 
 
-async def write_db(nextline: Nextline, db) -> None:
+async def write_db(nextline: Nextline, db: DB) -> None:
     try:
         await asyncio.gather(
             subscribe_run_info(nextline, db),
@@ -29,11 +30,12 @@ async def write_db(nextline: Nextline, db) -> None:
         raise
 
 
-async def subscribe_run_info(nextline: Nextline, db):
+async def subscribe_run_info(nextline: Nextline, db: DB):
     async for run_info in nextline.subscribe_run_info():
         run_no = run_info.run_no
-        with db() as session:
+        with db.session() as session:
             session = cast(Session, session)
+            model: Union[db_models.Run, None]
             if run_info.state == "initialized":
                 model = db_models.Run(
                     run_no=run_no,
@@ -57,10 +59,11 @@ async def subscribe_run_info(nextline: Nextline, db):
             session.commit()
 
 
-async def subscribe_trace_info(nextline: Nextline, db):
+async def subscribe_trace_info(nextline: Nextline, db: DB):
     async for trace_info in nextline.subscribe_trace_info():
-        with db() as session:
+        with db.session() as session:
             session = cast(Session, session)
+            model: Union[db_models.Trace, None]
             stmt_runs = select(db_models.Run).filter_by(run_no=trace_info.run_no)
             while not (run := session.execute(stmt_runs).scalar_one_or_none()):
                 await asyncio.sleep(0)
@@ -87,12 +90,13 @@ async def subscribe_trace_info(nextline: Nextline, db):
             session.commit()
 
 
-async def subscribe_prompt_info(nextline: Nextline, db):
+async def subscribe_prompt_info(nextline: Nextline, db: DB):
     async for prompt_info in nextline.subscribe_prompt_info():
         if prompt_info.trace_call_end:  # TODO: remove when unnecessary
             continue
-        with db() as session:
+        with db.session() as session:
             session = cast(Session, session)
+            model: Union[db_models.Prompt, None]
             stmt_runs = select(db_models.Run).filter_by(run_no=prompt_info.run_no)
             while not (run := session.execute(stmt_runs).scalar_one_or_none()):
                 await asyncio.sleep(0)
@@ -129,7 +133,7 @@ async def subscribe_prompt_info(nextline: Nextline, db):
             session.commit()
 
 
-async def subscribe_stdout(nextline: Nextline, db):
+async def subscribe_stdout(nextline: Nextline, db: DB):
 
     run_info = None
     stdout_info_list: Deque[StdoutInfo] = deque()
@@ -157,7 +161,7 @@ async def subscribe_stdout(nextline: Nextline, db):
                     stdout_info_list.appendleft(info)
                     break
                 to_save.append(info)
-        with db() as session:
+        with db.session() as session:
             for info in to_save:
                 session = cast(Session, session)
                 stmt_runs = select(db_models.Run).filter_by(run_no=info.run_no)

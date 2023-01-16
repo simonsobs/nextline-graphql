@@ -1,10 +1,9 @@
 import base64
 import datetime
-from typing import Any, Optional, TypedDict, cast
+from typing import Any, Optional, TypedDict
 
 import pytest
 from async_asgi_testclient import TestClient
-from sqlalchemy.orm import Session, sessionmaker
 
 from nextlinegraphql.db import DB
 from nextlinegraphql.db.models import Run
@@ -383,12 +382,25 @@ async def test_error_forward_and_backward(sample, client, variables):
 
 
 @pytest.fixture
-def sample(db_engine):
-    db, _ = db_engine
-    # with db() as session:
-    with db.begin() as session:  # commit automatically at exit
-        session = cast(Session, session)
-        for run_no in range(11, 111):
+def sample(db: DB):
+    with db.session() as session:
+        with session.begin():
+            for run_no in range(11, 111):
+                model = Run(
+                    run_no=run_no,
+                    state="running",
+                    started_at=datetime.datetime.now(),
+                    ended_at=datetime.datetime.now(),
+                    script="pass",
+                )
+                session.add(model)
+
+
+@pytest.fixture
+def sample_one(db: DB):
+    with db.session() as session:
+        with session.begin():
+            run_no = 10
             model = Run(
                 run_no=run_no,
                 state="running",
@@ -400,29 +412,12 @@ def sample(db_engine):
 
 
 @pytest.fixture
-def sample_one(db_engine):
-    db, _ = db_engine
-    # with db() as session:
-    with db.begin() as session:  # commit automatically at exit
-        session = cast(Session, session)
-        run_no = 10
-        model = Run(
-            run_no=run_no,
-            state="running",
-            started_at=datetime.datetime.now(),
-            ended_at=datetime.datetime.now(),
-            script="pass",
-        )
-        session.add(model)
+def sample_empty(db: DB):
+    del db
 
 
 @pytest.fixture
-def sample_empty(db_engine):
-    del db_engine
-
-
-@pytest.fixture
-def app(db_engine, nextline):
+def app(db: DB, nextline):
     # NOTE: Overriding the app fixture from conftest.py because it adds an
     # entry in the DB. The factory.create_app() needs to be refactored so this
     # override is not needed.
@@ -430,8 +425,6 @@ def app(db_engine, nextline):
 
     from nextlinegraphql.schema import schema
     from nextlinegraphql.strawberry_fix import GraphQL
-
-    db, _ = db_engine
 
     class EGraphQL(GraphQL):
         """Extend the strawberry GraphQL app
@@ -455,7 +448,6 @@ def app(db_engine, nextline):
 
 
 @pytest.fixture
-def db_engine():
+def db():
     url = 'sqlite:///:memory:?check_same_thread=false'
-    db = DB(url=url)
-    return sessionmaker(autocommit=False, autoflush=False, bind=db.engine), None
+    return DB(url=url)

@@ -6,7 +6,6 @@ from typing import Any, Optional, Tuple
 from dynaconf import Dynaconf
 from nextline import Nextline
 from sqlalchemy import func, select
-from sqlalchemy.orm import sessionmaker
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
@@ -27,7 +26,7 @@ class EGraphQL(GraphQL):
     https://strawberry.rocks/docs/integrations/asgi
     """
 
-    def __init__(self, nextline: Nextline, db: Optional[sessionmaker] = None):
+    def __init__(self, nextline: Nextline, db: Optional[DB] = None):
         super().__init__(schema)
         self._nextline = nextline
         self._db = db
@@ -43,7 +42,7 @@ class EGraphQL(GraphQL):
 
 def create_app(
     config: Optional[Dynaconf] = None,
-    db: Optional[sessionmaker] = None,
+    db: Optional[DB] = None,
     nextline: Optional[Nextline] = None,
 ):
 
@@ -56,13 +55,13 @@ def create_app(
 
     if not db:
         try:
-            db_ = DB(config.db['url'])
-            db = sessionmaker(autocommit=False, autoflush=False, bind=db_.engine)
+            db = DB(config.db['url'])
         except BaseException:
             logger = getLogger(__name__)
             logger.exception("failed to initialize DB ")
             db = None
 
+    if db:
         try:
             run_no, script = get_last_run_no_and_script(db)
         except BaseException:
@@ -111,10 +110,10 @@ def create_app(
     return app
 
 
-def get_last_run_no_and_script(db) -> Tuple[int, str]:
+def get_last_run_no_and_script(db: DB) -> Tuple[int, str]:
     """Get the last run number and the script from the DB"""
 
-    with db() as session:
+    with db.session() as session:
         stmt = select(db_models.Run, func.max(db_models.Run.run_no))
         if model := session.execute(stmt).scalar_one_or_none():
             return model.run_no, model.script
