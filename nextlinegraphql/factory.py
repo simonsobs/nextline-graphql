@@ -79,14 +79,14 @@ def create_app(
         del app
         nonlocal db, nextline
 
-        await nextline.start()
-
         if db:
             task = asyncio.create_task(write_db(nextline, db))
         else:
             logger = getLogger(__name__)
             logger.error("Starting without DB")
             task = None
+
+        await nextline.start()
 
         try:
             yield
