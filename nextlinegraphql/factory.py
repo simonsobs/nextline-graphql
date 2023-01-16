@@ -28,23 +28,16 @@ class EGraphQL(GraphQL):
     https://strawberry.rocks/docs/integrations/asgi
     """
 
-    def __init__(
-        self,
-        nextline: Nextline,
-        db: Optional[sessionmaker] = None,
-        engine: Optional[Engine] = None,
-    ):
+    def __init__(self, nextline: Nextline, db: Optional[sessionmaker] = None):
         super().__init__(schema)
         self._nextline = nextline
         self._db = db
-        self._engine = engine
 
     async def get_context(self, request, response=None) -> Optional[Any]:
         return {
             "request": request,
             "response": response,
             "db": self._db,
-            "engine": self._engine,
             "nextline": self._nextline,
         }
 
@@ -81,12 +74,12 @@ def create_app(
     if not nextline:
         nextline = Nextline(script, run_no)
 
-    app_ = EGraphQL(nextline, db, engine)
+    app_ = EGraphQL(nextline, db)
 
     @contextlib.asynccontextmanager
     async def lifespan(app):
         del app
-        nonlocal db, engine, nextline
+        nonlocal db, nextline
 
         await nextline.start()
 
