@@ -2,19 +2,19 @@ import contextlib
 from dataclasses import dataclass, field
 from logging import getLogger
 from pathlib import Path
-from typing import Callable, Dict, Iterator, Optional, Tuple
+from typing import Iterator, Optional
 
 from alembic.config import Config
 from alembic.migration import MigrationContext
 from alembic.runtime.environment import EnvironmentContext
 from alembic.script import ScriptDirectory
 from sqlalchemy import Engine, create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session
 
 from . import models
 from .write import write_db
 
-__all__ = ["init_db", "write_db"]
+__all__ = ['DB', 'write_db']
 
 
 def create_tables(engine: Engine):
@@ -23,30 +23,6 @@ def create_tables(engine: Engine):
     https://docs.sqlalchemy.org/en/20/orm/quickstart.html#emit-create-table-ddl
     '''
     models.Base.metadata.create_all(bind=engine)
-
-
-def init_db(config: Dict) -> Tuple[Callable[[], Session], Engine]:
-
-    url = config["url"]
-
-    # logger = getLogger(__name__)
-    # logger.info(f"SQLAlchemy DB URL: {url}")
-
-    db = DB(url=url)
-    engine = db.engine
-
-    # engine = create_engine(url)
-
-    # migrate_to_head(engine)
-
-    # with engine.connect() as connection:
-    #     context = MigrationContext.configure(connection)
-    #     rev = context.get_current_revision()
-    # logger.info(f"Alembic migration version: {rev!s}")
-
-    # models.Base.metadata.create_all(bind=engine)
-    db_ = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    return db_, engine
 
 
 @dataclass

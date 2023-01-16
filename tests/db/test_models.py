@@ -5,9 +5,9 @@ from typing import Optional, Set, cast
 import pytest
 from nextline import Nextline
 from nextline.utils import agen_with_wait
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
-from nextlinegraphql.db import init_db
+from nextlinegraphql.db import DB
 from nextlinegraphql.db import models as db_models
 from nextlinegraphql.db import write_db
 
@@ -72,8 +72,9 @@ def statement(monkey_patch_syspath):
 
 @pytest.fixture
 def db():
-    config = {"url": "sqlite:///:memory:?check_same_thread=false"}
-    return init_db(config)[0]
+    url = 'sqlite:///:memory:?check_same_thread=false'
+    db = DB(url=url)
+    return sessionmaker(autocommit=False, autoflush=False, bind=db.engine)
 
 
 @pytest.fixture

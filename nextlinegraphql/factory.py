@@ -6,14 +6,13 @@ from typing import Any, Optional, Tuple
 from dynaconf import Dynaconf
 from nextline import Nextline
 from sqlalchemy import func, select
-from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
 from .config import create_settings
-from .db import init_db
+from .db import DB
 from .db import models as db_models
 from .db import write_db
 from .example_script import statement
@@ -57,7 +56,8 @@ def create_app(
 
     if not db:
         try:
-            db, engine = init_db(config.db)
+            db_ = DB(config.db['url'])
+            db = sessionmaker(autocommit=False, autoflush=False, bind=db_.engine)
         except BaseException:
             logger = getLogger(__name__)
             logger.exception("failed to initialize DB ")

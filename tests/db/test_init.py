@@ -3,24 +3,24 @@ from typing import cast
 
 from alembic.migration import MigrationContext
 from sqlalchemy.engine.base import Connection
-from sqlalchemy.orm.session import Session
 
-from nextlinegraphql.db import init_db
+from nextlinegraphql.db import DB
 
 
 def test_one(caplog):
 
-    config = {"url": "sqlite:///:memory:?check_same_thread=false"}
+    url = 'sqlite:///:memory:?check_same_thread=false'
 
     with caplog.at_level(logging.DEBUG):
-        db, engine = init_db(config)
+        db = DB(url=url)
+        engine = db.engine
 
     print_logrecords(caplog.records)
 
-    with db.begin() as session:
-        session = cast(Session, db)
-        assert session
-        # print(session)
+    with db.session() as session:
+        with session.begin():
+            assert session
+            # print(session)
 
     with engine.connect() as connection:
         connection = cast(Connection, connection)
@@ -41,11 +41,10 @@ def print_logrecords(records):
 
 def test_alembic():
 
-    config = {"url": "sqlite:///:memory:?check_same_thread=false"}
+    url = 'sqlite:///:memory:?check_same_thread=false'
+    db = DB(url=url)
 
-    db, engine = init_db(config)
-
-    with engine.connect() as connection:
+    with db.engine.connect() as connection:
         context = MigrationContext.configure(connection)
         rev = context.get_current_revision()
         assert rev

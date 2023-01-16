@@ -4,9 +4,9 @@ from typing import Any, Optional, TypedDict, cast
 
 import pytest
 from async_asgi_testclient import TestClient
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
-from nextlinegraphql.db import init_db
+from nextlinegraphql.db import DB
 from nextlinegraphql.db.models import Run
 
 from ..funcs import gql_request, gql_request_response
@@ -431,7 +431,7 @@ def app(db_engine, nextline):
     from nextlinegraphql.schema import schema
     from nextlinegraphql.strawberry_fix import GraphQL
 
-    db, engine = db_engine
+    db, _ = db_engine
 
     class EGraphQL(GraphQL):
         """Extend the strawberry GraphQL app
@@ -444,7 +444,6 @@ def app(db_engine, nextline):
                 "request": request,
                 "response": response,
                 "db": db,
-                "engine": engine,
                 "nextline": nextline,
             }
 
@@ -457,5 +456,6 @@ def app(db_engine, nextline):
 
 @pytest.fixture
 def db_engine():
-    config = {"url": "sqlite:///:memory:?check_same_thread=false"}
-    return init_db(config)
+    url = 'sqlite:///:memory:?check_same_thread=false'
+    db = DB(url=url)
+    return sessionmaker(autocommit=False, autoflush=False, bind=db.engine), None
