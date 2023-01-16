@@ -74,6 +74,6 @@ class Query:
     @strawberry.field
     def history(self, info: Info) -> History:
         db = info.context["db"]
-        with db() as session:
+        with db.session() as session:
             info.context["session"] = session
             return History()

@@ -7,14 +7,14 @@ from nextline import Nextline
 from nextline.utils import agen_with_wait
 from sqlalchemy.orm import Session
 
-from nextlinegraphql.db import init_db
+from nextlinegraphql.db import DB
 from nextlinegraphql.db import models as db_models
 from nextlinegraphql.db import write_db
 
 
-def test_one(db, run_nextline, statement):
+def test_one(db: DB, run_nextline, statement):
     del run_nextline
-    with db() as session:
+    with db.session() as session:
         session = cast(Session, session)
         runs = session.query(db_models.Run).all()  # type: ignore
         assert 2 == len(runs)
@@ -71,13 +71,13 @@ def statement(monkey_patch_syspath):
 
 
 @pytest.fixture
-def db():
-    config = {"url": "sqlite:///:memory:?check_same_thread=false"}
-    return init_db(config)[0]
+def db() -> DB:
+    url = 'sqlite:///:memory:?check_same_thread=false'
+    return DB(url=url)
 
 
 @pytest.fixture
-async def run_nextline(db, statement):
+async def run_nextline(db: DB, statement):
     async with Nextline(statement) as nextline:
         task_write = asyncio.create_task(write_db(nextline, db))
         task_control = asyncio.create_task(control_execution(nextline))

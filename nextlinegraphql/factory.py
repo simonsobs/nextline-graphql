@@ -6,14 +6,12 @@ from typing import Any, Optional, Tuple
 from dynaconf import Dynaconf
 from nextline import Nextline
 from sqlalchemy import func, select
-from sqlalchemy.engine.base import Engine
-from sqlalchemy.orm import sessionmaker
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
 from .config import create_settings
-from .db import init_db
+from .db import DB
 from .db import models as db_models
 from .db import write_db
 from .example_script import statement
@@ -28,31 +26,23 @@ class EGraphQL(GraphQL):
     https://strawberry.rocks/docs/integrations/asgi
     """
 
-    def __init__(
-        self,
-        nextline: Nextline,
-        db: Optional[sessionmaker] = None,
-        engine: Optional[Engine] = None,
-    ):
+    def __init__(self, nextline: Nextline, db: Optional[DB] = None):
         super().__init__(schema)
         self._nextline = nextline
         self._db = db
-        self._engine = engine
 
     async def get_context(self, request, response=None) -> Optional[Any]:
         return {
             "request": request,
             "response": response,
             "db": self._db,
-            "engine": self._engine,
             "nextline": self._nextline,
         }
 
 
 def create_app(
     config: Optional[Dynaconf] = None,
-    db: Optional[sessionmaker] = None,
-    engine: Optional[Engine] = None,
+    db: Optional[DB] = None,
     nextline: Optional[Nextline] = None,
 ):
 
@@ -65,12 +55,13 @@ def create_app(
 
     if not db:
         try:
-            db, engine = init_db(config.db)
+            db = DB(config.db['url'])
         except BaseException:
             logger = getLogger(__name__)
             logger.exception("failed to initialize DB ")
             db = None
 
+    if db:
         try:
             run_no, script = get_last_run_no_and_script(db)
         except BaseException:
@@ -81,12 +72,12 @@ def create_app(
     if not nextline:
         nextline = Nextline(script, run_no)
 
-    app_ = EGraphQL(nextline, db, engine)
+    app_ = EGraphQL(nextline, db)
 
     @contextlib.asynccontextmanager
     async def lifespan(app):
         del app
-        nonlocal db, engine, nextline
+        nonlocal db, nextline
 
         await nextline.start()
 
@@ -119,10 +110,10 @@ def create_app(
     return app
 
 
-def get_last_run_no_and_script(db) -> Tuple[int, str]:
+def get_last_run_no_and_script(db: DB) -> Tuple[int, str]:
     """Get the last run number and the script from the DB"""
 
-    with db() as session:
+    with db.session() as session:
         stmt = select(db_models.Run, func.max(db_models.Run.run_no))
         if model := session.execute(stmt).scalar_one_or_none():
             return model.run_no, model.script

@@ -3,9 +3,9 @@ from typing import cast
 
 import pytest
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
-from nextlinegraphql.db import init_db
+from nextlinegraphql.db import DB
 from nextlinegraphql.db.models import Run
 
 
@@ -31,5 +31,6 @@ def test_one(db):
 
 @pytest.fixture
 def db():
-    config = {"url": "sqlite:///:memory:?check_same_thread=false"}
-    return init_db(config)[0]
+    url = 'sqlite:///:memory:?check_same_thread=false'
+    db = DB(url=url)
+    return sessionmaker(autocommit=False, autoflush=False, bind=db.engine)
