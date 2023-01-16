@@ -29,8 +29,8 @@ def init_db(config: Dict) -> Tuple[Callable[[], Session], Engine]:
 
     url = config["url"]
 
-    logger = getLogger(__name__)
-    logger.info(f"SQLAlchemy DB URL: {url}")
+    # logger = getLogger(__name__)
+    # logger.info(f"SQLAlchemy DB URL: {url}")
 
     db = DB(url=url)
     engine = db.engine
@@ -39,10 +39,10 @@ def init_db(config: Dict) -> Tuple[Callable[[], Session], Engine]:
 
     # migrate_to_head(engine)
 
-    with engine.connect() as connection:
-        context = MigrationContext.configure(connection)
-        rev = context.get_current_revision()
-    logger.info(f"Alembic migration version: {rev!s}")
+    # with engine.connect() as connection:
+    #     context = MigrationContext.configure(connection)
+    #     rev = context.get_current_revision()
+    # logger.info(f"Alembic migration version: {rev!s}")
 
     # models.Base.metadata.create_all(bind=engine)
     db_ = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -64,9 +64,15 @@ class DB:
         https://docs.sqlalchemy.org/en/20/orm/quickstart.html#create-an-engine
         '''
         if self._engine is None:
+            logger = getLogger(__name__)
+            logger.info(f"SQLAlchemy DB URL: {self.url}")
             self._engine = create_engine(self.url, **self.create_engine_kwargs)
             migrate_to_head(self._engine)
             create_tables(self._engine)  # NOTE: unnecessary as alembic is used
+            with self._engine.connect() as connection:
+                context = MigrationContext.configure(connection)
+                rev = context.get_current_revision()
+            logger.info(f"Alembic migration version: {rev!s}")
         return self._engine
 
     @contextlib.contextmanager
