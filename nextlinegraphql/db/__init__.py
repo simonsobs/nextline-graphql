@@ -27,7 +27,14 @@ def create_tables(engine: Engine):
 
 @dataclass
 class DB:
-    '''The interface to the SQLAlchemy database.'''
+    '''The interface to the SQLAlchemy database.
+
+    >>> db = DB()
+    >>> with db.session() as session:
+    ...     with session.begin():
+    ...         pass
+
+    '''
 
     url: str = 'sqlite://'
     create_engine_kwargs: dict = field(default_factory=dict)
