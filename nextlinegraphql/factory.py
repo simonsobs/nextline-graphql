@@ -76,7 +76,6 @@ def create_app(
     @contextlib.asynccontextmanager
     async def lifespan(app):
         del app
-        nonlocal db, nextline
 
         if db:
             async with write_db(nextline, db):
