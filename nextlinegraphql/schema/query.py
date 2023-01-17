@@ -47,6 +47,16 @@ def query_exception(info: Info) -> Optional[str]:
 
 
 @strawberry.type
+class QueryExec:
+    hello: str = strawberry.field(resolver=query_hello)
+    state: str = strawberry.field(resolver=query_state)
+    run_no: int = strawberry.field(resolver=query_run_no)
+    source: List[str] = strawberry.field(resolver=query_source)
+    source_line: str = strawberry.field(resolver=query_source_line)
+    exception: Optional[str] = strawberry.field(resolver=query_exception)
+
+
+@strawberry.type
 class History:
     runs: Connection[types.RunHistory] = strawberry.field(
         resolver=types.query_connection_run
@@ -63,17 +73,15 @@ class History:
 
 
 @strawberry.type
-class Query:
-    hello: str = strawberry.field(resolver=query_hello)
-    state: str = strawberry.field(resolver=query_state)
-    run_no: int = strawberry.field(resolver=query_run_no)
-    source: List[str] = strawberry.field(resolver=query_source)
-    source_line: str = strawberry.field(resolver=query_source_line)
-    exception: Optional[str] = strawberry.field(resolver=query_exception)
-
+class QueryDB:
     @strawberry.field
     def history(self, info: Info) -> History:
         db = info.context["db"]
         with db.session() as session:
             info.context["session"] = session
             return History()
+
+
+@strawberry.type
+class Query(QueryExec, QueryDB):
+    pass
