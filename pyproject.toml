@@ -29,6 +29,7 @@ dependencies = [
     "starlette>=0.20.4",
     "strawberry-graphql>=0.128",
     "websockets>=10.2",
+    "pluggy>=1.0",
 ]
 
 [project.optional-dependencies]
