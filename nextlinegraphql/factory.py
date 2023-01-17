@@ -78,13 +78,11 @@ def create_app(
         del app
         assert nextline
 
-        if db:
-            async with write_db(nextline, db):
-                async with nextline:
-                    yield
-        else:
-            async with nextline:
-                yield
+        async with contextlib.AsyncExitStack() as stack:
+            if db:
+                await stack.enter_async_context(write_db(nextline, db))
+            await stack.enter_async_context(nextline)
+            yield
 
     middleware = [
         Middleware(
