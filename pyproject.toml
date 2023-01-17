@@ -59,6 +59,9 @@ source = "regex_commit"
 path = "nextlinegraphql/__about__.py"
 tag_sign = false
 
+[tool.hatch.build]
+include = ["/nextlinegraphql"]
+
 [tool.hatch.build.targets.sdist]
 include = ["/nextlinegraphql"]
 
