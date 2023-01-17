@@ -78,12 +78,12 @@ def db() -> DB:
 
 @pytest.fixture
 async def run_nextline(db: DB, statement):
-    async with Nextline(statement) as nextline:
-        task_write = asyncio.create_task(write_db(nextline, db))
-        task_control = asyncio.create_task(control_execution(nextline))
-        await run_statement(nextline, statement)
-    await task_control
-    await task_write
+    nextline = Nextline(statement)
+    async with write_db(nextline, db):
+        async with nextline:
+            task_control = asyncio.create_task(control_execution(nextline))
+            await run_statement(nextline, statement)
+        await task_control
 
 
 async def run_statement(nextline: Nextline, statement: Optional[str] = None):

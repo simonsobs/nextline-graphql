@@ -1,4 +1,3 @@
-import asyncio
 import contextlib
 from logging import getLogger
 from typing import Any, Optional, Tuple
@@ -80,20 +79,12 @@ def create_app(
         nonlocal db, nextline
 
         if db:
-            task = asyncio.create_task(write_db(nextline, db))
+            async with write_db(nextline, db):
+                async with nextline:
+                    yield
         else:
-            logger = getLogger(__name__)
-            logger.error("Starting without DB")
-            task = None
-
-        await nextline.start()
-
-        try:
-            yield
-        finally:
-            await asyncio.wait_for(nextline.close(), timeout=3)
-            if task:
-                await asyncio.wait_for(task, timeout=3)
+            async with nextline:
+                yield
 
     middleware = [
         Middleware(

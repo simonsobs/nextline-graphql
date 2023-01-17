@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from collections import deque
+from contextlib import asynccontextmanager
 from logging import getLogger
 from typing import TYPE_CHECKING, Deque, List, Union
 
@@ -15,18 +16,23 @@ if TYPE_CHECKING:
     from nextline.types import StdoutInfo
 
 
-async def write_db(nextline: Nextline, db: DB) -> None:
+@asynccontextmanager
+async def write_db(nextline: Nextline, db: DB, timeout_on_exit: float = 3):
+    task = asyncio.gather(
+        subscribe_run_info(nextline, db),
+        subscribe_trace_info(nextline, db),
+        subscribe_prompt_info(nextline, db),
+        subscribe_stdout(nextline, db),
+    )
     try:
-        await asyncio.gather(
-            subscribe_run_info(nextline, db),
-            subscribe_trace_info(nextline, db),
-            subscribe_prompt_info(nextline, db),
-            subscribe_stdout(nextline, db),
-        )
-    except BaseException:
-        logger = getLogger(__name__)
-        logger.exception("Exception occurred in writing to DB")
-        raise
+        yield
+    finally:
+        try:
+            await asyncio.wait_for(task, timeout=timeout_on_exit)
+        except BaseException:
+            logger = getLogger(__name__)
+            logger.exception("Exception occurred in writing to DB")
+            raise
 
 
 async def subscribe_run_info(nextline: Nextline, db: DB):
