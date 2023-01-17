@@ -74,8 +74,9 @@ def create_app(
     app_ = EGraphQL(nextline, db)
 
     @contextlib.asynccontextmanager
-    async def lifespan(app):
+    async def lifespan(app: Starlette):
         del app
+        assert nextline
 
         if db:
             async with write_db(nextline, db):
