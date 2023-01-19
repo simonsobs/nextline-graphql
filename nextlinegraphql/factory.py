@@ -9,7 +9,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from . import apluggy
 from . import db
-from . import plugin1, spec
+from . import spec
 from .config import create_settings
 from .example_script import statement
 from .logging import configure_logging
@@ -47,7 +47,6 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
 
     pm = apluggy.PluginManager('nextline')
     pm.add_hookspecs(spec)
-    pm.register(plugin1)
     pm.register(db.Plugin(config=config))
 
     configure_logging(config.logging)
