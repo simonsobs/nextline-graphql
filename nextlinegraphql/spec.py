@@ -1,3 +1,4 @@
+'''Hook specification for Nextline GraphQL plugin.'''
 from typing import Mapping
 
 from nextline import Nextline
