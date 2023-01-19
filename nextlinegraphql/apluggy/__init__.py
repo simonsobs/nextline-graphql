@@ -1,45 +1,96 @@
-'''A wrapper around pluggy to make it work with async functions.
+'''A wrapper around pluggy to make it work with async functions and context managers.
 
 >>> from nextlinegraphql import apluggy
+>>> from decorator import contextmanager
+>>> from nextlinegraphql.decorator import asynccontextmanager
 
->>> hookspec = apluggy.HookspecMarker("myproject")
->>> hookimpl = apluggy.HookimplMarker("myproject")
+>>> hookspec = apluggy.HookspecMarker('project')
+>>> hookimpl = apluggy.HookimplMarker('project')
 
->>> class MySpec:
+>>> class Spec:
 ...     """A hook specification namespace."""
 ...
 ...     @hookspec
-...     async def myhook(self, arg1, arg2):
-...         """My special little hook that you can customize."""
+...     async def afunc(self, arg1, arg2):
+...         pass
+...
+...     @hookspec
+...     @contextmanager
+...     def context(self, arg1, arg2):
+...         pass
+...
+...     @hookspec
+...     @asynccontextmanager
+...     async def acontext(self, arg1, arg2):
+...         pass
 
 >>> class Plugin_1:
 ...     """A hook implementation namespace."""
 ...
 ...     @hookimpl
-...     async def myhook(self, arg1, arg2):
-...         print("inside Plugin_1.myhook()")
+...     async def afunc(self, arg1, arg2):
+...         print('inside Plugin_1.afunc()')
 ...         return arg1 + arg2
+...
+...     @hookimpl
+...     @contextmanager
+...     def context(self, arg1, arg2):
+...         print('inside Plugin_1.context()')
+...         yield arg1 + arg2
+...
+...     @hookimpl
+...     @asynccontextmanager
+...     async def acontext(self, arg1, arg2):
+...         print('inside Plugin_1.acontext()')
+...         yield arg1 + arg2
 
 >>> class Plugin_2:
 ...     """A 2nd hook implementation namespace."""
 ...
 ...     @hookimpl
-...     async def myhook(self, arg1, arg2):
-...         print("inside Plugin_2.myhook()")
+...     async def afunc(self, arg1, arg2):
+...         print('inside Plugin_2.afunc()')
 ...         return arg1 - arg2
+...
+...     @hookimpl
+...     @contextmanager
+...     def context(self, arg1, arg2):
+...         print('inside Plugin_2.context()')
+...         yield arg1 - arg2
+...
+...     @hookimpl
+...     @asynccontextmanager
+...     async def acontext(self, arg1, arg2):
+...         print('inside Plugin_2.acontext()')
+...         yield arg1 - arg2
 
+>>> pm = apluggy.PluginManager('project')
+>>> pm.add_hookspecs(Spec)
+>>> _ = pm.register(Plugin_1())
+>>> _ = pm.register(Plugin_2())
 
->>> async def main():
-...     pm = apluggy.PluginManager("myproject")
-...     pm.add_hookspecs(MySpec)
-...     r = pm.register(Plugin_1())
-...     r = pm.register(Plugin_2())
-...     results = await pm.ahook.myhook(arg1=1, arg2=2)  # ahook instead of hook
+>>> async def call_afunc():
+...     results = await pm.ahook.afunc(arg1=1, arg2=2)  # ahook instead of hook
 ...     print(results)
 
->>> asyncio.run(main())
-inside Plugin_2.myhook()
-inside Plugin_1.myhook()
+>>> asyncio.run(call_afunc())
+inside Plugin_2.afunc()
+inside Plugin_1.afunc()
+[-1, 3]
+
+>>> with pm.with_.context(arg1=1, arg2=2) as y:  # with_ instead of hook
+...     print(y)
+inside Plugin_2.context()
+inside Plugin_1.context()
+[-1, 3]
+
+>>> async def call_acontext():
+...     async with pm.awith.acontext(arg1=1, arg2=2) as y:  # awith instead of hook
+...         print(y)
+
+>>> asyncio.run(call_acontext())
+inside Plugin_2.acontext()
+inside Plugin_1.acontext()
 [-1, 3]
 
 '''
