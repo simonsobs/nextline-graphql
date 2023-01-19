@@ -106,13 +106,9 @@ __all__ = [
 import asyncio
 import contextlib
 
-from pluggy import (
-    HookCallError,
-    HookimplMarker,
-    HookspecMarker,
-    PluginManager as PluginManager_,
-    PluginValidationError,
-)
+from pluggy import HookCallError, HookimplMarker, HookspecMarker
+from pluggy import PluginManager as PluginManager_
+from pluggy import PluginValidationError
 
 
 class _AHook:
