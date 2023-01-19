@@ -30,7 +30,7 @@
 
 
 >>> async def main():
-...     pm = apluggy.APluginManager("myproject")
+...     pm = apluggy.PluginManager("myproject")
 ...     pm.add_hookspecs(MySpec)
 ...     r = pm.register(Plugin_1())
 ...     r = pm.register(Plugin_2())
@@ -50,7 +50,6 @@ __all__ = [
     'HookCallError',
     'HookspecMarker',
     'HookimplMarker',
-    'AsyncPluginManager',
 ]
 
 import asyncio
@@ -60,13 +59,13 @@ from pluggy import (
     HookCallError,
     HookimplMarker,
     HookspecMarker,
-    PluginManager,
+    PluginManager as PluginManager_,
     PluginValidationError,
 )
 
 
 class _AHook:
-    def __init__(self, pm: PluginManager):
+    def __init__(self, pm: PluginManager_):
         self.pm = pm
 
     def __getattr__(self, name):
@@ -79,7 +78,7 @@ class _AHook:
 
 
 class _With:
-    def __init__(self, pm: PluginManager):
+    def __init__(self, pm: PluginManager_):
         self.pm = pm
 
     def __getattr__(self, name):
@@ -95,7 +94,7 @@ class _With:
 
 
 class _AWith:
-    def __init__(self, pm: PluginManager):
+    def __init__(self, pm: PluginManager_):
         self.pm = pm
 
     def __getattr__(self, name):
@@ -110,7 +109,7 @@ class _AWith:
         return call
 
 
-class APluginManager(PluginManager):
+class PluginManager(PluginManager_):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.ahook = _AHook(self)
