@@ -4,6 +4,7 @@ import traceback
 from typing import TYPE_CHECKING, List, Optional
 
 import strawberry
+from strawberry.tools import merge_types
 from strawberry.types import Info
 
 from . import types
@@ -82,6 +83,4 @@ class QueryDB:
             return History()
 
 
-@strawberry.type
-class Query(QueryExec, QueryDB):
-    pass
+Query = merge_types('Query', (QueryExec, QueryDB))
