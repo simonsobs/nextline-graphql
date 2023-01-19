@@ -6,10 +6,9 @@ from nextline import Nextline
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
+from strawberry.schema import BaseSchema
 
-from . import apluggy
-from . import db
-from . import spec
+from . import apluggy, db, spec
 from .config import create_settings
 from .example_script import statement
 from .logging import configure_logging
@@ -23,7 +22,12 @@ class EGraphQL(GraphQL):
     https://strawberry.rocks/docs/integrations/asgi
     """
 
-    def __init__(self, nextline: Nextline, pm: apluggy.PluginManager):
+    def __init__(
+        self,
+        schema: BaseSchema,
+        nextline: Nextline,
+        pm: apluggy.PluginManager,
+    ):
         super().__init__(schema)
         self._nextline = nextline
         self._pm = pm
@@ -57,7 +61,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
     if not nextline:
         nextline = Nextline(script, run_no)
 
-    app_ = EGraphQL(nextline, pm=pm)
+    app_ = EGraphQL(schema=schema, nextline=nextline, pm=pm)
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
