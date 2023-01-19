@@ -98,5 +98,6 @@ module = [
     "dynaconf.*",
     "async_asgi_testclient.*",
     "snapshottest.*",
+    "pluggy.*",
 ]
 ignore_missing_imports = true
