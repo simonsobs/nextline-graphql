@@ -30,6 +30,8 @@ dependencies = [
     "strawberry-graphql>=0.128",
     "websockets>=10.2",
     "pluggy>=1.0",
+    "decorator>=5.1",
+    "types-decorator>=5.1",
 ]
 
 [project.optional-dependencies]
