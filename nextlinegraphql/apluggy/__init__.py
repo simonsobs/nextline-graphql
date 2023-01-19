@@ -54,6 +54,7 @@ __all__ = [
 ]
 
 import asyncio
+import contextlib
 
 from pluggy import (
     HookCallError,
@@ -77,7 +78,41 @@ class _AHook:
         return call
 
 
+class _With:
+    def __init__(self, pm: PluginManager):
+        self.pm = pm
+
+    def __getattr__(self, name):
+        @contextlib.contextmanager
+        def call(*args, **kwargs):
+            hook = getattr(self.pm.hook, name)
+            with contextlib.ExitStack() as stack:
+                contexts = hook(*args, **kwargs)
+                y = [stack.enter_context(context) for context in contexts]
+                yield y
+
+        return call
+
+
+class _AWith:
+    def __init__(self, pm: PluginManager):
+        self.pm = pm
+
+    def __getattr__(self, name):
+        @contextlib.asynccontextmanager
+        async def call(*args, **kwargs):
+            hook = getattr(self.pm.hook, name)
+            async with contextlib.AsyncExitStack() as stack:
+                contexts = hook(*args, **kwargs)
+                y = [await stack.enter_async_context(context) for context in contexts]
+                yield y
+
+        return call
+
+
 class APluginManager(PluginManager):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.ahook = _AHook(self)
+        self.with_ = _With(self)
+        self.awith = _AWith(self)
