@@ -2,8 +2,9 @@ __all__ = ['DB', 'write_db']
 
 import contextlib
 from logging import getLogger
-from typing import Mapping, Optional
+from typing import Mapping
 
+from dynaconf import Dynaconf
 from nextline import Nextline
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -18,8 +19,8 @@ from .write import write_db
 
 
 class Plugin:
-    def __init__(self, db: Optional[DB] = None):
-        self._db = db
+    def __init__(self, config: Dynaconf):
+        self._db = DB(config.db['url'])
 
     @spec.hookimpl
     def initial_run_no(self):

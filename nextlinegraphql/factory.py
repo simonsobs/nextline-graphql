@@ -1,5 +1,4 @@
 import contextlib
-from logging import getLogger
 from typing import Any, Optional
 
 from dynaconf import Dynaconf
@@ -9,10 +8,9 @@ from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
 from . import apluggy
-from . import db as db_
+from . import db
 from . import plugin1, spec
 from .config import create_settings
-from .db import DB
 from .example_script import statement
 from .logging import configure_logging
 from .schema import schema
@@ -45,25 +43,14 @@ class EGraphQL(GraphQL):
 
 def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] = None):
 
-    db: Optional[DB] = None
-
     config = config or create_settings()
 
     pm = apluggy.PluginManager('nextline')
     pm.add_hookspecs(spec)
     pm.register(plugin1)
+    pm.register(db.Plugin(config=config))
 
     configure_logging(config.logging)
-
-    if not db:
-        try:
-            db = DB(config.db['url'])
-        except BaseException:
-            logger = getLogger(__name__)
-            logger.exception("failed to initialize DB ")
-            db = None
-
-    pm.register(db_.Plugin(db=db))
 
     run_no: int = max(pm.hook.initial_run_no(), default=1)
     script: str = [*pm.hook.initial_script(), statement][0]
