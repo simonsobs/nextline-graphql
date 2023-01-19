@@ -63,6 +63,8 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
     async def lifespan(app: Starlette):
         assert nextline
 
+        app.mount('/', app_)
+
         async with pm.awith.lifespan(app=app, nextline=nextline):
             async with nextline:
                 yield
@@ -77,6 +79,5 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
     ]
 
     app = Starlette(debug=True, lifespan=lifespan, middleware=middleware)
-    app.mount("/", app_)
 
     return app
