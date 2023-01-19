@@ -71,12 +71,6 @@ def statement(monkey_patch_syspath):
 
 
 @pytest.fixture
-def db() -> DB:
-    url = 'sqlite:///:memory:?check_same_thread=false'
-    return DB(url=url)
-
-
-@pytest.fixture
 async def run_nextline(db: DB, statement):
     nextline = Nextline(statement)
     async with write_db(nextline, db):

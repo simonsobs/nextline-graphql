@@ -43,11 +43,9 @@ class EGraphQL(GraphQL):
         return context
 
 
-def create_app(
-    config: Optional[Dynaconf] = None,
-    db: Optional[DB] = None,
-    nextline: Optional[Nextline] = None,
-):
+def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] = None):
+
+    db: Optional[DB] = None
 
     config = config or create_settings()
 
