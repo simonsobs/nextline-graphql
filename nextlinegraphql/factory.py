@@ -9,6 +9,7 @@ from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
+from . import apluggy, plugin1, spec
 from .config import create_settings
 from .db import DB
 from .db import models as db_models
@@ -47,6 +48,10 @@ def create_app(
 
     config = config or create_settings()
 
+    pm = apluggy.PluginManager('nextline')
+    pm.add_hookspecs(spec)
+    pm.register(plugin1)
+
     configure_logging(config.logging)
 
     run_no = 0
@@ -75,10 +80,10 @@ def create_app(
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
-        del app
         assert nextline
 
         async with contextlib.AsyncExitStack() as stack:
+            await stack.enter_async_context(pm.awith.lifespan(app=app))
             if db:
                 await stack.enter_async_context(write_db(nextline, db))
             await stack.enter_async_context(nextline)
