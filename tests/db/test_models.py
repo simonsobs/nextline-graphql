@@ -80,6 +80,12 @@ async def run_nextline(db: DB, statement):
         await task_control
 
 
+@pytest.fixture
+def db() -> DB:
+    url = 'sqlite:///:memory:?check_same_thread=false'
+    return DB(url=url)
+
+
 async def run_statement(nextline: Nextline, statement: Optional[str] = None):
     await asyncio.sleep(0.01)
     await nextline.reset(statement=statement)
