@@ -29,6 +29,9 @@ dependencies = [
     "starlette>=0.20.4",
     "strawberry-graphql>=0.128",
     "websockets>=10.2",
+    "pluggy>=1.0",
+    "decorator>=5.1",
+    "types-decorator>=5.1",
 ]
 
 [project.optional-dependencies]
@@ -95,5 +98,6 @@ module = [
     "dynaconf.*",
     "async_asgi_testclient.*",
     "snapshottest.*",
+    "pluggy.*",
 ]
 ignore_missing_imports = true
