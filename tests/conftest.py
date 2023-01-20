@@ -6,7 +6,6 @@ import pytest
 from async_asgi_testclient import TestClient
 
 from nextlinegraphql import create_app
-from nextlinegraphql.db import DB
 
 
 @pytest.fixture(autouse=True)
@@ -26,21 +25,12 @@ async def client(app):
 
 
 @pytest.fixture
-def app(config, db: DB, nextline):
-    return create_app(
-        config=config,
-        db=db,
-        nextline=nextline,
-    )
+def app(config, nextline):
+    return create_app(config=config, nextline=nextline)
 
 
 @pytest.fixture
 def config():
-    return None
-
-
-@pytest.fixture
-def db():
     return None
 
 

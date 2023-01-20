@@ -9,7 +9,13 @@ from strawberry.types import Info
 if TYPE_CHECKING:
     from nextline import Nextline
 
-from .types import PromptingData
+
+@strawberry.type
+class PromptingData:
+    prompting: int
+    file_name: str
+    line_no: int
+    trace_event: str
 
 
 async def subscribe_counter() -> AsyncIterator[int]:

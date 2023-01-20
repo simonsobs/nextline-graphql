@@ -1,23 +1,46 @@
 import contextlib
-from logging import getLogger
-from typing import Any, Optional, Tuple
+from typing import Any, Optional
 
+import strawberry
 from dynaconf import Dynaconf
 from nextline import Nextline
-from sqlalchemy import func, select
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
+from strawberry.schema import BaseSchema
+from strawberry.tools import merge_types
 
-from . import apluggy, plugin1, spec
+from . import apluggy, spec
 from .config import create_settings
-from .db import DB
-from .db import models as db_models
-from .db import write_db
 from .example_script import statement
 from .logging import configure_logging
-from .schema import schema
+from .plugins import ctrl, db
+
 from .strawberry_fix import GraphQL
+
+
+def compose_schema(pm: apluggy.PluginManager) -> BaseSchema:
+
+    # [(Query, Mutation, Subscription), ...]
+    three_types = pm.hook.schema()
+
+    # [(Query, ...), (Mutation, ...), (Subscription, ...)]
+    transposed = list(map(tuple, zip(*three_types)))
+    transposed = [tuple(t for t in l if t) for l in transposed]  # remove None
+
+    q, m, s = transposed
+    assert q  # Query is required
+    Query = merge_types('Query', q)  # type: ignore
+    Mutation = m and merge_types('Mutation', m) or None  # type: ignore
+    Subscription = s and merge_types('Subscription', s) or None  # type: ignore
+
+    schema = strawberry.Schema(
+        query=Query,
+        mutation=Mutation,
+        subscription=Subscription,
+    )
+
+    return schema
 
 
 class EGraphQL(GraphQL):
@@ -26,68 +49,58 @@ class EGraphQL(GraphQL):
     https://strawberry.rocks/docs/integrations/asgi
     """
 
-    def __init__(self, nextline: Nextline, db: Optional[DB] = None):
+    def __init__(
+        self,
+        schema: BaseSchema,
+        nextline: Nextline,
+        pm: apluggy.PluginManager,
+    ):
         super().__init__(schema)
         self._nextline = nextline
-        self._db = db
+        self._pm = pm
 
     async def get_context(self, request, response=None) -> Optional[Any]:
-        return {
+        context = {
             "request": request,
             "response": response,
-            "db": self._db,
             "nextline": self._nextline,
         }
+        updates = await self._pm.ahook.get_context(context=context)
+        for update in updates:
+            if update:
+                context.update(update)
+        return context
 
 
-def create_app(
-    config: Optional[Dynaconf] = None,
-    db: Optional[DB] = None,
-    nextline: Optional[Nextline] = None,
-):
+def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] = None):
 
     config = config or create_settings()
 
     pm = apluggy.PluginManager('nextline')
     pm.add_hookspecs(spec)
-    pm.register(plugin1)
+    pm.register(db.Plugin(config=config))
+    pm.register(ctrl.Plugin(config=config))
 
     configure_logging(config.logging)
 
-    run_no = 0
-    script = statement
-
-    if not db:
-        try:
-            db = DB(config.db['url'])
-        except BaseException:
-            logger = getLogger(__name__)
-            logger.exception("failed to initialize DB ")
-            db = None
-
-    if db:
-        try:
-            run_no, script = get_last_run_no_and_script(db)
-        except BaseException:
-            logger.exception("failed to get the last run info in the DB")
-
-    run_no = run_no + 1
+    run_no: int = max(pm.hook.initial_run_no(), default=1)
+    script: str = [*pm.hook.initial_script(), statement][0]
 
     if not nextline:
         nextline = Nextline(script, run_no)
 
-    app_ = EGraphQL(nextline, db)
+    schema = compose_schema(pm=pm)
+    app_ = EGraphQL(schema=schema, nextline=nextline, pm=pm)
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
         assert nextline
 
-        async with contextlib.AsyncExitStack() as stack:
-            await stack.enter_async_context(pm.awith.lifespan(app=app))
-            if db:
-                await stack.enter_async_context(write_db(nextline, db))
-            await stack.enter_async_context(nextline)
-            yield
+        app.mount('/', app_)
+
+        async with pm.awith.lifespan(app=app, nextline=nextline):
+            async with nextline:
+                yield
 
     middleware = [
         Middleware(
@@ -99,20 +112,5 @@ def create_app(
     ]
 
     app = Starlette(debug=True, lifespan=lifespan, middleware=middleware)
-    app.mount("/", app_)
 
     return app
-
-
-def get_last_run_no_and_script(db: DB) -> Tuple[int, str]:
-    """Get the last run number and the script from the DB"""
-
-    with db.session() as session:
-        stmt = select(db_models.Run, func.max(db_models.Run.run_no))
-        if model := session.execute(stmt).scalar_one_or_none():
-            return model.run_no, model.script
-        else:
-            logger = getLogger(__name__)
-            msg = "No previous runs were found in the DB"
-            logger.info(msg)
-            return 0, statement

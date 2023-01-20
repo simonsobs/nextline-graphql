@@ -5,8 +5,8 @@ from typing import Any, Optional, TypedDict
 import pytest
 from async_asgi_testclient import TestClient
 
-from nextlinegraphql.db import DB
-from nextlinegraphql.db.models import Run
+from nextlinegraphql.plugins.db import DB
+from nextlinegraphql.plugins.db.models import Run
 
 from ..funcs import gql_request, gql_request_response
 from ..graphql import QUERY_HISTORY_RUNS
@@ -423,8 +423,12 @@ def app(db: DB, nextline):
     # override is not needed.
     from starlette.applications import Starlette
 
-    from nextlinegraphql.schema import schema
+    import strawberry
+
+    from nextlinegraphql.plugins.db.schema import Query
     from nextlinegraphql.strawberry_fix import GraphQL
+
+    schema = strawberry.Schema(query=Query)
 
     class EGraphQL(GraphQL):
         """Extend the strawberry GraphQL app

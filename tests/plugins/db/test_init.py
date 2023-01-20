@@ -4,7 +4,7 @@ from typing import cast
 from alembic.migration import MigrationContext
 from sqlalchemy.engine.base import Connection
 
-from nextlinegraphql.db import DB
+from nextlinegraphql.plugins.db import DB
 
 
 def test_one(caplog):

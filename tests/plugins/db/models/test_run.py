@@ -1,18 +1,15 @@
 import datetime
-from typing import cast
 
-import pytest
 from sqlalchemy import select
-from sqlalchemy.orm import Session, sessionmaker
 
-from nextlinegraphql.db import DB
-from nextlinegraphql.db.models import Run
+from nextlinegraphql.plugins.db import DB
+from nextlinegraphql.plugins.db.models import Run
 
 
-def test_one(db):
+def test_one():
+    db = DB()
     run_no = 1
-    with db() as session:
-        session = cast(Session, session)
+    with db.session() as session:
         model = Run(
             run_no=run_no,
             state="running",
@@ -24,13 +21,6 @@ def test_one(db):
         session.commit()
         assert model.id
 
-    with db() as session:
+    with db.session() as session:
         stmt = select(Run).filter_by(run_no=run_no)
         model = session.execute(stmt).scalar_one()
-
-
-@pytest.fixture
-def db():
-    url = 'sqlite:///:memory:?check_same_thread=false'
-    db = DB(url=url)
-    return sessionmaker(autocommit=False, autoflush=False, bind=db.engine)
