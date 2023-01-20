@@ -1,7 +1,7 @@
 from decorator import contextmanager
 from pluggy._hooks import varnames
 
-from nextlinegraphql.decorator import asynccontextmanager
+from nextlinegraphql.custom.decorator import asynccontextmanager
 
 
 @asynccontextmanager

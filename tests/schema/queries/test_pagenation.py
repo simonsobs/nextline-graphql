@@ -421,12 +421,11 @@ def app(db: DB, nextline):
     # NOTE: Overriding the app fixture from conftest.py because it adds an
     # entry in the DB. The factory.create_app() needs to be refactored so this
     # override is not needed.
+    import strawberry
     from starlette.applications import Starlette
 
-    import strawberry
-
+    from nextlinegraphql.custom.strawberry import GraphQL
     from nextlinegraphql.plugins.db.schema import Query
-    from nextlinegraphql.strawberry_fix import GraphQL
 
     schema = strawberry.Schema(query=Query)
 

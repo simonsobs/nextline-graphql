@@ -1,3 +1,7 @@
+'''Strawberry GraphQL ASGI app with a fix for async_asgi_testclient.
+
+Strawberry: https://strawberry.rocks
+'''
 from strawberry.asgi import GraphQL as GraphQL_
 from strawberry.subscriptions import GRAPHQL_WS_PROTOCOL
 

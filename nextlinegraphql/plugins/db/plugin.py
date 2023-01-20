@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from starlette.applications import Starlette
 
 from nextlinegraphql import spec
-from nextlinegraphql.decorator import asynccontextmanager
+from nextlinegraphql.custom.decorator import asynccontextmanager
 
 from . import models
 from .db import DB
