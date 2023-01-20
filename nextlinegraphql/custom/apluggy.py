@@ -1,6 +1,6 @@
 '''A wrapper around pluggy to make it work with async functions and context managers.
 
->>> from nextlinegraphql import apluggy
+>>> from nextlinegraphql.custom import apluggy
 >>> from decorator import contextmanager
 >>> from nextlinegraphql.custom.decorator import asynccontextmanager
 

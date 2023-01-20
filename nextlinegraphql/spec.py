@@ -4,7 +4,7 @@ from typing import Mapping, Optional, Tuple, Union
 from nextline import Nextline
 from starlette.applications import Starlette
 
-from nextlinegraphql import apluggy
+from nextlinegraphql.custom import apluggy
 from nextlinegraphql.custom.decorator import asynccontextmanager
 
 hookspec = apluggy.HookspecMarker('nextline')

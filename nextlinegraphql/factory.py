@@ -10,8 +10,9 @@ from starlette.middleware.cors import CORSMiddleware
 from strawberry.schema import BaseSchema
 from strawberry.tools import merge_types
 
-from . import apluggy, spec
+from . import spec
 from .config import create_settings
+from .custom import apluggy
 from .custom.strawberry import GraphQL
 from .example_script import statement
 from .logging import configure_logging
