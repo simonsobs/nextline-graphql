@@ -12,7 +12,7 @@ from strawberry.tools import merge_types
 
 from . import apluggy, spec
 from .config import create_settings
-from .custom.strawberry_fix import GraphQL
+from .custom.strawberry import GraphQL
 from .example_script import statement
 from .logging import configure_logging
 from .plugins import ctrl, db

@@ -424,7 +424,7 @@ def app(db: DB, nextline):
     import strawberry
     from starlette.applications import Starlette
 
-    from nextlinegraphql.custom.strawberry_fix import GraphQL
+    from nextlinegraphql.custom.strawberry import GraphQL
     from nextlinegraphql.plugins.db.schema import Query
 
     schema = strawberry.Schema(query=Query)
