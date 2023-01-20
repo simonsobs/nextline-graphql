@@ -12,11 +12,10 @@ from strawberry.tools import merge_types
 
 from . import apluggy, spec
 from .config import create_settings
+from .custom.strawberry_fix import GraphQL
 from .example_script import statement
 from .logging import configure_logging
 from .plugins import ctrl, db
-
-from .strawberry_fix import GraphQL
 
 
 def compose_schema(pm: apluggy.PluginManager) -> BaseSchema:
