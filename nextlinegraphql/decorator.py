@@ -6,8 +6,6 @@ import contextlib
 
 from decorator import decorate, decorator
 
-contextlib._AsyncGeneratorContextManager
-
 
 class AsyncContextManager(contextlib._AsyncGeneratorContextManager):
     def __init__(self, g, *a, **k):
