@@ -78,6 +78,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
 
     pm = pluggy.PluginManager(spec.PROJECT_NAME)
     pm.add_hookspecs(spec)
+    pm.load_setuptools_entrypoints(spec.PROJECT_NAME)
     pm.register(db.Plugin(config=config))
     pm.register(ctrl.Plugin(config=config))
 
