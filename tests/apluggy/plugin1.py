@@ -1,6 +1,6 @@
 from decorator import contextmanager
 
-from nextlinegraphql.decorator import asynccontextmanager
+from nextlinegraphql.custom.decorator import asynccontextmanager
 
 from . import spec
 

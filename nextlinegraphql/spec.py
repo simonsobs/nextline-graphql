@@ -5,7 +5,7 @@ from nextline import Nextline
 from starlette.applications import Starlette
 
 from nextlinegraphql import apluggy
-from nextlinegraphql.decorator import asynccontextmanager
+from nextlinegraphql.custom.decorator import asynccontextmanager
 
 hookspec = apluggy.HookspecMarker('nextline')
 hookimpl = apluggy.HookimplMarker('nextline')
