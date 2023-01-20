@@ -1,7 +1,0 @@
-include versioneer.py
-include nextlinegraphql/_version.py
-recursive-include nextlinegraphql *.toml
-recursive-exclude nextlinegraphql *.secrets.toml
-recursive-include nextlinegraphql *.graphql
-include nextlinegraphql/plugins/db/alembic.ini
-graft nextlinegraphql/plugins/db/alembic
