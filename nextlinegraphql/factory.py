@@ -12,14 +12,14 @@ from strawberry.tools import merge_types
 
 from . import spec
 from .config import create_settings
-from .custom import apluggy
+from .custom import pluggy
 from .custom.strawberry import GraphQL
 from .example_script import statement
 from .logging import configure_logging
 from .plugins import ctrl, db
 
 
-def compose_schema(pm: apluggy.PluginManager) -> BaseSchema:
+def compose_schema(pm: pluggy.PluginManager) -> BaseSchema:
 
     # [(Query, Mutation, Subscription), ...]
     three_types = pm.hook.schema()
@@ -53,7 +53,7 @@ class EGraphQL(GraphQL):
         self,
         schema: BaseSchema,
         nextline: Nextline,
-        pm: apluggy.PluginManager,
+        pm: pluggy.PluginManager,
     ):
         super().__init__(schema)
         self._nextline = nextline
@@ -76,7 +76,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
 
     config = config or create_settings()
 
-    pm = apluggy.PluginManager('nextline')
+    pm = pluggy.PluginManager('nextline')
     pm.add_hookspecs(spec)
     pm.register(db.Plugin(config=config))
     pm.register(ctrl.Plugin(config=config))

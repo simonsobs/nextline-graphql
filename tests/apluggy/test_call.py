@@ -1,6 +1,6 @@
 import pytest
 
-from nextlinegraphql.custom.apluggy import PluginManager
+from nextlinegraphql.custom.pluggy import PluginManager
 
 from . import plugin1, plugin2, spec
 

@@ -1,10 +1,10 @@
 from decorator import contextmanager
 
-from nextlinegraphql.custom import apluggy
+from nextlinegraphql.custom import pluggy
 from nextlinegraphql.custom.decorator import asynccontextmanager
 
-hookspec = apluggy.HookspecMarker('myproject')
-hookimpl = apluggy.HookimplMarker('myproject')
+hookspec = pluggy.HookspecMarker('myproject')
+hookimpl = pluggy.HookimplMarker('myproject')
 
 
 @hookspec

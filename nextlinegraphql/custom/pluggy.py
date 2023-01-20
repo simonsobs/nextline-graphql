@@ -1,11 +1,13 @@
-'''A wrapper around pluggy to make it work with async functions and context managers.
+'''Extend pluggy.PluginManager to support async hooks and context managers.
 
->>> from nextlinegraphql.custom import apluggy
+pluggy: https://pluggy.readthedocs.io/en/stable/
+
+>>> from nextlinegraphql.custom import pluggy
 >>> from decorator import contextmanager
 >>> from nextlinegraphql.custom.decorator import asynccontextmanager
 
->>> hookspec = apluggy.HookspecMarker('project')
->>> hookimpl = apluggy.HookimplMarker('project')
+>>> hookspec = pluggy.HookspecMarker('project')
+>>> hookimpl = pluggy.HookimplMarker('project')
 
 >>> class Spec:
 ...     """A hook specification namespace."""
@@ -64,7 +66,7 @@
 ...         print('inside Plugin_2.acontext()')
 ...         yield arg1 - arg2
 
->>> pm = apluggy.PluginManager('project')
+>>> pm = pluggy.PluginManager('project')
 >>> pm.add_hookspecs(Spec)
 >>> _ = pm.register(Plugin_1())
 >>> _ = pm.register(Plugin_2())
