@@ -7,7 +7,7 @@ import strawberry
 from strawberry.tools import merge_types
 from strawberry.types import Info
 
-from nextlinegraphql.plugins.db.schema.query import QueryDB
+from nextlinegraphql.plugins.db.schema.query import Query as QueryDB
 
 if TYPE_CHECKING:
     from nextline import Nextline

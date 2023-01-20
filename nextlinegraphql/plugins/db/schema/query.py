@@ -24,7 +24,7 @@ class History:
 
 
 @strawberry.type
-class QueryDB:
+class Query:
     @strawberry.field
     def history(self, info: Info) -> History:
         db = info.context["db"]
