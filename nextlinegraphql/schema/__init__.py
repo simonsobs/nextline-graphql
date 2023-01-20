@@ -1,8 +1,6 @@
 import strawberry
 
-from .mutation import Mutation
-from .query import Query
-from .subscription import Subscription
+from nextlinegraphql.plugins.ctrl.schema import Mutation, Query, Subscription
 
 schema = strawberry.Schema(
     query=Query,
