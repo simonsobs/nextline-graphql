@@ -1,4 +1,3 @@
-import contextlib
 from logging import getLogger
 from typing import Mapping
 
@@ -18,13 +17,12 @@ from .write import write_db
 
 
 class Plugin:
-    def __init__(self, config: Dynaconf):
-        self._db = DB(config.db['url'])
+    @spec.hookimpl
+    def configure(self, settings: Dynaconf):
+        self._db = DB(settings.db['url'])
 
     @spec.hookimpl
     def initial_run_no(self):
-        if self._db is None:
-            return None
         with self._db.session() as session:
             last_run = self._last_run(session)
             if last_run is None:
@@ -34,8 +32,6 @@ class Plugin:
 
     @spec.hookimpl
     def initial_script(self):
-        if self._db is None:
-            return None
         with self._db.session() as session:
             last_run = self._last_run(session)
             if last_run is None:
@@ -60,9 +56,7 @@ class Plugin:
     @spec.hookimpl
     @asynccontextmanager
     async def lifespan(self, app: Starlette, nextline: Nextline):
-        async with contextlib.AsyncExitStack() as stack:
-            if self._db:
-                await stack.enter_async_context(write_db(nextline, self._db))
+        async with write_db(nextline, self._db):
             yield
 
     @spec.hookimpl

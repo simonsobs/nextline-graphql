@@ -1,6 +1,7 @@
 '''Hook specification for Nextline GraphQL plugin.'''
 from typing import Mapping, Optional, Tuple, Union
 
+from dynaconf import Dynaconf
 from nextline import Nextline
 from starlette.applications import Starlette
 
@@ -11,6 +12,12 @@ PROJECT_NAME = 'nextline'
 
 hookspec = pluggy.HookspecMarker(PROJECT_NAME)
 hookimpl = pluggy.HookimplMarker(PROJECT_NAME)
+
+
+@hookspec
+def configure(settings: Dynaconf) -> None:
+    '''Initialize the plugin with the settings.'''
+    pass
 
 
 @hookspec

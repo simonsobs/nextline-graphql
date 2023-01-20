@@ -7,8 +7,9 @@ from .schema import Mutation, Query, Subscription
 
 
 class Plugin:
-    def __init__(self, config: Dynaconf):
-        pass
+    @spec.hookimpl
+    def configure(self, settings: Dynaconf):
+        del settings
 
     @spec.hookimpl
     def schema(self):
