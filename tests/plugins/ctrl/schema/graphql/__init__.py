@@ -12,8 +12,6 @@ QUERY_STATE = (sub / 'State.gql').read_text()
 QUERY_EXCEPTION = (sub / 'Exception.gql').read_text()
 QUERY_SOURCE = (sub / 'Source.gql').read_text()
 QUERY_SOURCE_LINE = (sub / 'SourceLine.gql').read_text()
-QUERY_HISTORY = (sub / 'History.gql').read_text()
-QUERY_HISTORY_RUNS = (sub / 'HistoryRuns.gql').read_text()
 
 sub = pwd / 'subscriptions'
 SUBSCRIBE_COUNTER = (sub / 'Counter.gql').read_text()

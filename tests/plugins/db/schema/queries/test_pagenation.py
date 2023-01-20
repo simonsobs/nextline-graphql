@@ -9,7 +9,7 @@ from nextlinegraphql.plugins.db import DB
 from nextlinegraphql.plugins.db.models import Run
 
 from ....ctrl.schema.funcs import gql_request, gql_request_response
-from ....ctrl.schema.graphql import QUERY_HISTORY_RUNS
+from ..graphql import QUERY_HISTORY_RUNS
 
 
 def Cursor(i: int):
