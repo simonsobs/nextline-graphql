@@ -4,7 +4,7 @@ from typing import Any, List, Set
 from async_asgi_testclient import TestClient
 from nextline.utils import agen_with_wait
 
-from .funcs import gql_request, gql_subscribe
+from ....funcs import gql_request, gql_subscribe
 from .graphql import (
     MUTATE_EXEC,
     MUTATE_SEND_PDB_COMMAND,

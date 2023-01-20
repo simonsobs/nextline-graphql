@@ -5,7 +5,7 @@ from async_asgi_testclient import TestClient
 
 import nextlinegraphql
 
-from ..funcs import gql_request
+from .....funcs import gql_request
 from ..graphql import QUERY_SOURCE
 
 PACKAGE_TOP = Path(nextlinegraphql.__file__).resolve().parent

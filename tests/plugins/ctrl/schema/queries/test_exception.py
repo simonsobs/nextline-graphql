@@ -1,6 +1,6 @@
 from async_asgi_testclient import TestClient
 
-from ..funcs import gql_request
+from .....funcs import gql_request
 from ..graphql import QUERY_EXCEPTION
 from .funcs import run_statement
 
