@@ -7,8 +7,7 @@ import strawberry
 from strawberry.tools import merge_types
 from strawberry.types import Info
 
-from . import types
-from .pagination import Connection
+from nextlinegraphql.plugins.db.schema.query import QueryDB
 
 if TYPE_CHECKING:
     from nextline import Nextline
@@ -55,32 +54,6 @@ class QueryExec:
     source: List[str] = strawberry.field(resolver=query_source)
     source_line: str = strawberry.field(resolver=query_source_line)
     exception: Optional[str] = strawberry.field(resolver=query_exception)
-
-
-@strawberry.type
-class History:
-    runs: Connection[types.RunHistory] = strawberry.field(
-        resolver=types.query_connection_run
-    )
-    traces: Connection[types.TraceHistory] = strawberry.field(
-        resolver=types.query_connection_trace
-    )
-    prompts: Connection[types.PromptHistory] = strawberry.field(
-        resolver=types.query_connection_prompt
-    )
-    stdouts: Connection[types.StdoutHistory] = strawberry.field(
-        resolver=types.query_connection_stdout
-    )
-
-
-@strawberry.type
-class QueryDB:
-    @strawberry.field
-    def history(self, info: Info) -> History:
-        db = info.context["db"]
-        with db.session() as session:
-            info.context["session"] = session
-            return History()
 
 
 Query = merge_types('Query', (QueryExec, QueryDB))

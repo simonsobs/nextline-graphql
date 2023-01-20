@@ -12,14 +12,6 @@ from nextlinegraphql.plugins.db import models as db_models
 from .pagination import Connection, load_connection
 
 
-@strawberry.type
-class PromptingData:
-    prompting: int
-    file_name: str
-    line_no: int
-    trace_event: str
-
-
 def query_connection_run(
     info: Info,
     before: Optional[str] = None,
