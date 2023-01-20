@@ -1,8 +1,8 @@
 from async_asgi_testclient import TestClient
 
-from ..funcs import gql_request
-from ..graphql import QUERY_HISTORY
-from .funcs import run_statement
+from ....ctrl.schema.funcs import gql_request
+from ....ctrl.schema.graphql import QUERY_HISTORY
+from ....ctrl.schema.queries.funcs import run_statement
 
 
 async def test_one(client: TestClient):

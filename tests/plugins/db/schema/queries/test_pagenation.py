@@ -8,8 +8,8 @@ from async_asgi_testclient import TestClient
 from nextlinegraphql.plugins.db import DB
 from nextlinegraphql.plugins.db.models import Run
 
-from ..funcs import gql_request, gql_request_response
-from ..graphql import QUERY_HISTORY_RUNS
+from ....ctrl.schema.funcs import gql_request, gql_request_response
+from ....ctrl.schema.graphql import QUERY_HISTORY_RUNS
 
 
 def Cursor(i: int):
