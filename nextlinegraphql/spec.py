@@ -1,5 +1,5 @@
 '''Hook specification for Nextline GraphQL plugin.'''
-from typing import Mapping
+from typing import Mapping, Optional
 
 from nextline import Nextline
 from starlette.applications import Starlette
@@ -12,21 +12,25 @@ hookimpl = apluggy.HookimplMarker('nextline')
 
 
 @hookspec
-def initial_run_no():
+def initial_run_no() -> Optional[int]:
+    '''Run No. of the first run.'''
     pass
 
 
 @hookspec
-def initial_script():
+def initial_script() -> Optional[str]:
+    '''The script of the first run.'''
     pass
 
 
 @hookspec
 @asynccontextmanager
 async def lifespan(app: Starlette, nextline: Nextline):
+    '''Starlette lifespan'''
     pass
 
 
 @hookspec
-async def get_context(context: Mapping):
+async def get_context(context: Mapping) -> Optional[Mapping]:
+    '''Strawberry GraphQL context'''
     pass
