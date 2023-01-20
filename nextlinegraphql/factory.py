@@ -76,7 +76,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
 
     config = config or create_settings()
 
-    pm = pluggy.PluginManager('nextline')
+    pm = pluggy.PluginManager(spec.PROJECT_NAME)
     pm.add_hookspecs(spec)
     pm.register(db.Plugin(config=config))
     pm.register(ctrl.Plugin(config=config))

@@ -7,8 +7,10 @@ from starlette.applications import Starlette
 from nextlinegraphql.custom import pluggy
 from nextlinegraphql.custom.decorator import asynccontextmanager
 
-hookspec = pluggy.HookspecMarker('nextline')
-hookimpl = pluggy.HookimplMarker('nextline')
+PROJECT_NAME = 'nextline'
+
+hookspec = pluggy.HookspecMarker(PROJECT_NAME)
+hookimpl = pluggy.HookimplMarker(PROJECT_NAME)
 
 
 @hookspec
