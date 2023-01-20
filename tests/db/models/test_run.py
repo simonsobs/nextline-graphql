@@ -2,8 +2,8 @@ import datetime
 
 from sqlalchemy import select
 
-from nextlinegraphql.db import DB
-from nextlinegraphql.db.models import Run
+from nextlinegraphql.plugins.db import DB
+from nextlinegraphql.plugins.db.models import Run
 
 
 def test_one():

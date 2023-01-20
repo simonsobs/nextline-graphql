@@ -8,10 +8,11 @@ from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 from strawberry.schema import BaseSchema
 
-from . import apluggy, db, spec
+from . import apluggy, spec
 from .config import create_settings
 from .example_script import statement
 from .logging import configure_logging
+from .plugins import db
 from .schema import schema
 from .strawberry_fix import GraphQL
 

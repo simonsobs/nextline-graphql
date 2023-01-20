@@ -5,7 +5,7 @@ from alembic import context
 from sqlalchemy import create_engine
 
 from nextlinegraphql.config import create_settings
-from nextlinegraphql.db import models
+from nextlinegraphql.plugins.db import models
 
 settings = create_settings()
 

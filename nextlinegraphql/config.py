@@ -19,7 +19,7 @@ def create_settings() -> Dynaconf:
         str(cwd / 'nextline-graphql.toml'),
     ]
 
-    if cwd == HERE / 'db':
+    if cwd == HERE / 'plugins' / 'db':
         # for alembic
         settings_files.append(str(cwd / 'migration.toml'))
 

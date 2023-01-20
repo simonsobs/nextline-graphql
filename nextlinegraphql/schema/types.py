@@ -7,7 +7,8 @@ import strawberry
 from sqlalchemy import inspect
 from strawberry.types import Info
 
-from ..db import models as db_models
+from nextlinegraphql.plugins.db import models as db_models
+
 from .pagination import Connection, load_connection
 
 

@@ -5,8 +5,8 @@ from typing import Any, Optional, TypedDict
 import pytest
 from async_asgi_testclient import TestClient
 
-from nextlinegraphql.db import DB
-from nextlinegraphql.db.models import Run
+from nextlinegraphql.plugins.db import DB
+from nextlinegraphql.plugins.db.models import Run
 
 from ..funcs import gql_request, gql_request_response
 from ..graphql import QUERY_HISTORY_RUNS
