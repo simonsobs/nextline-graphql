@@ -1,4 +1,46 @@
-'''implement asynccontextmanager in the same way as decorator.contextmanager'''
+'''Implement asynccontextmanager in the same way as decorator.contextmanager.
+
+decorator: https://pypi.org/project/decorator/
+
+
+>>> import asyncio
+>>> import inspect
+>>> import contextlib
+>>> from nextlinegraphql.custom.decorator import asynccontextmanager
+
+With the original `asynccontextmanager` from `contextlib`:
+
+>>> @contextlib.asynccontextmanager
+... async def context(arg1, arg2):
+...     yield arg1 + arg2
+
+the arguments signature becomes `(*args, **kwds)`:
+
+>>> inspect.getfullargspec(context)
+FullArgSpec(args=[], varargs='args', varkw='kwds', ...)
+
+
+With the `asynccontextmanager` from this module:
+
+>>> @asynccontextmanager
+... async def context(arg1, arg2):
+...     yield arg1 + arg2
+
+the arguments signature is preserved:
+
+>>> inspect.getfullargspec(context)
+FullArgSpec(args=['arg1', 'arg2'], varargs=None, varkw=None, ...)
+
+It runs as expected:
+
+>>> async def main():
+...     async with context(1, 2) as result:
+...         print(result)
+...
+>>> asyncio.run(main())
+3
+
+'''
 
 __all__ = ['asynccontextmanager']
 
