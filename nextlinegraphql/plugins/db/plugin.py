@@ -13,6 +13,7 @@ from nextlinegraphql.decorator import asynccontextmanager
 
 from . import models
 from .db import DB
+from .schema import Mutation, Query, Subscription
 from .write import write_db
 
 
@@ -41,6 +42,10 @@ class Plugin:
                 return None
             else:
                 return last_run.script
+
+    @spec.hookimpl
+    def schema(self):
+        return (Query, Mutation, Subscription)
 
     def _last_run(self, session: Session):
         stmt = select(models.Run, func.max(models.Run.run_no))

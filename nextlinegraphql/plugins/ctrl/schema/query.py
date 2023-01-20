@@ -4,10 +4,7 @@ import traceback
 from typing import TYPE_CHECKING, List, Optional
 
 import strawberry
-from strawberry.tools import merge_types
 from strawberry.types import Info
-
-from nextlinegraphql.plugins.db.schema.query import Query as QueryDB
 
 if TYPE_CHECKING:
     from nextline import Nextline
@@ -47,13 +44,10 @@ def query_exception(info: Info) -> Optional[str]:
 
 
 @strawberry.type
-class QueryExec:
+class Query:
     hello: str = strawberry.field(resolver=query_hello)
     state: str = strawberry.field(resolver=query_state)
     run_no: int = strawberry.field(resolver=query_run_no)
     source: List[str] = strawberry.field(resolver=query_source)
     source_line: str = strawberry.field(resolver=query_source_line)
     exception: Optional[str] = strawberry.field(resolver=query_exception)
-
-
-Query = merge_types('Query', (QueryExec, QueryDB))

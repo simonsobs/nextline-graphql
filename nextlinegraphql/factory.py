@@ -1,20 +1,46 @@
 import contextlib
 from typing import Any, Optional
 
+import strawberry
 from dynaconf import Dynaconf
 from nextline import Nextline
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 from strawberry.schema import BaseSchema
+from strawberry.tools import merge_types
 
 from . import apluggy, spec
 from .config import create_settings
 from .example_script import statement
 from .logging import configure_logging
-from .plugins import db
-from .schema import schema
+from .plugins import ctrl, db
+
 from .strawberry_fix import GraphQL
+
+
+def compose_schema(pm: apluggy.PluginManager) -> BaseSchema:
+
+    # [(Query, Mutation, Subscription), ...]
+    three_types = pm.hook.schema()
+
+    # [(Query, ...), (Mutation, ...), (Subscription, ...)]
+    transposed = list(map(tuple, zip(*three_types)))
+    transposed = [tuple(t for t in l if t) for l in transposed]  # remove None
+
+    q, m, s = transposed
+    assert q  # Query is required
+    Query = merge_types('Query', q)  # type: ignore
+    Mutation = m and merge_types('Mutation', m) or None  # type: ignore
+    Subscription = s and merge_types('Subscription', s) or None  # type: ignore
+
+    schema = strawberry.Schema(
+        query=Query,
+        mutation=Mutation,
+        subscription=Subscription,
+    )
+
+    return schema
 
 
 class EGraphQL(GraphQL):
@@ -53,6 +79,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
     pm = apluggy.PluginManager('nextline')
     pm.add_hookspecs(spec)
     pm.register(db.Plugin(config=config))
+    pm.register(ctrl.Plugin(config=config))
 
     configure_logging(config.logging)
 
@@ -62,6 +89,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
     if not nextline:
         nextline = Nextline(script, run_no)
 
+    schema = compose_schema(pm=pm)
     app_ = EGraphQL(schema=schema, nextline=nextline, pm=pm)
 
     @contextlib.asynccontextmanager

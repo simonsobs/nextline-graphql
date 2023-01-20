@@ -423,8 +423,12 @@ def app(db: DB, nextline):
     # override is not needed.
     from starlette.applications import Starlette
 
-    from nextlinegraphql.schema import schema
+    import strawberry
+
+    from nextlinegraphql.plugins.db.schema import Query
     from nextlinegraphql.strawberry_fix import GraphQL
+
+    schema = strawberry.Schema(query=Query)
 
     class EGraphQL(GraphQL):
         """Extend the strawberry GraphQL app

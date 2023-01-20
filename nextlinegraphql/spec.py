@@ -1,5 +1,5 @@
 '''Hook specification for Nextline GraphQL plugin.'''
-from typing import Mapping, Optional
+from typing import Mapping, Optional, Tuple, Union
 
 from nextline import Nextline
 from starlette.applications import Starlette
@@ -20,6 +20,12 @@ def initial_run_no() -> Optional[int]:
 @hookspec
 def initial_script() -> Optional[str]:
     '''The script of the first run.'''
+    pass
+
+
+@hookspec
+def schema() -> Optional[Tuple[type, Union[type, None], Union[type, None]]]:
+    '''The GraphQL schema (Query, Mutation, Subscription)'''
     pass
 
 
