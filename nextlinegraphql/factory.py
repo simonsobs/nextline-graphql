@@ -74,13 +74,13 @@ class EGraphQL(GraphQL):
 
 def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] = None):
 
-    config = config or create_settings()
-
     pm = pluggy.PluginManager(spec.PROJECT_NAME)
     pm.add_hookspecs(spec)
     pm.load_setuptools_entrypoints(spec.PROJECT_NAME)
     pm.register(db.Plugin())
     pm.register(ctrl.Plugin())
+
+    config = config or create_settings()
 
     pm.hook.configure(settings=config)
     configure_logging(config.logging)
