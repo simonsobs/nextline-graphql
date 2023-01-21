@@ -1,7 +1,7 @@
 from pathlib import Path
 
-import pytest
 from dynaconf import Dynaconf
+from pytest import FixtureRequest, MonkeyPatch, fixture
 
 
 def test_merge(config: Dynaconf, envvar_url: bool, envvar_connect_args: bool):
@@ -29,7 +29,7 @@ def test_merge(config: Dynaconf, envvar_url: bool, envvar_connect_args: bool):
         assert {"check_same_thread": False} == config.db.connect_args
 
 
-@pytest.fixture
+@fixture
 def config():
     here = Path(__file__).resolve().parent
     ret = Dynaconf(
@@ -43,8 +43,8 @@ def config():
     return ret
 
 
-@pytest.fixture(params=[True, False])
-def envvar_url(request, monkeypatch):
+@fixture(params=[True, False])
+def envvar_url(request: FixtureRequest, monkeypatch: MonkeyPatch):
     if ret := request.param:
         monkeypatch.setenv("NEXTLINE_DB__URL", "sqlite:///env.sqlite3")
         # dunder merging
@@ -52,8 +52,8 @@ def envvar_url(request, monkeypatch):
     return ret
 
 
-@pytest.fixture(params=[False, True, None])
-def envvar_connect_args(request, monkeypatch):
+@fixture(params=[False, True, None])
+def envvar_connect_args(request: FixtureRequest, monkeypatch: MonkeyPatch):
     # False: intact
     # True: override
     # None: remove
