@@ -13,6 +13,8 @@ HERE = Path(__file__).resolve().parent
 MINIMAL_PRELOAD = (str(HERE / 'config' / 'default.toml'),)
 MINIMAL_VALIDATORS = (Validator("DB.URL", must_exist=True, is_type_of=str),)
 
+assert all(Path(p).is_file() for p in MINIMAL_PRELOAD)
+
 
 def create_settings(
     preload: Optional[Sequence[str]] = None,
