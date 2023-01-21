@@ -14,8 +14,11 @@ def create_settings() -> Dynaconf:
     '''Return a Dynaconf settings after validation'''
     cwd = Path.cwd()
 
-    settings_files = [
+    preload = [
         str(HERE / 'config' / 'default.toml'),
+    ]
+
+    settings_files = [
         str(cwd / 'nextline-graphql.toml'),
     ]
 
@@ -25,6 +28,7 @@ def create_settings() -> Dynaconf:
 
     settings = Dynaconf(
         envvar_prefix="NEXTLINE",
+        preload=preload,
         settings_files=settings_files,
     )
 
