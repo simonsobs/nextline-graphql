@@ -5,5 +5,4 @@
 # In ../config.py, it is set up so this config file will be used when the cwd
 # is this directory.
 
-[default]
 db = {url = "sqlite:///migration.sqlite3"}

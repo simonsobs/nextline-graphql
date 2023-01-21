@@ -3,10 +3,8 @@
 # Syntax can be learned from Dynaconf examples 
 # https://github.com/rochacbruno/learndynaconf/tree/main/configs
 
-[default]
-
-[default.db]
+[db]
 url = "sqlite:///default.sqlite3"
 
-[default.db.connect_args]
+[db.connect_args]
 check_same_thread = false

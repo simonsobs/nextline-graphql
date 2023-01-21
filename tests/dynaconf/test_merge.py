@@ -38,7 +38,7 @@ def config():
             str(here / 'default.toml'),
             str(here / 'config.toml'),
         ],
-        environments=True,  # enable sections, e.g., "development"
+        # environments=True,  # enable sections, e.g., "development"
     )
     return ret
 

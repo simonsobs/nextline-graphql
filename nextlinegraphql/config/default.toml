@@ -3,37 +3,35 @@
 # Syntax can be learned from Dynaconf examples 
 # https://github.com/rochacbruno/learndynaconf/tree/main/configs
 
-[default]
-
-[default.db]
+[db]
 url = "sqlite:///:memory:?check_same_thread=false"
 
-[default.logging]
+[logging]
 disable_existing_loggers = false
 version = 1
 
-[default.logging.formatters.default]
+[logging.formatters.default]
 # datefmt = "%Y-%m-%d %H:%M:%S"
 # format = "{asctime} {levelname:>8s} {pathname}:{lineno}: {message}"
 format = "{levelname:8s} [{name}] {message}"
 style = "{"
 
-[default.logging.handlers.default]
+[logging.handlers.default]
 class = "logging.StreamHandler"
 formatter = "default"
 
-[default.logging.loggers.nextlinegraphql]
+[logging.loggers.nextlinegraphql]
 handlers = ["default"]
 level = "DEBUG"
 
-[default.logging.loggers.nextline]
+[logging.loggers.nextline]
 handlers = ["default"]
 level = "DEBUG"
 
-[default.logging.loggers.alembic]
+[logging.loggers.alembic]
 handlers = ["default"]
 level = "INFO"
 
-# [default.logging.loggers.sqlalchemy]
+# [logging.loggers.sqlalchemy]
 # handlers = ["default"]
 # level = "DEBUG"

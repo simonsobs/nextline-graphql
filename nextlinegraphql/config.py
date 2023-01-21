@@ -26,7 +26,6 @@ def create_settings() -> Dynaconf:
     settings = Dynaconf(
         envvar_prefix="NEXTLINE",
         settings_files=settings_files,
-        environments=True,
     )
 
     settings.validators.register(
