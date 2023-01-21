@@ -57,7 +57,7 @@ def test_one(db: DB, run_nextline, statement):
 @pytest.fixture
 def monkey_patch_syspath(monkeypatch):
     here = Path(__file__).resolve().parent
-    path = here.joinpath("example_script")
+    path = here / 'example_script'
     monkeypatch.syspath_prepend(str(path))
     yield
 
@@ -66,8 +66,8 @@ def monkey_patch_syspath(monkeypatch):
 def statement(monkey_patch_syspath):
     del monkey_patch_syspath
     here = Path(__file__).resolve().parent
-    path = here.joinpath("example_script")
-    return path.joinpath("script.py").read_text()
+    path = here / 'example_script'
+    return (path / 'script.py').read_text()
 
 
 @pytest.fixture

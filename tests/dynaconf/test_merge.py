@@ -35,8 +35,8 @@ def config():
     ret = Dynaconf(
         envvar_prefix="NEXTLINE",
         settings_files=[
-            str(here.joinpath("default.toml")),
-            str(here.joinpath("config.toml")),
+            str(here / 'default.toml'),
+            str(here / 'config.toml'),
         ],
         environments=True,  # enable sections, e.g., "development"
     )

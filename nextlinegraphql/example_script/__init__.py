@@ -4,7 +4,7 @@ from pathlib import Path
 __all__ = ["statement"]
 
 THIS_DIR = Path(__file__).resolve().parent
-SCRIPT_PATH = THIS_DIR.joinpath("script.py")
+SCRIPT_PATH = THIS_DIR / 'script.py'
 
 sys.path.insert(0, str(THIS_DIR))
 
