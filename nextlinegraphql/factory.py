@@ -1,4 +1,5 @@
 import contextlib
+from itertools import chain
 from typing import Any, Optional
 
 import strawberry
@@ -43,6 +44,21 @@ def compose_schema(pm: pluggy.PluginManager) -> BaseSchema:
     return schema
 
 
+def configure(pm: pluggy.PluginManager, config: Optional[Dynaconf]) -> None:
+
+    config = config or create_settings(
+        preload=tuple(chain(*pm.hook.dynaconf_preload())),
+        settings_files=tuple(chain(*pm.hook.dynaconf_settings_files())),
+        validators=tuple(chain(*pm.hook.dynaconf_validators())),
+    )
+
+    pm.hook.configure(settings=config)
+    configure_logging(config.logging)
+
+    # print(config.__dict__)
+    # print(config.as_dict())
+
+
 class EGraphQL(GraphQL):
     """Extend the strawberry GraphQL app
 
@@ -80,10 +96,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
     pm.register(db.Plugin())
     pm.register(ctrl.Plugin())
 
-    config = config or create_settings()
-
-    pm.hook.configure(settings=config)
-    configure_logging(config.logging)
+    configure(pm=pm, config=config)
 
     run_no: int = max(pm.hook.initial_run_no(), default=1)
     script: str = [*pm.hook.initial_script(), statement][0]
