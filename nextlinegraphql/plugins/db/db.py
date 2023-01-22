@@ -74,6 +74,8 @@ class DB:
 
 ALEMBIC_INI = str(Path(__file__).resolve().parent / 'alembic.ini')
 
+assert Path(ALEMBIC_INI).is_file()
+
 
 def migrate_to_head(engine):
     '''Run alembic to upgrade the database to the latest version.'''
