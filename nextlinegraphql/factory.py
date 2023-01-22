@@ -12,7 +12,6 @@ from strawberry.schema import BaseSchema
 from strawberry.tools import merge_types
 
 from . import spec
-from .config import create_settings
 from .custom import pluggy
 from .custom.strawberry import GraphQL
 from .example_script import statement
@@ -44,19 +43,25 @@ def compose_schema(pm: pluggy.PluginManager) -> BaseSchema:
     return schema
 
 
-def configure(pm: pluggy.PluginManager, config: Optional[Dynaconf]) -> None:
+def create_settings(hook: Optional[pluggy.PluginManager] = None) -> Dynaconf:
 
-    config = config or create_settings(
-        preload=tuple(chain(*pm.hook.dynaconf_preload())),
-        settings_files=tuple(chain(*pm.hook.dynaconf_settings_files())),
-        validators=tuple(chain(*pm.hook.dynaconf_validators())),
+    from .config import create_settings as create_settings_
+
+    hook = hook or initialize_plugins()
+
+    settings = create_settings_(
+        preload=tuple(chain(*hook.hook.dynaconf_preload())),
+        settings_files=tuple(chain(*hook.hook.dynaconf_settings_files())),
+        validators=tuple(chain(*hook.hook.dynaconf_validators())),
     )
 
-    pm.hook.configure(settings=config)
-    configure_logging(config.logging)
+    return settings
 
-    # print(config.__dict__)
-    # print(config.as_dict())
+
+def configure(hook: pluggy.PluginManager, config: Optional[Dynaconf]) -> None:
+    config = config or create_settings(hook)
+    hook.hook.configure(settings=config)
+    configure_logging(config.logging)
 
 
 class EGraphQL(GraphQL):
@@ -101,7 +106,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
 
     hook = initialize_plugins()
 
-    configure(pm=hook, config=config)
+    configure(hook=hook, config=config)
 
     run_no: int = max(hook.hook.initial_run_no(), default=1)
     script: str = [*hook.hook.initial_script(), statement][0]
