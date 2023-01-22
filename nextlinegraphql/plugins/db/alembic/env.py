@@ -4,7 +4,7 @@ import logging.config
 from alembic import context
 from sqlalchemy import create_engine
 
-from nextlinegraphql.config import create_settings
+from nextlinegraphql.factory import create_settings
 from nextlinegraphql.plugins.db import models
 
 settings = create_settings()
