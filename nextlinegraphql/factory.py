@@ -88,13 +88,18 @@ class EGraphQL(GraphQL):
         return context
 
 
-def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] = None):
-
+def initialize_plugins() -> pluggy.PluginManager:
     hook = pluggy.PluginManager(spec.PROJECT_NAME)
     hook.add_hookspecs(spec)
     hook.load_setuptools_entrypoints(spec.PROJECT_NAME)
     hook.register(db.Plugin())
     hook.register(ctrl.Plugin())
+    return hook
+
+
+def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] = None):
+
+    hook = initialize_plugins()
 
     configure(pm=hook, config=config)
 
