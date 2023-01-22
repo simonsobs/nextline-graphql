@@ -1,0 +1,7 @@
+# Default settings
+#
+# Syntax can be learned from Dynaconf examples 
+# https://github.com/rochacbruno/learndynaconf/tree/main/configs
+
+[db]
+url = "sqlite:///:memory:?check_same_thread=false"
