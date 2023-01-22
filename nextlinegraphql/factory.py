@@ -1,4 +1,5 @@
 import contextlib
+from itertools import chain
 from typing import Any, Optional
 
 import strawberry
@@ -11,7 +12,6 @@ from strawberry.schema import BaseSchema
 from strawberry.tools import merge_types
 
 from . import spec
-from .config import create_settings
 from .custom import pluggy
 from .custom.strawberry import GraphQL
 from .example_script import statement
@@ -43,6 +43,27 @@ def compose_schema(pm: pluggy.PluginManager) -> BaseSchema:
     return schema
 
 
+def create_settings(hook: Optional[pluggy.PluginManager] = None) -> Dynaconf:
+
+    from .config import create_settings as create_settings_
+
+    hook = hook or initialize_plugins()
+
+    settings = create_settings_(
+        preload=tuple(chain(*hook.hook.dynaconf_preload())),
+        settings_files=tuple(chain(*hook.hook.dynaconf_settings_files())),
+        validators=tuple(chain(*hook.hook.dynaconf_validators())),
+    )
+
+    return settings
+
+
+def configure(hook: pluggy.PluginManager, config: Optional[Dynaconf]) -> None:
+    config = config or create_settings(hook)
+    hook.hook.configure(settings=config)
+    configure_logging(config.logging)
+
+
 class EGraphQL(GraphQL):
     """Extend the strawberry GraphQL app
 
@@ -72,27 +93,29 @@ class EGraphQL(GraphQL):
         return context
 
 
+def initialize_plugins() -> pluggy.PluginManager:
+    hook = pluggy.PluginManager(spec.PROJECT_NAME)
+    hook.add_hookspecs(spec)
+    hook.load_setuptools_entrypoints(spec.PROJECT_NAME)
+    hook.register(db.Plugin())
+    hook.register(ctrl.Plugin())
+    return hook
+
+
 def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] = None):
 
-    pm = pluggy.PluginManager(spec.PROJECT_NAME)
-    pm.add_hookspecs(spec)
-    pm.load_setuptools_entrypoints(spec.PROJECT_NAME)
-    pm.register(db.Plugin())
-    pm.register(ctrl.Plugin())
+    hook = initialize_plugins()
 
-    config = config or create_settings()
+    configure(hook=hook, config=config)
 
-    pm.hook.configure(settings=config)
-    configure_logging(config.logging)
-
-    run_no: int = max(pm.hook.initial_run_no(), default=1)
-    script: str = [*pm.hook.initial_script(), statement][0]
+    run_no: int = max(hook.hook.initial_run_no(), default=1)
+    script: str = [*hook.hook.initial_script(), statement][0]
 
     if not nextline:
         nextline = Nextline(script, run_no)
 
-    schema = compose_schema(pm=pm)
-    app_ = EGraphQL(schema=schema, nextline=nextline, pm=pm)
+    schema = compose_schema(pm=hook)
+    app_ = EGraphQL(schema=schema, nextline=nextline, pm=hook)
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
@@ -100,7 +123,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
 
         app.mount('/', app_)
 
-        async with pm.awith.lifespan(app=app, nextline=nextline):
+        async with hook.awith.lifespan(app=app, nextline=nextline):
             async with nextline:
                 yield
 

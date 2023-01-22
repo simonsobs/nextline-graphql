@@ -4,10 +4,11 @@ import logging.config
 from alembic import context
 from sqlalchemy import create_engine
 
-from nextlinegraphql.config import create_settings
+from nextlinegraphql.factory import create_settings
 from nextlinegraphql.plugins.db import models
 
 settings = create_settings()
+url = settings.db.url
 
 # Config in alembic.ini, only used to configure logger
 config = context.config
@@ -26,6 +27,11 @@ if config.config_file_name:
         # conditional configuration of logging becomes cleaner or deleted.
         logging.config.fileConfig(config.config_file_name)
 
+
+logger = logging.getLogger(__name__)
+logger.info(f'DB URL: {url}')
+
+
 target_metadata = models.Base.metadata
 
 
@@ -41,7 +47,6 @@ def run_migrations_offline():
     script output.
 
     """
-    url = settings.db.url
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -60,7 +65,7 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    connectable = create_engine(settings.db.url)
+    connectable = create_engine(url)
 
     with connectable.connect() as connection:
         context.configure(
