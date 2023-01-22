@@ -9,7 +9,7 @@ from typing import Optional, Sequence
 from dynaconf import Dynaconf, Validator
 
 HERE = Path(__file__).resolve().parent
-DEFAULT_CONFIG_PATH = HERE / 'config' / 'default.toml'
+DEFAULT_CONFIG_PATH = HERE / 'default.toml'
 
 assert DEFAULT_CONFIG_PATH.is_file()
 
