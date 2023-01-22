@@ -90,22 +90,22 @@ class EGraphQL(GraphQL):
 
 def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] = None):
 
-    pm = pluggy.PluginManager(spec.PROJECT_NAME)
-    pm.add_hookspecs(spec)
-    pm.load_setuptools_entrypoints(spec.PROJECT_NAME)
-    pm.register(db.Plugin())
-    pm.register(ctrl.Plugin())
+    hook = pluggy.PluginManager(spec.PROJECT_NAME)
+    hook.add_hookspecs(spec)
+    hook.load_setuptools_entrypoints(spec.PROJECT_NAME)
+    hook.register(db.Plugin())
+    hook.register(ctrl.Plugin())
 
-    configure(pm=pm, config=config)
+    configure(pm=hook, config=config)
 
-    run_no: int = max(pm.hook.initial_run_no(), default=1)
-    script: str = [*pm.hook.initial_script(), statement][0]
+    run_no: int = max(hook.hook.initial_run_no(), default=1)
+    script: str = [*hook.hook.initial_script(), statement][0]
 
     if not nextline:
         nextline = Nextline(script, run_no)
 
-    schema = compose_schema(pm=pm)
-    app_ = EGraphQL(schema=schema, nextline=nextline, pm=pm)
+    schema = compose_schema(pm=hook)
+    app_ = EGraphQL(schema=schema, nextline=nextline, pm=hook)
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
@@ -113,7 +113,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
 
         app.mount('/', app_)
 
-        async with pm.awith.lifespan(app=app, nextline=nextline):
+        async with hook.awith.lifespan(app=app, nextline=nextline):
             async with nextline:
                 yield
 
