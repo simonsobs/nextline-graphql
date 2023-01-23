@@ -25,15 +25,10 @@ async def client(app):
 
 
 @pytest.fixture
-def app(config, nextline):
-    return create_app(config=config, nextline=nextline)
+def app(config):
+    return create_app(config=config)
 
 
 @pytest.fixture
 def config():
-    return None
-
-
-@pytest.fixture
-def nextline():
     return None

@@ -417,7 +417,7 @@ def sample_empty(db: DB):
 
 
 @pytest.fixture
-def app(db: DB, nextline):
+def app(db: DB):
     # NOTE: Overriding the app fixture from conftest.py because it adds an
     # entry in the DB. The factory.create_app() needs to be refactored so this
     # override is not needed.
@@ -436,12 +436,7 @@ def app(db: DB, nextline):
         """
 
         async def get_context(self, request, response=None) -> Optional[Any]:
-            return {
-                "request": request,
-                "response": response,
-                "db": db,
-                "nextline": nextline,
-            }
+            return {"request": request, "response": response, "db": db}
 
     app_ = EGraphQL(schema)
 
