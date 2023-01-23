@@ -3,13 +3,14 @@ uvicorn --factory --reload --reload-dir nextline-graphql --reload-dir nextline n
 use "--lifespan on" to show exception in lifespan
 """
 
-__all__ = ["create_app", "__version__"]
+__all__ = ['__version__', 'create_app', 'spec']
 
-# remove args so that they won't be processed in the executing script
-# TODO This should be properly handled and tested
 import sys  # noqa: E402
 
 from .__about__ import __version__
 from .factory import create_app
+from .hook import spec
 
+# remove args so that they won't be processed in the executing script
+# TODO This should be properly handled and tested
 sys.argv[1:] = []
