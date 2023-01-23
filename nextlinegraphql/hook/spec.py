@@ -32,8 +32,8 @@ def dynaconf_validators() -> Optional[Tuple[Validator, ...]]:
 
 
 @hookspec
-def configure(settings: Dynaconf) -> None:
-    '''Initialize the plugin with the settings.'''
+def configure(settings: Dynaconf, hook: pluggy.PluginManager) -> None:
+    '''Initialize the plugin.'''
     pass
 
 

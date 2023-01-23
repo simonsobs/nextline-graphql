@@ -17,7 +17,7 @@ from .logging import configure_logging
 
 def configure(hook: PluginManager, config: Optional[Dynaconf]) -> None:
     config = config or load_settings(hook)
-    hook.hook.configure(settings=config)
+    hook.hook.configure(settings=config, hook=hook)
     configure_logging(config.logging)
 
 
