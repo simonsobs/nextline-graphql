@@ -5,8 +5,8 @@ from starlette.types import ASGIApp
 from strawberry.schema import BaseSchema
 from strawberry.tools import merge_types
 
-from .custom.pluggy import PluginManager
-from .custom.strawberry import GraphQL
+from nextlinegraphql.custom.pluggy import PluginManager
+from nextlinegraphql.custom.strawberry import GraphQL
 
 
 def create_app(hook: PluginManager) -> ASGIApp:

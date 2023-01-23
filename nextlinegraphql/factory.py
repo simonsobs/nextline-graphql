@@ -5,10 +5,10 @@ from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
-from . import graphql
 from .config import load_settings
 from .hook import load_plugins
 from .logging import configure_logging
+from .plugins import graphql
 
 
 def create_app() -> Starlette:
