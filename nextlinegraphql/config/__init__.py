@@ -22,6 +22,7 @@ MINIMAL_VALIDATORS = ()
 
 
 def load_settings(hook: Optional[PluginManager] = None) -> Dynaconf:
+    '''Return a Dynaconf settings after validation'''
 
     hook = hook or initialize_plugins()
 
@@ -39,7 +40,6 @@ def _load_settings(
     settings_files: Optional[Sequence[str]] = None,
     validators: Optional[Sequence[Validator]] = None,
 ) -> Dynaconf:
-    '''Return a Dynaconf settings after validation'''
 
     cwd = Path.cwd()
     minimal_settings_files = (str(cwd / 'nextline-graphql.toml'),)
