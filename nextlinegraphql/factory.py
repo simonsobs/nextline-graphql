@@ -44,8 +44,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
         context = {'nextline': nextline}
 
         async with hook.awith.lifespan(app=app, context=context):
-            async with nextline:
-                yield
+            yield
 
     middleware = [
         Middleware(
