@@ -8,7 +8,6 @@ from starlette.middleware.cors import CORSMiddleware
 from .config import load_settings
 from .hook import load_plugins
 from .logging import configure_logging
-from .plugins import graphql
 
 
 def create_app() -> Starlette:
@@ -23,9 +22,6 @@ def create_app() -> Starlette:
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
-
-        app_ = graphql.create_app(hook=hook)
-        app.mount('/', app_)
 
         context: Dict = {}
         hook.hook.update_lifespan_context(app=app, context=context)

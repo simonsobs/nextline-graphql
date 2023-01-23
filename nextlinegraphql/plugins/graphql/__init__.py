@@ -1,12 +1,27 @@
 from typing import Any, Optional
 
 import strawberry
+from starlette.applications import Starlette
 from starlette.types import ASGIApp
 from strawberry.schema import BaseSchema
 from strawberry.tools import merge_types
 
+from nextlinegraphql.custom.decorator import asynccontextmanager
 from nextlinegraphql.custom.pluggy import PluginManager
 from nextlinegraphql.custom.strawberry import GraphQL
+from nextlinegraphql.hook import spec
+
+
+class Plugin:
+    @spec.hookimpl
+    def configure(self, hook: PluginManager) -> None:
+        self._app = create_app(hook=hook)
+
+    @spec.hookimpl(tryfirst=True)  # tryfirst so to be the outermost context
+    @asynccontextmanager
+    async def lifespan(self, app: Starlette):
+        app.mount('/', self._app)
+        yield
 
 
 def create_app(hook: PluginManager) -> ASGIApp:
