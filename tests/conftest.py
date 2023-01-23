@@ -25,10 +25,5 @@ async def client(app):
 
 
 @pytest.fixture
-def app(config):
-    return create_app(config=config)
-
-
-@pytest.fixture
-def config():
-    return None
+def app():
+    return create_app()
