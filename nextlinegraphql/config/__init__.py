@@ -10,7 +10,6 @@ from typing import Optional, Sequence
 from dynaconf import Dynaconf, Validator
 
 from nextlinegraphql.custom.pluggy import PluginManager
-from nextlinegraphql.hook import initialize_plugins
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_CONFIG_PATH = HERE / 'default.toml'
@@ -21,10 +20,8 @@ MINIMAL_PRELOAD = (str(DEFAULT_CONFIG_PATH),)
 MINIMAL_VALIDATORS = ()
 
 
-def load_settings(hook: Optional[PluginManager] = None) -> Dynaconf:
+def load_settings(hook: PluginManager) -> Dynaconf:
     '''Return a Dynaconf settings after validation'''
-
-    hook = hook or initialize_plugins()
 
     settings = _load_settings(
         preload=tuple(chain(*hook.hook.dynaconf_preload())),
