@@ -8,8 +8,8 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from starlette.applications import Starlette
 
-from nextlinegraphql import spec
 from nextlinegraphql.custom.decorator import asynccontextmanager
+from nextlinegraphql.hook import spec
 
 from . import models
 from .db import DB

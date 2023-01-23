@@ -1,6 +1,6 @@
 __all__ = ['Plugin']
 
-from nextlinegraphql import spec
+from nextlinegraphql.hook import spec
 
 from .schema import Mutation, Query, Subscription
 
