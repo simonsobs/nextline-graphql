@@ -1,4 +1,4 @@
-__all__ = ['spec', 'initialize_plugins']
+__all__ = ['spec', 'load_plugins']
 
 from nextlinegraphql.custom.pluggy import PluginManager
 from nextlinegraphql.plugins import ctrl, db
@@ -6,7 +6,7 @@ from nextlinegraphql.plugins import ctrl, db
 from . import spec
 
 
-def initialize_plugins() -> PluginManager:
+def load_plugins() -> PluginManager:
     '''Return a pluggy PluginManager with the plugins registered'''
 
     pm = PluginManager(spec.PROJECT_NAME)

@@ -5,10 +5,10 @@ from alembic import context
 from sqlalchemy import create_engine
 
 from nextlinegraphql.config import load_settings
-from nextlinegraphql.hook import initialize_plugins
+from nextlinegraphql.hook import load_plugins
 from nextlinegraphql.plugins.db import models
 
-settings = load_settings(hook=initialize_plugins())
+settings = load_settings(hook=load_plugins())
 url = settings.db.url
 
 # Config in alembic.ini, only used to configure logger

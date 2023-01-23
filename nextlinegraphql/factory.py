@@ -11,7 +11,7 @@ from . import graphql
 from .config import load_settings
 from .custom.pluggy import PluginManager
 from .example_script import statement
-from .hook import initialize_plugins
+from .hook import load_plugins
 from .logging import configure_logging
 
 
@@ -23,7 +23,7 @@ def configure(hook: PluginManager, config: Optional[Dynaconf]) -> None:
 
 def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] = None):
 
-    hook = initialize_plugins()
+    hook = load_plugins()
 
     configure(hook=hook, config=config)
 
