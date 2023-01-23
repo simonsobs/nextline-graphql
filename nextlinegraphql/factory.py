@@ -41,7 +41,9 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
 
         app.mount('/', app_)
 
-        async with hook.awith.lifespan(app=app, nextline=nextline):
+        context = {'nextline': nextline}
+
+        async with hook.awith.lifespan(app=app, context=context):
             async with nextline:
                 yield
 

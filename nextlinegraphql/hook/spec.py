@@ -1,8 +1,7 @@
 '''Hook specification for Nextline GraphQL plugin.'''
-from typing import Mapping, Optional, Tuple, Union
+from typing import Mapping, MutableMapping, Optional, Tuple, Union
 
 from dynaconf import Dynaconf, Validator
-from nextline import Nextline
 from starlette.applications import Starlette
 
 from nextlinegraphql.custom import pluggy
@@ -58,7 +57,7 @@ def schema() -> Optional[Tuple[type, Union[type, None], Union[type, None]]]:
 
 @hookspec
 @asynccontextmanager
-async def lifespan(app: Starlette, nextline: Nextline):
+async def lifespan(app: Starlette, context: MutableMapping):
     '''Starlette lifespan'''
     pass
 

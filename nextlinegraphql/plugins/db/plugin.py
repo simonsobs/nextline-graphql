@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Mapping, Optional, Tuple
 
 from dynaconf import Dynaconf, Validator
-from nextline import Nextline
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from starlette.applications import Starlette
@@ -83,7 +82,8 @@ class Plugin:
 
     @spec.hookimpl
     @asynccontextmanager
-    async def lifespan(self, app: Starlette, nextline: Nextline):
+    async def lifespan(self, app: Starlette, context: Mapping):
+        nextline = context['nextline']
         async with write_db(nextline, self._db):
             yield
 
