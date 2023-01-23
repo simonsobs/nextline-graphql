@@ -18,10 +18,10 @@ from .hook import initialize_plugins
 from .logging import configure_logging
 
 
-def compose_schema(pm: PluginManager) -> BaseSchema:
+def compose_schema(hook: PluginManager) -> BaseSchema:
 
     # [(Query, Mutation, Subscription), ...]
-    three_types = pm.hook.schema()
+    three_types = hook.hook.schema()
 
     # [(Query, ...), (Mutation, ...), (Subscription, ...)]
     transposed = list(map(tuple, zip(*three_types)))
@@ -58,11 +58,11 @@ class EGraphQL(GraphQL):
         self,
         schema: BaseSchema,
         nextline: Nextline,
-        pm: PluginManager,
+        hook: PluginManager,
     ):
         super().__init__(schema)
         self._nextline = nextline
-        self._pm = pm
+        self._hook = hook
 
     async def get_context(self, request, response=None) -> Optional[Any]:
         context = {
@@ -70,7 +70,7 @@ class EGraphQL(GraphQL):
             "response": response,
             "nextline": self._nextline,
         }
-        updates = await self._pm.ahook.get_context(context=context)
+        updates = await self._hook.ahook.get_context(context=context)
         for update in updates:
             if update:
                 context.update(update)
@@ -89,8 +89,8 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
     if not nextline:
         nextline = Nextline(script, run_no)
 
-    schema = compose_schema(pm=hook)
-    app_ = EGraphQL(schema=schema, nextline=nextline, pm=hook)
+    schema = compose_schema(hook=hook)
+    app_ = EGraphQL(schema=schema, nextline=nextline, hook=hook)
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
