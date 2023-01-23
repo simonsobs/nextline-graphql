@@ -14,9 +14,8 @@ from strawberry.tools import merge_types
 from .custom import pluggy
 from .custom.strawberry import GraphQL
 from .example_script import statement
-from .hook import spec
+from .hook import initialize_plugins
 from .logging import configure_logging
-from .plugins import ctrl, db
 
 
 def compose_schema(pm: pluggy.PluginManager) -> BaseSchema:
@@ -91,15 +90,6 @@ class EGraphQL(GraphQL):
             if update:
                 context.update(update)
         return context
-
-
-def initialize_plugins() -> pluggy.PluginManager:
-    hook = pluggy.PluginManager(spec.PROJECT_NAME)
-    hook.add_hookspecs(spec)
-    hook.load_setuptools_entrypoints(spec.PROJECT_NAME)
-    hook.register(db.Plugin())
-    hook.register(ctrl.Plugin())
-    return hook
 
 
 def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] = None):
