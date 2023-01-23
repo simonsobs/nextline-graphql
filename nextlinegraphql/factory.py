@@ -33,7 +33,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
     if not nextline:
         nextline = Nextline(script, run_no)
 
-    app_ = graphql.create_app(nextline=nextline, hook=hook)
+    app_ = graphql.create_app(hook=hook)
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):

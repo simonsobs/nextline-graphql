@@ -1,6 +1,6 @@
 __all__ = ['Plugin']
 
-from typing import Mapping
+from typing import Mapping, MutableMapping
 
 from starlette.applications import Starlette
 
@@ -19,6 +19,10 @@ class Plugin:
     @asynccontextmanager
     async def lifespan(self, app: Starlette, context: Mapping):
         '''Yield within the nextline context.'''
-        nextline = context['nextline']
-        async with nextline:
+        self._nextline = context['nextline']
+        async with self._nextline:
             yield
+
+    @spec.hookimpl
+    def update_strawberry_context(self, context: MutableMapping) -> None:
+        context['nextline'] = self._nextline

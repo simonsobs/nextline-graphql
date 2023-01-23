@@ -1,7 +1,6 @@
 from typing import Any, Optional
 
 import strawberry
-from nextline import Nextline
 from starlette.types import ASGIApp
 from strawberry.schema import BaseSchema
 from strawberry.tools import merge_types
@@ -10,11 +9,11 @@ from .custom.pluggy import PluginManager
 from .custom.strawberry import GraphQL
 
 
-def create_app(hook: PluginManager, nextline: Nextline) -> ASGIApp:
+def create_app(hook: PluginManager) -> ASGIApp:
 
     schema = compose_schema(hook=hook)
 
-    app = EGraphQL(schema=schema, nextline=nextline, hook=hook)
+    app = EGraphQL(schema=schema, hook=hook)
 
     return app
 
@@ -49,21 +48,11 @@ class EGraphQL(GraphQL):
     https://strawberry.rocks/docs/integrations/asgi
     """
 
-    def __init__(
-        self,
-        schema: BaseSchema,
-        nextline: Nextline,
-        hook: PluginManager,
-    ):
+    def __init__(self, schema: BaseSchema, hook: PluginManager):
         super().__init__(schema)
-        self._nextline = nextline
         self._hook = hook
 
     async def get_context(self, request, response=None) -> Optional[Any]:
-        context = {
-            "request": request,
-            "response": response,
-            "nextline": self._nextline,
-        }
+        context = {'request': request, 'response': response}
         self._hook.hook.update_strawberry_context(context=context)
         return context
