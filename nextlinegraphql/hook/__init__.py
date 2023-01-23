@@ -14,8 +14,8 @@ def load_plugins() -> PluginManager:
 
     # The hooks are called in the reverse order of the plugin registration.
     # https://pluggy.readthedocs.io/en/stable/#call-time-order
+    pm.register(ctrl.Plugin())
     pm.load_setuptools_entrypoints(spec.PROJECT_NAME)
     pm.register(db.Plugin())
-    pm.register(ctrl.Plugin())
 
     return pm
