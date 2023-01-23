@@ -1,5 +1,5 @@
 '''Hook specification for Nextline GraphQL plugin.'''
-from typing import Mapping, MutableMapping, Optional, Tuple, Union
+from typing import MutableMapping, Optional, Tuple, Union
 
 from dynaconf import Dynaconf, Validator
 from starlette.applications import Starlette
@@ -63,6 +63,11 @@ async def lifespan(app: Starlette, context: MutableMapping):
 
 
 @hookspec
-async def get_context(context: Mapping) -> Optional[Mapping]:
-    '''Strawberry GraphQL context'''
+def update_strawberry_context(context: MutableMapping) -> None:
+    '''Called within get_context() of a subclass of strawberry.asgi.GraphQL.
+
+    Plugins can modify the context in place.
+
+    Strawberry Doc: https://strawberry.rocks/docs/integrations/asgi#get_context
+    '''
     pass

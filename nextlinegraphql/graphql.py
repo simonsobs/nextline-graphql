@@ -65,8 +65,5 @@ class EGraphQL(GraphQL):
             "response": response,
             "nextline": self._nextline,
         }
-        updates = await self._hook.ahook.get_context(context=context)
-        for update in updates:
-            if update:
-                context.update(update)
+        self._hook.hook.update_strawberry_context(context=context)
         return context

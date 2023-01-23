@@ -1,6 +1,6 @@
 from logging import getLogger
 from pathlib import Path
-from typing import Mapping, Optional, Tuple
+from typing import Mapping, MutableMapping, Optional, Tuple
 
 from dynaconf import Dynaconf, Validator
 from sqlalchemy import func, select
@@ -88,5 +88,5 @@ class Plugin:
             yield
 
     @spec.hookimpl
-    async def get_context(self, context: Mapping):
-        return {'db': self._db}
+    def update_strawberry_context(self, context: MutableMapping) -> None:
+        context['db'] = self._db
