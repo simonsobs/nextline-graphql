@@ -11,14 +11,14 @@ from starlette.middleware.cors import CORSMiddleware
 from strawberry.schema import BaseSchema
 from strawberry.tools import merge_types
 
-from .custom import pluggy
+from .custom.pluggy import PluginManager
 from .custom.strawberry import GraphQL
 from .example_script import statement
 from .hook import initialize_plugins
 from .logging import configure_logging
 
 
-def compose_schema(pm: pluggy.PluginManager) -> BaseSchema:
+def compose_schema(pm: PluginManager) -> BaseSchema:
 
     # [(Query, Mutation, Subscription), ...]
     three_types = pm.hook.schema()
@@ -42,7 +42,7 @@ def compose_schema(pm: pluggy.PluginManager) -> BaseSchema:
     return schema
 
 
-def create_settings(hook: Optional[pluggy.PluginManager] = None) -> Dynaconf:
+def create_settings(hook: Optional[PluginManager] = None) -> Dynaconf:
 
     from .config import create_settings as create_settings_
 
@@ -57,7 +57,7 @@ def create_settings(hook: Optional[pluggy.PluginManager] = None) -> Dynaconf:
     return settings
 
 
-def configure(hook: pluggy.PluginManager, config: Optional[Dynaconf]) -> None:
+def configure(hook: PluginManager, config: Optional[Dynaconf]) -> None:
     config = config or create_settings(hook)
     hook.hook.configure(settings=config)
     configure_logging(config.logging)
@@ -73,7 +73,7 @@ class EGraphQL(GraphQL):
         self,
         schema: BaseSchema,
         nextline: Nextline,
-        pm: pluggy.PluginManager,
+        pm: PluginManager,
     ):
         super().__init__(schema)
         self._nextline = nextline
