@@ -2,11 +2,15 @@
 
 Dynaconf: https://www.dynaconf.com/ 
 '''
-
+__all__ = ['create_settings']
+from itertools import chain
 from pathlib import Path
 from typing import Optional, Sequence
 
 from dynaconf import Dynaconf, Validator
+
+from nextlinegraphql.custom.pluggy import PluginManager
+from nextlinegraphql.hook import initialize_plugins
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_CONFIG_PATH = HERE / 'default.toml'
@@ -17,7 +21,20 @@ MINIMAL_PRELOAD = (str(DEFAULT_CONFIG_PATH),)
 MINIMAL_VALIDATORS = ()
 
 
-def create_settings(
+def create_settings(hook: Optional[PluginManager] = None) -> Dynaconf:
+
+    hook = hook or initialize_plugins()
+
+    settings = _load_settings(
+        preload=tuple(chain(*hook.hook.dynaconf_preload())),
+        settings_files=tuple(chain(*hook.hook.dynaconf_settings_files())),
+        validators=tuple(chain(*hook.hook.dynaconf_validators())),
+    )
+
+    return settings
+
+
+def _load_settings(
     preload: Optional[Sequence[str]] = None,
     settings_files: Optional[Sequence[str]] = None,
     validators: Optional[Sequence[Validator]] = None,

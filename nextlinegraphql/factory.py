@@ -1,5 +1,4 @@
 import contextlib
-from itertools import chain
 from typing import Any, Optional
 
 import strawberry
@@ -11,6 +10,7 @@ from starlette.middleware.cors import CORSMiddleware
 from strawberry.schema import BaseSchema
 from strawberry.tools import merge_types
 
+from .config import create_settings
 from .custom.pluggy import PluginManager
 from .custom.strawberry import GraphQL
 from .example_script import statement
@@ -40,21 +40,6 @@ def compose_schema(pm: PluginManager) -> BaseSchema:
     )
 
     return schema
-
-
-def create_settings(hook: Optional[PluginManager] = None) -> Dynaconf:
-
-    from .config import create_settings as create_settings_
-
-    hook = hook or initialize_plugins()
-
-    settings = create_settings_(
-        preload=tuple(chain(*hook.hook.dynaconf_preload())),
-        settings_files=tuple(chain(*hook.hook.dynaconf_settings_files())),
-        validators=tuple(chain(*hook.hook.dynaconf_validators())),
-    )
-
-    return settings
 
 
 def configure(hook: PluginManager, config: Optional[Dynaconf]) -> None:
