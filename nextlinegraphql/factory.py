@@ -21,11 +21,10 @@ def create_app() -> Starlette:
 
     configure_logging(config.logging)
 
-    app_ = graphql.create_app(hook=hook)
-
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
 
+        app_ = graphql.create_app(hook=hook)
         app.mount('/', app_)
 
         context: Dict = {}
