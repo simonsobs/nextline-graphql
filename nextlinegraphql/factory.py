@@ -1,4 +1,5 @@
 import contextlib
+import logging.config
 from typing import Dict
 
 from starlette.applications import Starlette
@@ -7,7 +8,6 @@ from starlette.middleware.cors import CORSMiddleware
 
 from .config import load_settings
 from .hook import load_plugins
-from .logging import configure_logging
 
 
 def create_app() -> Starlette:
@@ -41,3 +41,11 @@ def create_app() -> Starlette:
     app = Starlette(debug=True, lifespan=lifespan, middleware=middleware)
 
     return app
+
+
+def configure_logging(config: Dict):
+    logging.config.dictConfig(config)
+
+    # https://pypi.org/project/logging_tree/
+    # import logging_tree
+    # logging_tree.printout()
