@@ -1,7 +1,7 @@
-"""Configuration by Dynaconf
+'''Configuration by Dynaconf.
 
-Example: https://github.com/rochacbruno/learndynaconf/blob/main/config.py
-"""
+Dynaconf: https://www.dynaconf.com/ 
+'''
 
 from pathlib import Path
 from typing import Optional, Sequence
@@ -31,6 +31,9 @@ def create_settings(
     settings_files = minimal_settings_files + tuple(settings_files or ())
     validators = MINIMAL_VALIDATORS + tuple(validators or ())
 
+    # Dynaconf object:
+    # Dynaconf Doc: https://www.dynaconf.com/configuration/
+    # Example: https://github.com/rochacbruno/learndynaconf/blob/main/config.py
     settings = Dynaconf(
         envvar_prefix="NEXTLINE",
         preload=preload,
