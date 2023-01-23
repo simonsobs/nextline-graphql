@@ -2,7 +2,7 @@
 
 Dynaconf: https://www.dynaconf.com/ 
 '''
-__all__ = ['create_settings']
+__all__ = ['load_settings']
 from itertools import chain
 from pathlib import Path
 from typing import Optional, Sequence
@@ -21,7 +21,7 @@ MINIMAL_PRELOAD = (str(DEFAULT_CONFIG_PATH),)
 MINIMAL_VALIDATORS = ()
 
 
-def create_settings(hook: Optional[PluginManager] = None) -> Dynaconf:
+def load_settings(hook: Optional[PluginManager] = None) -> Dynaconf:
 
     hook = hook or initialize_plugins()
 

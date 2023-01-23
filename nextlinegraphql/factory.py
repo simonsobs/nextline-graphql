@@ -10,7 +10,7 @@ from starlette.middleware.cors import CORSMiddleware
 from strawberry.schema import BaseSchema
 from strawberry.tools import merge_types
 
-from .config import create_settings
+from .config import load_settings
 from .custom.pluggy import PluginManager
 from .custom.strawberry import GraphQL
 from .example_script import statement
@@ -43,7 +43,7 @@ def compose_schema(pm: PluginManager) -> BaseSchema:
 
 
 def configure(hook: PluginManager, config: Optional[Dynaconf]) -> None:
-    config = config or create_settings(hook)
+    config = config or load_settings(hook)
     hook.hook.configure(settings=config)
     configure_logging(config.logging)
 
