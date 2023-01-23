@@ -1,29 +1,25 @@
 import contextlib
-from typing import Dict, Optional
+from typing import Dict
 
-from dynaconf import Dynaconf
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
 from . import graphql
 from .config import load_settings
-from .custom.pluggy import PluginManager
 from .hook import load_plugins
 from .logging import configure_logging
-
-
-def configure(hook: PluginManager, config: Optional[Dynaconf] = None) -> None:
-    config = config or load_settings(hook)
-    hook.hook.configure(settings=config, hook=hook)
-    configure_logging(config.logging)
 
 
 def create_app() -> Starlette:
 
     hook = load_plugins()
 
-    configure(hook=hook)
+    config = load_settings(hook)
+
+    hook.hook.configure(settings=config, hook=hook)
+
+    configure_logging(config.logging)
 
     app_ = graphql.create_app(hook=hook)
 
