@@ -21,7 +21,7 @@ def configure(hook: PluginManager, config: Optional[Dynaconf]) -> None:
     configure_logging(config.logging)
 
 
-def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] = None):
+def create_app(config: Optional[Dynaconf] = None):
 
     hook = load_plugins()
 
@@ -30,8 +30,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
     run_no: int = max(hook.hook.initial_run_no(), default=1)
     script: str = [*hook.hook.initial_script(), statement][0]
 
-    if not nextline:
-        nextline = Nextline(script, run_no)
+    nextline = Nextline(script, run_no)
 
     app_ = graphql.create_app(hook=hook)
 
