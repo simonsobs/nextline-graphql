@@ -7,10 +7,10 @@ from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
+from . import graphql
 from .config import load_settings
 from .custom.pluggy import PluginManager
 from .example_script import statement
-from .graphql import EGraphQL, compose_schema
 from .hook import initialize_plugins
 from .logging import configure_logging
 
@@ -33,8 +33,7 @@ def create_app(config: Optional[Dynaconf] = None, nextline: Optional[Nextline] =
     if not nextline:
         nextline = Nextline(script, run_no)
 
-    schema = compose_schema(hook=hook)
-    app_ = EGraphQL(schema=schema, nextline=nextline, hook=hook)
+    app_ = graphql.create_app(nextline=nextline, hook=hook)
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):

@@ -2,11 +2,21 @@ from typing import Any, Optional
 
 import strawberry
 from nextline import Nextline
+from starlette.types import ASGIApp
 from strawberry.schema import BaseSchema
 from strawberry.tools import merge_types
 
 from .custom.pluggy import PluginManager
 from .custom.strawberry import GraphQL
+
+
+def create_app(hook: PluginManager, nextline: Nextline) -> ASGIApp:
+
+    schema = compose_schema(hook=hook)
+
+    app = EGraphQL(schema=schema, nextline=nextline, hook=hook)
+
+    return app
 
 
 def compose_schema(hook: PluginManager) -> BaseSchema:
