@@ -13,17 +13,17 @@ from .hook import load_plugins
 from .logging import configure_logging
 
 
-def configure(hook: PluginManager, config: Optional[Dynaconf]) -> None:
+def configure(hook: PluginManager, config: Optional[Dynaconf] = None) -> None:
     config = config or load_settings(hook)
     hook.hook.configure(settings=config, hook=hook)
     configure_logging(config.logging)
 
 
-def create_app(config: Optional[Dynaconf] = None):
+def create_app() -> Starlette:
 
     hook = load_plugins()
 
-    configure(hook=hook, config=config)
+    configure(hook=hook)
 
     app_ = graphql.create_app(hook=hook)
 
