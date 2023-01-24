@@ -4,8 +4,8 @@ import pytest
 from async_asgi_testclient import TestClient
 
 from nextlinegraphql.plugins.ctrl import example_script
+from nextlinegraphql.plugins.graphql.test import gql_request
 
-from .....funcs import gql_request
 from ..graphql import QUERY_SOURCE
 
 EXAMPLE_SCRIPT_DIR = Path(example_script.__file__).resolve().parent
