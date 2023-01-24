@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
 COPY ./ nextline-graphql
 RUN pip install --upgrade pip
 RUN pip install ./nextline-graphql
+RUN pip install nextline-rdb>=0.1
 RUN pip install uvicorn
 RUN rm -rf ./nextline-graphql
 
