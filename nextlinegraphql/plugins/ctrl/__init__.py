@@ -14,17 +14,16 @@ from .schema import Mutation, Query, Subscription
 
 class Plugin:
     @spec.hookimpl
-    def configure(self, hook: pluggy.PluginManager) -> None:
-        run_no: int = max(hook.hook.initial_run_no(), default=1)
-        script: str = [*hook.hook.initial_script(), statement][0]
-        self._nextline = Nextline(script, run_no)
-
-    @spec.hookimpl
     def schema(self):
         return (Query, Mutation, Subscription)
 
     @spec.hookimpl
-    async def update_lifespan_context(self, context: MutableMapping) -> None:
+    async def update_lifespan_context(
+        self, hook: pluggy.PluginManager, context: MutableMapping
+    ) -> None:
+        run_no: int = max(hook.hook.initial_run_no(), default=1)
+        script: str = [*hook.hook.initial_script(), statement][0]
+        self._nextline = Nextline(script, run_no)
         context['nextline'] = self._nextline
 
     @spec.hookimpl(trylast=True)  # trylast so to be the innermost context
