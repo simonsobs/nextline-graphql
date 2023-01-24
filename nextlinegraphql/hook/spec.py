@@ -74,10 +74,7 @@ def schema() -> Optional[Tuple[type, Union[type, None], Union[type, None]]]:
 def update_lifespan_context(
     app: Starlette, hook: pluggy.PluginManager, context: MutableMapping
 ) -> None:
-    '''Called within the Starlette lifespan context before the lifespan hook.
-
-    The context is passed to the lifespan hook.
-    '''
+    '''Update the context object before it is passed to the lifespan hook.'''
 
 
 @hookspec
