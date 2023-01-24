@@ -1,4 +1,7 @@
-'''Extend pluggy.PluginManager to support async hooks and context managers.
+'''Extend pluggy.PluginManager.
+
+It supports async hooks and context managers.
+It accepts plugin factories in addition to plugins themselves for registration.
 
 pluggy: https://pluggy.readthedocs.io/en/stable/
 
@@ -68,8 +71,8 @@ pluggy: https://pluggy.readthedocs.io/en/stable/
 
 >>> pm = pluggy.PluginManager('project')
 >>> pm.add_hookspecs(Spec)
->>> _ = pm.register(Plugin_1())
->>> _ = pm.register(Plugin_2())
+>>> _ = pm.register(Plugin_1())  # instantiation is optional.
+>>> _ = pm.register(Plugin_2)  # callable is considered a plugin factory.
 
 >>> async def call_afunc():
 ...     results = await pm.ahook.afunc(arg1=1, arg2=2)  # ahook instead of hook
@@ -164,3 +167,8 @@ class PluginManager(PluginManager_):
         self.ahook = _AHook(self)
         self.with_ = _With(self)
         self.awith = _AWith(self)
+
+    def register(self, plugin, name=None):
+        if callable(plugin):
+            plugin = plugin()
+        super().register(plugin, name=name)
