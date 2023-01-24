@@ -24,7 +24,7 @@ class Plugin:
         return (Query, Mutation, Subscription)
 
     @spec.hookimpl
-    def update_lifespan_context(self, context: MutableMapping) -> None:
+    async def update_lifespan_context(self, context: MutableMapping) -> None:
         context['nextline'] = self._nextline
 
     @spec.hookimpl(trylast=True)  # trylast so to be the innermost context

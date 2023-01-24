@@ -28,7 +28,7 @@ def create_app() -> Starlette:
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
         context: Dict = {}
-        hook.hook.update_lifespan_context(app=app, hook=hook, context=context)
+        await hook.ahook.update_lifespan_context(app=app, hook=hook, context=context)
         async with hook.awith.lifespan(app=app, hook=hook, context=context):
             yield
 
