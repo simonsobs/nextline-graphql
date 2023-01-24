@@ -1,8 +1,8 @@
 from async_asgi_testclient import TestClient
 
+from nextlinegraphql.plugins.ctrl.graphql import QUERY_EXCEPTION
 from nextlinegraphql.plugins.graphql.test import gql_request
 
-from ..graphql import QUERY_EXCEPTION
 from .funcs import run_statement
 
 SOURCE_RAISE = """

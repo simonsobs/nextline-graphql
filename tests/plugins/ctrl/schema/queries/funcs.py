@@ -4,9 +4,7 @@ from typing import Any, List, Optional, Set
 from async_asgi_testclient import TestClient
 from nextline.utils import agen_with_wait
 
-from nextlinegraphql.plugins.graphql.test import gql_request, gql_subscribe
-
-from ..graphql import (
+from nextlinegraphql.plugins.ctrl.graphql import (
     MUTATE_EXEC,
     MUTATE_RESET,
     MUTATE_SEND_PDB_COMMAND,
@@ -15,6 +13,7 @@ from ..graphql import (
     SUBSCRIBE_STATE,
     SUBSCRIBE_TRACE_IDS,
 )
+from nextlinegraphql.plugins.graphql.test import gql_request, gql_subscribe
 
 
 async def run_statement(client, statement: Optional[str] = None):
