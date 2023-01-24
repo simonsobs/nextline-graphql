@@ -1,8 +1,8 @@
 from async_asgi_testclient import TestClient
 
+from nextlinegraphql.plugins.ctrl.test import run_statement
 from nextlinegraphql.plugins.graphql.test import gql_request
 
-from ....ctrl.schema.queries.funcs import run_statement
 from ..graphql import QUERY_HISTORY
 
 
