@@ -1,6 +1,6 @@
 __all__ = ['Plugin']
 
-from typing import MutableMapping
+from typing import AsyncIterator, MutableMapping
 
 from nextline import Nextline
 
@@ -29,7 +29,7 @@ class Plugin:
 
     @spec.hookimpl(trylast=True)  # trylast so to be the innermost context
     @asynccontextmanager
-    async def lifespan(self):
+    async def lifespan(self) -> AsyncIterator[None]:
         '''Yield within the nextline context.'''
         async with self._nextline:
             yield
