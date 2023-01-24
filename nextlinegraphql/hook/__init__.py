@@ -1,7 +1,7 @@
 __all__ = ['spec', 'load_plugins']
 
 from nextlinegraphql.custom.pluggy import PluginManager
-from nextlinegraphql.plugins import ctrl, db, graphql
+from nextlinegraphql.plugins import ctrl, graphql
 
 from . import spec
 
@@ -17,6 +17,5 @@ def load_plugins() -> PluginManager:
     pm.register(graphql.Plugin())
     pm.register(ctrl.Plugin())
     pm.load_setuptools_entrypoints(spec.PROJECT_NAME)
-    pm.register(db.Plugin())
 
     return pm
