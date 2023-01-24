@@ -21,7 +21,6 @@ def dynaconf_preload() -> Optional[Sequence[str]]:
 
     https://www.dynaconf.com/configuration/#preload
     '''
-    pass
 
 
 @hookspec
@@ -32,7 +31,6 @@ def dynaconf_settings_files() -> Optional[Sequence[str]]:
 
     https://www.dynaconf.com/configuration/#settings_file-or-settings_files
     '''
-    pass
 
 
 @hookspec
@@ -43,31 +41,26 @@ def dynaconf_validators() -> Optional[Sequence[Validator]]:
 
     https://www.dynaconf.com/configuration/#validators
     '''
-    pass
 
 
 @hookspec
 def configure(settings: Dynaconf, hook: pluggy.PluginManager) -> None:
     '''Initialize the plugin.'''
-    pass
 
 
 @hookspec
 def initial_run_no() -> Optional[int]:
     '''Run No. of the first run.'''
-    pass
 
 
 @hookspec
 def initial_script() -> Optional[str]:
     '''The script of the first run.'''
-    pass
 
 
 @hookspec
 def schema() -> Optional[Tuple[type, Union[type, None], Union[type, None]]]:
     '''The GraphQL schema (Query, Mutation, Subscription)'''
-    pass
 
 
 @hookspec
@@ -86,7 +79,6 @@ async def lifespan(app: Starlette, hook: pluggy.PluginManager, context: MutableM
 
     The Starlette lifespan yields within this hook
     '''
-    pass
 
 
 @hookspec
@@ -97,4 +89,3 @@ def update_strawberry_context(context: MutableMapping) -> None:
 
     Strawberry Doc: https://strawberry.rocks/docs/integrations/asgi#get_context
     '''
-    pass
