@@ -1,5 +1,5 @@
 '''Hook specification for Nextline GraphQL plugin.'''
-from typing import MutableMapping, Optional, Tuple, Union
+from typing import MutableMapping, Optional, Sequence, Tuple, Union
 
 from dynaconf import Dynaconf, Validator
 from starlette.applications import Starlette
@@ -14,20 +14,35 @@ hookimpl = pluggy.HookimplMarker(PROJECT_NAME)
 
 
 @hookspec
-def dynaconf_preload() -> Optional[Tuple[str, ...]]:
-    '''Default settings file paths of the plugin.'''
+def dynaconf_preload() -> Optional[Sequence[str]]:
+    '''Return settings file paths of the plugin to be preloaded.
+
+    The paths will be included in the "preload" option of Dynaconf.
+
+    https://www.dynaconf.com/configuration/#preload
+    '''
     pass
 
 
 @hookspec
-def dynaconf_settings_files() -> Optional[Tuple[str, ...]]:
-    '''Settings file paths of the plugin.'''
+def dynaconf_settings_files() -> Optional[Sequence[str]]:
+    '''Return settings file paths of the plugin.
+
+    The paths will be included in the "settings_files" option of Dynaconf.
+
+    https://www.dynaconf.com/configuration/#settings_file-or-settings_files
+    '''
     pass
 
 
 @hookspec
-def dynaconf_validators() -> Optional[Tuple[Validator, ...]]:
-    '''Validators of the plugin settings.'''
+def dynaconf_validators() -> Optional[Sequence[Validator]]:
+    '''Return validators of the plugin settings.
+
+    The validators will be included in the "validators" option of Dynaconf.
+
+    https://www.dynaconf.com/configuration/#validators
+    '''
     pass
 
 
