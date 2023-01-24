@@ -3,13 +3,13 @@ from pathlib import Path
 import pytest
 from async_asgi_testclient import TestClient
 
-import nextlinegraphql
+from nextlinegraphql.plugins.ctrl import example_script
 
 from .....funcs import gql_request
 from ..graphql import QUERY_SOURCE
 
-PACKAGE_TOP = Path(nextlinegraphql.__file__).resolve().parent
-SCRIPT_PATH = str(PACKAGE_TOP / 'example_script' / 'script_threading.py')
+EXAMPLE_SCRIPT_DIR = Path(example_script.__file__).resolve().parent
+SCRIPT_PATH = str(EXAMPLE_SCRIPT_DIR / 'script_threading.py')
 
 params = [
     pytest.param(None, id="default"),

@@ -6,9 +6,9 @@ from nextline import Nextline
 
 from nextlinegraphql.custom import pluggy
 from nextlinegraphql.custom.decorator import asynccontextmanager
-from nextlinegraphql.example_script import statement
 from nextlinegraphql.hook import spec
 
+from .example_script import statement
 from .schema import Mutation, Query, Subscription
 
 
