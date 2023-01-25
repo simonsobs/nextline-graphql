@@ -1,5 +1,6 @@
-[![PyPI version](https://badge.fury.io/py/nextline-graphql.svg)](https://badge.fury.io/py/nextline-graphql)
-[![Test Status](https://github.com/simonsobs/nextline-graphql/workflows/Test/badge.svg)](https://github.com/simonsobs/nextline-graphql/actions?query=workflow%3ATest)
+[![PyPI - Version](https://img.shields.io/pypi/v/nextline-graphql.svg)](https://pypi.org/project/nextline-graphql)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/nextline-graphql.svg)](https://pypi.org/project/nextline-graphql)
+[![Test Status](https://github.com/simonsobs/nextline-graphql/actions/workflows/test.yml/badge.svg)](https://github.com/simonsobs/nextline-graphql/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/simonsobs/nextline-graphql/branch/main/graph/badge.svg)](https://codecov.io/gh/simonsobs/nextline-graphql)
 
 # nextline-graphql
