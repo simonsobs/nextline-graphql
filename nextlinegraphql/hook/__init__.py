@@ -14,8 +14,8 @@ def load_plugins() -> PluginManager:
 
     # The hooks are called in the reverse order of the plugin registration.
     # https://pluggy.readthedocs.io/en/stable/#call-time-order
-    pm.register(graphql.Plugin())
-    pm.register(ctrl.Plugin())
+    pm.register(graphql.Plugin(), name='graphql')
+    pm.register(ctrl.Plugin(), name='ctrl')
     pm.load_setuptools_entrypoints(spec.PROJECT_NAME)
 
     return pm
