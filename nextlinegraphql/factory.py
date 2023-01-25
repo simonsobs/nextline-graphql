@@ -1,5 +1,6 @@
 import contextlib
 import logging.config
+from logging import getLogger
 from typing import Dict
 
 from starlette.applications import Starlette
@@ -24,6 +25,10 @@ def create_app() -> Starlette:
     config = load_settings(hook)
     hook.hook.configure(settings=config, hook=hook)
     configure_logging(config.logging)
+
+    logger = getLogger(__name__)
+    msg = f'Loaded plugins: {",".join(f"{p[0]!r}" for p in hook.list_name_plugin())}.'
+    logger.info(msg)
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
