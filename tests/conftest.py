@@ -27,3 +27,9 @@ async def client(app):
 @pytest.fixture
 def app():
     return create_app()
+
+
+if not sys.version_info >= (3, 9):
+    from nextline.test import suppress_atexit_oserror
+
+    _ = pytest.fixture(scope='session', autouse=True)(suppress_atexit_oserror)
