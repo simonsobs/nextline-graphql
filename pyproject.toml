@@ -21,9 +21,9 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
+    "nextline==0.3.7",
+    "nextline-rdb==0.1.2",
     "dynaconf>=3.1",
-    "nextline>=0.3.6",
-    "nextline-rdb>=0.1.2",
     "starlette>=0.20.4",
     "strawberry-graphql>=0.128",
     "websockets>=10.2",
