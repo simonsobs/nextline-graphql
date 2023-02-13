@@ -16,6 +16,7 @@ def load_plugins() -> PluginManager:
     # https://pluggy.readthedocs.io/en/stable/#call-time-order
     pm.register(graphql.Plugin(), name='graphql')
     pm.register(ctrl.Plugin(), name='ctrl')
+    # pm.set_blocked('schedule')
     pm.load_setuptools_entrypoints(spec.PROJECT_NAME)
 
     return pm
