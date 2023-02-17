@@ -7,9 +7,8 @@ from itertools import chain
 from pathlib import Path
 from typing import Optional, Sequence
 
+from apluggy import PluginManager
 from dynaconf import Dynaconf, Validator
-
-from nextlinegraphql.custom.pluggy import PluginManager
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_CONFIG_PATH = HERE / 'default.toml'

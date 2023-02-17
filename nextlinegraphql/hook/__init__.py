@@ -1,6 +1,7 @@
 __all__ = ['spec', 'load_plugins']
 
-from nextlinegraphql.custom.pluggy import PluginManager
+from apluggy import PluginManager
+
 from nextlinegraphql.plugins import ctrl, graphql
 
 from . import spec
