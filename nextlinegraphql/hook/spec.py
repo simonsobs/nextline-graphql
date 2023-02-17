@@ -1,11 +1,10 @@
 '''Hook specification for Nextline GraphQL plugin.'''
 from typing import MutableMapping, Optional, Sequence, Tuple, Union
 
+import apluggy as pluggy
+from apluggy import asynccontextmanager
 from dynaconf import Dynaconf, Validator
 from starlette.applications import Starlette
-
-from nextlinegraphql.custom import pluggy
-from nextlinegraphql.custom.decorator import asynccontextmanager
 
 PROJECT_NAME = 'nextline'
 

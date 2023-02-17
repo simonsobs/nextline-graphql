@@ -2,10 +2,10 @@ __all__ = ['Plugin']
 
 from typing import AsyncIterator, MutableMapping
 
+import apluggy as pluggy
+from apluggy import asynccontextmanager
 from nextline import Nextline
 
-from nextlinegraphql.custom import pluggy
-from nextlinegraphql.custom.decorator import asynccontextmanager
 from nextlinegraphql.hook import spec
 
 from .example_script import statement
