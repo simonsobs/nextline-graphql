@@ -31,15 +31,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "black",
-    "flake8",
-    "logging_tree",
-    "mypy",
-    "tox",
-    "twine",
-    "uvicorn",
-]
+dev = ["black", "flake8", "logging_tree", "mypy", "tox", "twine", "uvicorn"]
 tests = [
     "async-asgi-testclient>=1.4",
     "pytest-asyncio>=0.18",
@@ -65,7 +57,7 @@ include = ["/nextlinegraphql"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-timeout = 60 
+timeout = 60
 addopts = "--doctest-modules"
 # doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE",]
 doctest_optionflags = ["ELLIPSIS"]
@@ -94,6 +86,6 @@ module = [
     "dynaconf.*",
     "async_asgi_testclient.*",
     "snapshottest.*",
-    "pluggy.*",
+    "apluggy.*",
 ]
 ignore_missing_imports = true
