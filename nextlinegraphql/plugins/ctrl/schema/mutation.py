@@ -35,21 +35,21 @@ def mutate_send_pdb_command(
     return True
 
 
-def mutate_interrupt(info: Info) -> bool:
+async def mutate_interrupt(info: Info) -> bool:
     nextline: Nextline = info.context["nextline"]
-    nextline.interrupt()
+    await nextline.interrupt()
     return True
 
 
-def mutate_terminate(info: Info) -> bool:
+async def mutate_terminate(info: Info) -> bool:
     nextline: Nextline = info.context["nextline"]
-    nextline.terminate()
+    await nextline.terminate()
     return True
 
 
-def mutate_kill(info: Info) -> bool:
+async def mutate_kill(info: Info) -> bool:
     nextline: Nextline = info.context["nextline"]
-    nextline.kill()
+    await nextline.kill()
     return True
 
 
