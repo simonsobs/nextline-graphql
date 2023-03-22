@@ -21,11 +21,11 @@ async def mutate_reset(info: Info, statement: Optional[str] = None):
     return True
 
 
-def mutate_send_pdb_command(
+async def mutate_send_pdb_command(
     info: Info, command: str, prompt_no: int, trace_no: int
 ) -> bool:
     nextline: Nextline = info.context["nextline"]
-    nextline.send_pdb_command(command, prompt_no, trace_no)
+    await nextline.send_pdb_command(command, prompt_no, trace_no)
     return True
 
 
