@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING, Optional
 
 import strawberry
@@ -11,13 +10,8 @@ if TYPE_CHECKING:
 
 
 async def mutate_exec(info: Info) -> bool:
-
     nextline: Nextline = info.context["nextline"]
-
-    async def wait():
-        await nextline.run()
-
-    asyncio.create_task(wait())
+    await nextline.run()
     return True
 
 
