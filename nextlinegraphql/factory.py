@@ -28,7 +28,7 @@ def create_app() -> Starlette:
 
     logger = getLogger(__name__)
     plugin_names = (f"{n!r}" for n, p in hook.list_name_plugin() if p)
-    msg = f'Loaded plugins: {",".join(plugin_names)}.'
+    msg = f'Loaded plugins ({hook.project_name!r}): {",".join(plugin_names)}.'
     logger.info(msg)
 
     @contextlib.asynccontextmanager
