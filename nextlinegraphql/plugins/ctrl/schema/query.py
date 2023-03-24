@@ -18,7 +18,7 @@ def query_hello(info: Info) -> str:
 
 def query_state(info: Info) -> str:
     nextline: Nextline = info.context["nextline"]
-    return nextline.state
+    return nextline.state or ''
 
 
 def query_run_no(info: Info) -> int:
