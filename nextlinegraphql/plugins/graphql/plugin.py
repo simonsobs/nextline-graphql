@@ -1,26 +1,48 @@
-from typing import Any, Optional
+from typing import Any, MutableMapping, Optional
 
 import strawberry
 from apluggy import PluginManager, asynccontextmanager
+from dynaconf import Dynaconf
 from starlette.applications import Starlette
 from starlette.types import ASGIApp
 from strawberry.schema import BaseSchema
 from strawberry.tools import merge_types
+from strawberry.types import Info
 
 from nextlinegraphql.custom.strawberry import GraphQL
 from nextlinegraphql.hook import spec
 
 
+def query_hello(info: Info) -> str:
+    settings: Dynaconf = info.context['settings']
+    ret = str(settings.to_dict())
+    return ret
+
+
+@strawberry.type
+class Query:
+    settings: str = strawberry.field(resolver=query_hello)
+
+
 class Plugin:
     @spec.hookimpl
-    def configure(self, hook: PluginManager) -> None:
+    def configure(self, settings: Dynaconf, hook: PluginManager) -> None:
+        self._settings = settings
         self._app = create_app(hook=hook)
+
+    @spec.hookimpl
+    def schema(self):
+        return (Query, None, None)
 
     @spec.hookimpl(tryfirst=True)  # tryfirst so to be the outermost context
     @asynccontextmanager
     async def lifespan(self, app: Starlette):
         app.mount('/', self._app)
         yield
+
+    @spec.hookimpl
+    def update_strawberry_context(self, context: MutableMapping[str, Any]) -> None:
+        context['settings'] = self._settings
 
 
 def create_app(hook: PluginManager) -> ASGIApp:
