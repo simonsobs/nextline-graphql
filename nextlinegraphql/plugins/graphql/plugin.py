@@ -1,4 +1,3 @@
-import json
 from typing import Any, MutableMapping, Optional
 
 import strawberry
@@ -8,20 +7,10 @@ from starlette.applications import Starlette
 from starlette.types import ASGIApp
 from strawberry.schema import BaseSchema
 from strawberry.tools import merge_types
-from strawberry.types import Info
 
 from nextlinegraphql.custom.strawberry import GraphQL
 from nextlinegraphql.hook import spec
-
-
-def query_hello(info: Info) -> str:
-    settings: Dynaconf = info.context['settings']
-    return json.dumps(settings.to_dict())
-
-
-@strawberry.type
-class Query:
-    settings: str = strawberry.field(resolver=query_hello)
+from .schema import Query
 
 
 class Plugin:
