@@ -70,7 +70,7 @@ async def gql_subscribe(
 ) -> AsyncGenerator[Any, None]:
 
     payload = SubscribePayload(
-        variables=variables if variables else {},
+        variables=variables or {},
         extensions={},
         operationName=None,
         query=query,
