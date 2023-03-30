@@ -25,7 +25,7 @@ dependencies = [
     "nextline-rdb>=0.1.6",
     "apluggy>=0.9.0",
     "dynaconf>=3.1",
-    "starlette>=0.20.4",
+    "starlette>=0.26",
     "strawberry-graphql>=0.168",
     "websockets>=10.2",
 ]
