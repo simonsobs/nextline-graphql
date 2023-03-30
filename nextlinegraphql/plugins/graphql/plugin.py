@@ -1,3 +1,4 @@
+import json
 from typing import Any, MutableMapping, Optional
 
 import strawberry
@@ -15,8 +16,7 @@ from nextlinegraphql.hook import spec
 
 def query_hello(info: Info) -> str:
     settings: Dynaconf = info.context['settings']
-    ret = str(settings.to_dict())
-    return ret
+    return json.dumps(settings.to_dict())
 
 
 @strawberry.type
