@@ -17,7 +17,7 @@ class Plugin:
     @spec.hookimpl
     def configure(self, settings: Dynaconf, hook: PluginManager) -> None:
         self._settings = settings
-        self._app = create_app(hook=hook)
+        self._app = _create_app(hook=hook)
 
     @spec.hookimpl
     def schema(self):
@@ -34,16 +34,13 @@ class Plugin:
         context['settings'] = self._settings
 
 
-def create_app(hook: PluginManager) -> ASGIApp:
-
-    schema = compose_schema(hook=hook)
-
-    app = EGraphQL(schema=schema, hook=hook)
-
+def _create_app(hook: PluginManager) -> ASGIApp:
+    schema = _compose_schema(hook=hook)
+    app = _EGraphQL(schema=schema, hook=hook)
     return app
 
 
-def compose_schema(hook: PluginManager) -> BaseSchema:
+def _compose_schema(hook: PluginManager) -> BaseSchema:
 
     # [(Query, Mutation, Subscription), ...]
     three_types = hook.hook.schema()
@@ -67,7 +64,7 @@ def compose_schema(hook: PluginManager) -> BaseSchema:
     return schema
 
 
-class EGraphQL(GraphQL):
+class _EGraphQL(GraphQL):
     """Extend the strawberry GraphQL app
 
     https://strawberry.rocks/docs/integrations/asgi
