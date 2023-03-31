@@ -52,6 +52,7 @@ def _load_settings(
         preload=preload,
         settings_files=settings_files,
         validators=validators,
+        merge_enabled=True,
     )
 
     return settings
