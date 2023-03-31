@@ -1,22 +1,12 @@
 import asyncio
 import sys
-import threading
-from typing import AsyncIterator, Iterator
+from typing import AsyncIterator
 
 import pytest
 from async_asgi_testclient import TestClient
 from starlette.applications import Starlette
 
 from nextlinegraphql import create_app
-
-
-@pytest.fixture(autouse=True)
-def recover_trace() -> Iterator[None]:
-    """Set the original trace function back after each test"""
-    trace_org = sys.gettrace()
-    yield
-    sys.settrace(trace_org)
-    threading.settrace(trace_org)  # type: ignore
 
 
 @pytest.fixture
