@@ -30,9 +30,10 @@ def create_app() -> Starlette:
     configure_logging(config.logging)
 
     logger = getLogger(__name__)
-    plugin_names = (f"{n!r}" for n, p in hook.list_name_plugin() if p)
-    msg = f'Loaded plugins ({hook.project_name!r}): {",".join(plugin_names)}.'
-    logger.info(msg)
+
+    plugin_names = [n for n, p in hook.list_name_plugin() if p]
+    logger.info(f'Pluggy project name: {hook.project_name!r}')
+    logger.info(f'Loaded plugins: {plugin_names}')
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
