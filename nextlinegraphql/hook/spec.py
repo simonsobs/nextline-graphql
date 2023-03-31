@@ -6,7 +6,7 @@ from apluggy import asynccontextmanager
 from dynaconf import Dynaconf, Validator
 from starlette.applications import Starlette
 
-PROJECT_NAME = 'nextline'
+PROJECT_NAME = 'nextline_graphql'
 
 hookspec = pluggy.HookspecMarker(PROJECT_NAME)
 hookimpl = pluggy.HookimplMarker(PROJECT_NAME)
