@@ -3,6 +3,7 @@ import logging.config
 from logging import getLogger
 from typing import Dict
 
+from rich import print
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
@@ -23,6 +24,8 @@ def create_app() -> Starlette:
 
     hook = load_plugins()
     config = load_settings(hook)
+    print('Settings:', config.as_dict())
+
     hook.hook.configure(settings=config, hook=hook)
     configure_logging(config.logging)
 
