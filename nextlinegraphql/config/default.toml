@@ -9,12 +9,15 @@ version = 1
 
 [logging.formatters.default]
 # datefmt = "%Y-%m-%d %H:%M:%S"
+datefmt = "[%X]"
 # format = "{asctime} {levelname:>8s} {pathname}:{lineno}: {message}"
-format = "{levelname:8s} [{name}] {message}"
+# format = "{levelname:8s} [{name}] {message}"
+format = "[{name}] {message}"
 style = "{"
 
 [logging.handlers.default]
-class = "logging.StreamHandler"
+# class = "logging.StreamHandler"
+class = "rich.logging.RichHandler"
 formatter = "default"
 
 [logging.loggers.nextlinegraphql]
@@ -26,6 +29,10 @@ handlers = ["default"]
 level = "DEBUG"
 
 [logging.loggers.alembic]
+handlers = ["default"]
+level = "INFO"
+
+[logging.loggers.uvicorn]
 handlers = ["default"]
 level = "INFO"
 
