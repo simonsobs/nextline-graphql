@@ -10,6 +10,7 @@ from strawberry.tools import merge_types
 
 from nextlinegraphql.custom.strawberry import GraphQL
 from nextlinegraphql.hook import spec
+
 from .schema import Query
 
 
