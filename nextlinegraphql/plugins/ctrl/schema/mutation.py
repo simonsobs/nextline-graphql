@@ -15,6 +15,12 @@ async def mutate_exec(info: Info) -> bool:
     return True
 
 
+async def mutate_run_and_continue(info: Info) -> bool:
+    nextline: Nextline = info.context["nextline"]
+    await nextline.run_and_continue()
+    return True
+
+
 async def mutate_reset(info: Info, statement: Optional[str] = None):
     nextline: Nextline = info.context["nextline"]
     await nextline.reset(statement=statement)
@@ -50,6 +56,7 @@ async def mutate_kill(info: Info) -> bool:
 @strawberry.type
 class Mutation:
     exec: bool = strawberry.field(resolver=mutate_exec)
+    run_and_continue: bool = strawberry.field(resolver=mutate_run_and_continue)
     reset: bool = strawberry.field(resolver=mutate_reset)
     send_pdb_command: bool = strawberry.field(resolver=mutate_send_pdb_command)
     interrupt: bool = strawberry.field(resolver=mutate_interrupt)

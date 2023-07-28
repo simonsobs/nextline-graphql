@@ -65,6 +65,11 @@ async def subscribe_stdout(info: Info) -> AsyncIterator[str]:
         yield i.text
 
 
+def subscribe_continuous_enabled(info: Info) -> AsyncIterator[bool]:
+    nextline: Nextline = info.context["nextline"]
+    return nextline.subscribe_continuous_enabled()
+
+
 @strawberry.type
 class Subscription:
     counter: AsyncIterator[int] = strawberry.field(
@@ -84,4 +89,7 @@ class Subscription:
     )
     stdout: AsyncIterator[str] = strawberry.field(
         is_subscription=True, resolver=subscribe_stdout
+    )
+    continuous_enabled: AsyncIterator[bool] = strawberry.field(
+        is_subscription=True, resolver=subscribe_continuous_enabled
     )
