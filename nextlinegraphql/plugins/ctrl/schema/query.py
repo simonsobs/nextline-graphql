@@ -43,6 +43,11 @@ def query_exception(info: Info) -> Optional[str]:
     return None
 
 
+def query_continuous_enabled(info: Info) -> bool:
+    nextline: Nextline = info.context["nextline"]
+    return nextline.continuous_enabled
+
+
 @strawberry.type
 class Query:
     hello: str = strawberry.field(resolver=query_hello)
@@ -51,3 +56,4 @@ class Query:
     source: List[str] = strawberry.field(resolver=query_source)
     source_line: str = strawberry.field(resolver=query_source_line)
     exception: Optional[str] = strawberry.field(resolver=query_exception)
+    continuous_enabled: bool = strawberry.field(resolver=query_continuous_enabled)
