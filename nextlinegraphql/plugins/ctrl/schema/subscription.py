@@ -78,7 +78,7 @@ class Subscription:
     state: AsyncIterator[str] = strawberry.field(
         is_subscription=True, resolver=subscribe_state
     )
-    run_no: AsyncIterator[str] = strawberry.field(
+    run_no: AsyncIterator[int] = strawberry.field(
         is_subscription=True, resolver=subscribe_run_no
     )
     trace_ids: AsyncIterator[List[int]] = strawberry.field(
