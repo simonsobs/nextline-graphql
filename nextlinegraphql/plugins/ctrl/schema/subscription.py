@@ -34,7 +34,7 @@ def subscribe_run_no(info: Info) -> AsyncIterator[int]:
     return nextline.subscribe_run_no()
 
 
-def subscribe_trace_ids(info: Info) -> AsyncIterator[Tuple[int]]:
+def subscribe_trace_ids(info: Info) -> AsyncIterator[Tuple[int, ...]]:
     nextline: Nextline = info.context["nextline"]
     return nextline.subscribe_trace_ids()
 
