@@ -1,5 +1,4 @@
 import asyncio
-import sys
 from typing import AsyncIterator
 
 import pytest
@@ -19,9 +18,3 @@ async def client(app: Starlette) -> AsyncIterator[TestClient]:
 @pytest.fixture
 def app() -> Starlette:
     return create_app()
-
-
-if not sys.version_info >= (3, 9):
-    from nextline.test import suppress_atexit_oserror
-
-    _ = pytest.fixture(scope='session', autouse=True)(suppress_atexit_oserror)
