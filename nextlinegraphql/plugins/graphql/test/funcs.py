@@ -1,4 +1,4 @@
-from typing import Any, AsyncGenerator, Dict, Optional, TypedDict
+from typing import Any, AsyncGenerator, Optional, TypedDict
 
 from async_asgi_testclient import TestClient
 from async_asgi_testclient.response import Response
@@ -10,13 +10,13 @@ class PostRequest(TypedDict, total=False):
     """
 
     query: str
-    variables: Dict[str, Any]
+    variables: dict[str, Any]
     operationName: str
 
 
 class SubscribePayload(TypedDict):
-    variables: Dict[str, Any]
-    extensions: Dict[str, Any]
+    variables: dict[str, Any]
+    extensions: dict[str, Any]
     operationName: Any
     query: str
 
@@ -38,9 +38,8 @@ class SubscribeMessage(TypedDict):
 async def gql_request(
     client: TestClient,
     query: str,
-    variables: Optional[Dict[str, Any]] = None,
+    variables: Optional[dict[str, Any]] = None,
 ) -> Any:
-
     resp = await gql_request_response(client, query, variables)
     result = resp.json()
     if err := result.get("errors"):
@@ -51,9 +50,8 @@ async def gql_request(
 async def gql_request_response(
     client: TestClient,
     query: str,
-    variables: Optional[Dict[str, Any]] = None,
+    variables: Optional[dict[str, Any]] = None,
 ) -> Response:
-
     request = PostRequest(query=query)
     if variables:
         request["variables"] = variables
@@ -66,9 +64,8 @@ async def gql_request_response(
 async def gql_subscribe(
     client: TestClient,
     query: str,
-    variables: Optional[Dict[str, Any]] = None,
+    variables: Optional[dict[str, Any]] = None,
 ) -> AsyncGenerator[Any, None]:
-
     payload = SubscribePayload(
         variables=variables or {},
         extensions={},

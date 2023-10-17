@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import traceback
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING, Optional
 
 import strawberry
 from strawberry.types import Info
@@ -26,12 +26,12 @@ def query_run_no(info: Info) -> int:
     return nextline.run_no
 
 
-def query_trace_ids(info: Info) -> Tuple[int, ...]:
+def query_trace_ids(info: Info) -> tuple[int, ...]:
     nextline: Nextline = info.context["nextline"]
     return nextline.trace_ids
 
 
-def query_source(info: Info, file_name: Optional[str] = None) -> List[str]:
+def query_source(info: Info, file_name: Optional[str] = None) -> list[str]:
     nextline: Nextline = info.context["nextline"]
     return nextline.get_source(file_name)
 
@@ -58,8 +58,8 @@ class Query:
     hello: str = strawberry.field(resolver=query_hello)
     state: str = strawberry.field(resolver=query_state)
     run_no: int = strawberry.field(resolver=query_run_no)
-    trace_ids: Tuple[int, ...] = strawberry.field(resolver=query_trace_ids)
-    source: List[str] = strawberry.field(resolver=query_source)
+    trace_ids: tuple[int, ...] = strawberry.field(resolver=query_trace_ids)
+    source: list[str] = strawberry.field(resolver=query_source)
     source_line: str = strawberry.field(resolver=query_source_line)
     exception: Optional[str] = strawberry.field(resolver=query_exception)
     continuous_enabled: bool = strawberry.field(resolver=query_continuous_enabled)

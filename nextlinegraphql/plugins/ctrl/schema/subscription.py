@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, AsyncIterator, List, Tuple
+from typing import TYPE_CHECKING, AsyncIterator
 
 import strawberry
 from strawberry.types import Info
@@ -34,7 +34,7 @@ def subscribe_run_no(info: Info) -> AsyncIterator[int]:
     return nextline.subscribe_run_no()
 
 
-def subscribe_trace_ids(info: Info) -> AsyncIterator[Tuple[int, ...]]:
+def subscribe_trace_ids(info: Info) -> AsyncIterator[tuple[int, ...]]:
     nextline: Nextline = info.context["nextline"]
     return nextline.subscribe_trace_ids()
 
@@ -81,7 +81,7 @@ class Subscription:
     run_no: AsyncIterator[int] = strawberry.field(
         is_subscription=True, resolver=subscribe_run_no
     )
-    trace_ids: AsyncIterator[Tuple[int, ...]] = strawberry.field(
+    trace_ids: AsyncIterator[tuple[int, ...]] = strawberry.field(
         is_subscription=True, resolver=subscribe_trace_ids
     )
     prompting: AsyncIterator[PromptingData] = strawberry.field(

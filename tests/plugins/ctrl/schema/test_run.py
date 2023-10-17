@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, List, Set
+from typing import Any
 
 from async_asgi_testclient import TestClient
 from nextline.utils import agen_with_wait
@@ -17,7 +17,6 @@ from nextlinegraphql.plugins.graphql.test import gql_request, gql_subscribe
 
 
 async def test_run(client: TestClient):
-
     task_subscribe_state = asyncio.create_task(subscribe_state(client))
 
     data = await gql_request(client, QUERY_STATE)
@@ -42,7 +41,7 @@ async def test_run(client: TestClient):
     assert "finished" == data["state"]
 
 
-async def subscribe_state(client: TestClient) -> List[str]:
+async def subscribe_state(client: TestClient) -> list[str]:
     ret = []
     async for data in gql_subscribe(client, SUBSCRIBE_STATE):
         s = data["state"]
@@ -53,11 +52,10 @@ async def subscribe_state(client: TestClient) -> List[str]:
 
 
 async def control_execution(client: TestClient):
-
     agen = agen_with_wait(gql_subscribe(client, SUBSCRIBE_TRACE_IDS))
     data: Any
 
-    prev_ids: Set[int] = set()
+    prev_ids = set[int]()
     async for data in agen:
         if not (ids := set(data["traceIds"])):
             break

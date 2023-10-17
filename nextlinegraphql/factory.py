@@ -1,7 +1,7 @@
 import contextlib
 import logging.config
 from logging import getLogger
-from typing import Dict
+from typing import Any
 
 from rich import print
 from starlette.applications import Starlette
@@ -37,7 +37,7 @@ def create_app() -> Starlette:
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
-        context: Dict = {}
+        context = dict[Any, Any]()
         await hook.ahook.update_lifespan_context(app=app, hook=hook, context=context)
         async with hook.awith.lifespan(app=app, hook=hook, context=context):
             yield
@@ -56,7 +56,7 @@ def create_app() -> Starlette:
     return app
 
 
-def configure_logging(config: Dict):
+def configure_logging(config: dict):
     logging.config.dictConfig(config)
 
     # https://pypi.org/project/logging_tree/

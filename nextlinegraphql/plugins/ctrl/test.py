@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, List, Optional, Set
+from typing import Any, Optional
 
 from async_asgi_testclient import TestClient
 from nextline.utils import agen_with_wait
@@ -47,7 +47,7 @@ async def run_statement(client, statement: Optional[str] = None):
     await asyncio.sleep(0.01)
 
 
-async def subscribe_state(client: TestClient) -> List[str]:
+async def subscribe_state(client: TestClient) -> list[str]:
     ret = []
     async for data in gql_subscribe(client, SUBSCRIBE_STATE):
         s = data["state"]
@@ -58,11 +58,10 @@ async def subscribe_state(client: TestClient) -> List[str]:
 
 
 async def control_execution(client: TestClient):
-
     agen = agen_with_wait(gql_subscribe(client, SUBSCRIBE_TRACE_IDS))
     data: Any
 
-    prev_ids: Set[int] = set()
+    prev_ids = set[int]()
     async for data in agen:
         if not (ids := set(data["traceIds"])):
             break
