@@ -1,6 +1,6 @@
 '''Hook specification for Nextline GraphQL plugin.'''
 from collections.abc import MutableMapping, Sequence
-from typing import Optional, Union
+from typing import Optional
 
 import apluggy as pluggy
 from apluggy import asynccontextmanager
@@ -59,7 +59,7 @@ def initial_script() -> Optional[str]:
 
 
 @hookspec
-def schema() -> Optional[tuple[type, Union[type, None], Union[type, None]]]:
+def schema() -> Optional[tuple[type, type | None, type | None]]:
     '''The GraphQL schema (Query, Mutation, Subscription)'''
 
 
