@@ -19,7 +19,6 @@ params = [
 
 @pytest.mark.parametrize("statement", params)
 async def test_reset(snapshot, statement):
-
     headers = {"Content-Type:": "application/json"}
 
     data = {"query": MUTATE_RESET}

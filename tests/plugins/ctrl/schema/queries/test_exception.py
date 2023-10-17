@@ -10,7 +10,6 @@ raise Exception('foo', 'bar')
 
 
 async def test_one(client: TestClient):
-
     statement = SOURCE_RAISE
     await run_statement(client, statement)
 

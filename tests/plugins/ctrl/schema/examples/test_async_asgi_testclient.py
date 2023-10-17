@@ -5,7 +5,6 @@ from nextlinegraphql import create_app
 
 ##__________________________________________________________________||
 async def test_query():
-
     query = """
       { hello }
     """
@@ -25,7 +24,6 @@ async def test_query():
 
 ##__________________________________________________________________||
 async def test_subscription():
-
     query = """
       subscription {
         counter

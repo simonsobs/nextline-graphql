@@ -7,6 +7,5 @@ from nextlinegraphql.plugins.graphql.test import gql_request
 
 
 async def test_settings(client: TestClient):
-
     data = await gql_request(client, QUERY_SETTINGS)
     assert json.loads(data['settings'])

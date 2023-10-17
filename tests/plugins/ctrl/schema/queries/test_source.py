@@ -19,7 +19,6 @@ params = [
 
 @pytest.mark.parametrize("file_name", params)
 async def test_source(client: TestClient, snapshot, file_name):
-
     variables = {}
     if file_name:
         variables["fileName"] = file_name
