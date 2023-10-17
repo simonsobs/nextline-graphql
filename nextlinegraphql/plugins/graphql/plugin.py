@@ -1,4 +1,5 @@
-from typing import Any, MutableMapping, Optional
+from collections.abc import MutableMapping
+from typing import Any, Optional
 
 import strawberry
 from apluggy import PluginManager, asynccontextmanager
@@ -42,7 +43,6 @@ def _create_app(hook: PluginManager) -> ASGIApp:
 
 
 def _compose_schema(hook: PluginManager) -> BaseSchema:
-
     # [(Query, Mutation, Subscription), ...]
     three_types = hook.hook.schema()
 

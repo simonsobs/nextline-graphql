@@ -3,9 +3,10 @@
 Dynaconf: https://www.dynaconf.com/ 
 '''
 __all__ = ['load_settings']
+from collections.abc import Sequence
 from itertools import chain
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import Optional
 
 from apluggy import PluginManager
 from dynaconf import Dynaconf, Validator
@@ -36,7 +37,6 @@ def _load_settings(
     settings_files: Optional[Sequence[str]] = None,
     validators: Optional[Sequence[Validator]] = None,
 ) -> Dynaconf:
-
     cwd = Path.cwd()
     minimal_settings_files = (str(cwd / 'nextline-graphql.toml'),)
 

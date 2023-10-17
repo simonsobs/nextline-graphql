@@ -1,4 +1,5 @@
-from typing import Any, AsyncGenerator, Optional, TypedDict
+from collections.abc import AsyncGenerator
+from typing import Any, Optional, TypedDict
 
 from async_asgi_testclient import TestClient
 from async_asgi_testclient.response import Response

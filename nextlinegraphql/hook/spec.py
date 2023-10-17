@@ -1,5 +1,6 @@
 '''Hook specification for Nextline GraphQL plugin.'''
-from typing import MutableMapping, Optional, Sequence, Union
+from collections.abc import MutableMapping, Sequence
+from typing import Optional, Union
 
 import apluggy as pluggy
 from apluggy import asynccontextmanager

@@ -1,6 +1,6 @@
 __all__ = ['Plugin']
 
-from typing import AsyncIterator, MutableMapping
+from collections.abc import AsyncIterator, MutableMapping
 
 import apluggy as pluggy
 from apluggy import asynccontextmanager
