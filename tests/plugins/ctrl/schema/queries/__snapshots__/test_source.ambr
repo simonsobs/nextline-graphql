@@ -1,0 +1,87 @@
+# serializer version: 1
+# name: test_source[default]
+  dict({
+    'source': list([
+      'import time',
+      '',
+      'time.sleep(0.3)',
+      '',
+      'def f():',
+      '    for _ in range(10):',
+      '        pass',
+      '    return',
+      '',
+      'f()',
+      'f()',
+      '',
+      "print('here!')",
+      '',
+      'import script_threading',
+      '',
+      'script_threading.run()',
+      '',
+      '',
+      'import script_asyncio',
+      '',
+      'script_asyncio.run()',
+      '',
+    ]),
+  })
+# ---
+# name: test_source[path]
+  dict({
+    'source': list([
+      'from threading import Thread',
+      '',
+      '',
+      'def run():',
+      '    t1 = Thread(target=f1)',
+      '    t1.start()',
+      '    t2 = Thread(target=f2)',
+      '    t2.start()',
+      '    t2.join()',
+      '    t1.join()',
+      '    return',
+      '',
+      'def f1():',
+      '    for _ in range(5):',
+      '        pass',
+      '    return',
+      '',
+      'def f2():',
+      '    for _ in range(5):',
+      '        pass',
+      '    return',
+      '',
+    ]),
+  })
+# ---
+# name: test_source[string]
+  dict({
+    'source': list([
+      'import time',
+      '',
+      'time.sleep(0.3)',
+      '',
+      'def f():',
+      '    for _ in range(10):',
+      '        pass',
+      '    return',
+      '',
+      'f()',
+      'f()',
+      '',
+      "print('here!')",
+      '',
+      'import script_threading',
+      '',
+      'script_threading.run()',
+      '',
+      '',
+      'import script_asyncio',
+      '',
+      'script_asyncio.run()',
+      '',
+    ]),
+  })
+# ---
