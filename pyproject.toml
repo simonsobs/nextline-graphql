@@ -7,6 +7,7 @@ name = "nextline-graphql"
 dynamic = ["version"]
 description = "A GraphQL API for Nextline"
 readme = "README.md"
+requires-python = ">=3.10"
 license = "MIT"
 authors = [
     { name = "Simons Observatory", email = "so_software@simonsobservatory.org" },
@@ -15,10 +16,9 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
     "nextline>=0.5.6",
@@ -66,7 +66,7 @@ norecursedirs = "nextlinegraphql/plugins/db/alembic build"
 
 [tool.black]
 skip-string-normalization = true
-target_version = ['py38', 'py39', 'py310', 'py311']
+target_version = ['py310', 'py311', 'py312']
 exclude = '''(?x)(
    plugins/db/alembic/versions/.*\.py$
     | example_script/.*\.py$
