@@ -58,7 +58,7 @@ class Query:
     hello: str = strawberry.field(resolver=query_hello)
     state: str = strawberry.field(resolver=query_state)
     run_no: int = strawberry.field(resolver=query_run_no)
-    trace_ids: List[int] = strawberry.field(resolver=query_trace_ids)
+    trace_ids: Tuple[int, ...] = strawberry.field(resolver=query_trace_ids)
     source: List[str] = strawberry.field(resolver=query_source)
     source_line: str = strawberry.field(resolver=query_source_line)
     exception: Optional[str] = strawberry.field(resolver=query_exception)

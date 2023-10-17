@@ -21,7 +21,7 @@ async def mutate_run_and_continue(info: Info) -> bool:
     return True
 
 
-async def mutate_reset(info: Info, statement: Optional[str] = None):
+async def mutate_reset(info: Info, statement: Optional[str] = None) -> bool:
     nextline: Nextline = info.context["nextline"]
     await nextline.reset(statement=statement)
     return True
