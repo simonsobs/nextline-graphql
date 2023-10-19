@@ -18,6 +18,7 @@ logger.configure(
         {
             "sink": RichHandler(markup=True, log_time_format='[%X]', show_path=False),
             "format": "[dim]\\[{name}:{line}][/dim] {message}",
+            "level": "TRACE",
         }
     ]
 )
