@@ -37,6 +37,10 @@ level = "INFO"
 handlers = ["default"]
 level = "INFO"
 
+[logging.loggers.transitions]
+handlers = ["default"]
+level = "INFO"
+
 # [logging.loggers.sqlalchemy]
 # handlers = ["default"]
 # level = "DEBUG"
