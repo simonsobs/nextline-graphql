@@ -3,13 +3,24 @@ import logging.config
 from logging import getLogger
 from typing import Any
 
+from loguru import logger
 from rich import print
+from rich.logging import RichHandler
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
 from .config import load_settings
 from .hook import load_plugins
+
+logger.configure(
+    handlers=[
+        {
+            "sink": RichHandler(markup=True, log_time_format='[%X]', show_path=False),
+            "format": "[dim]\\[{name}:{line}][/dim] {message}",
+        }
+    ]
+)
 
 
 def create_app() -> Starlette:

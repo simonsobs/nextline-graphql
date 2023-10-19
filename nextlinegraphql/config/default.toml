@@ -17,7 +17,8 @@ style = "{"
 
 [logging.handlers.default]
 # class = "logging.StreamHandler"
-class = "rich.logging.RichHandler"
+# class = "rich.logging.RichHandler"
+class = "nextlinegraphql.logging.InterceptHandler"
 formatter = "default"
 
 [logging.loggers.nextlinegraphql]
