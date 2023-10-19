@@ -29,6 +29,7 @@ dependencies = [
     "strawberry-graphql>=0.168",
     "websockets>=10.2",
     "rich>=13.3",
+    "loguru>=0.7",
 ]
 
 [project.optional-dependencies]
