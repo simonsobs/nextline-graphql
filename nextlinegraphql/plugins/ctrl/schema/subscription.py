@@ -59,6 +59,8 @@ async def subscribe_prompting(
 
 async def subscribe_stdout(info: Info) -> AsyncIterator[str]:
     nextline: Nextline = info.context["nextline"]
+    stdout_cache: list[str] = info.context["stdout_cache"]
+    yield ''.join(stdout_cache)
     async for i in nextline.subscribe_stdout():
         assert i.text is not None
         yield i.text
