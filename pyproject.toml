@@ -23,23 +23,23 @@ classifiers = [
 dependencies = [
     "nextline>=0.6.0",
     "nextline-rdb>=0.2.2",
-    "apluggy>=0.9.0",
-    "dynaconf>=3.1",
-    "starlette>=0.26",
-    "strawberry-graphql>=0.168",
+    "apluggy>=0.9.5",
+    "dynaconf>=3.2",
+    "starlette>=0.31",
+    "strawberry-graphql>=0.213",
     "websockets>=10.2",
-    "rich>=13.3",
+    "rich>=12.0",
 ]
 
 [project.optional-dependencies]
 dev = ["black", "flake8", "logging_tree", "mypy", "tox", "twine", "uvicorn"]
 tests = [
     "async-asgi-testclient>=1.4",
-    "pytest-asyncio>=0.18",
-    "pytest-cov>=3.0",
-    "pytest-timeout>=2.1",
-    "pytest>=7.0",
-    "syrupy>=4.5",
+    "pytest-asyncio>=0.21",
+    "pytest-cov>=4.1",
+    "pytest-timeout>=2.2",
+    "pytest>=7.4",
+    "syrupy>=4.6",
 ]
 
 [project.urls]
