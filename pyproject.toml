@@ -27,8 +27,8 @@ dependencies = [
     "dynaconf>=3.2",
     "starlette>=0.31",
     "strawberry-graphql>=0.213",
-    "websockets>=10.2",
-    "rich>=12.0",
+    "websockets>=12.0",
+    "rich>=13.6",
 ]
 
 [project.optional-dependencies]
