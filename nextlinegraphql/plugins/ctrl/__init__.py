@@ -30,10 +30,6 @@ class Plugin:
     @asynccontextmanager
     async def lifespan(self, hook: pluggy.PluginManager) -> AsyncIterator[None]:
         '''Yield within the nextline context.'''
-        run_no: int = max(hook.hook.initial_run_no(), default=1)
-        script: str = [*hook.hook.initial_script(), statement][0]
-        self._nextline._init_options.run_no_start_from = run_no
-        self._nextline._init_options.statement = script
         async with (self._nextline, self._cache_stdout()):
             yield
 
