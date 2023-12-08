@@ -21,18 +21,14 @@ class Plugin:
         return (Query, Mutation, Subscription)
 
     @spec.hookimpl
-    async def update_lifespan_context(
-        self, hook: pluggy.PluginManager, context: MutableMapping
-    ) -> None:
-        run_no: int = max(hook.hook.initial_run_no(), default=1)
-        script: str = [*hook.hook.initial_script(), statement][0]
-        self._nextline = Nextline(script, run_no)
+    async def update_lifespan_context(self, context: MutableMapping) -> None:
+        self._nextline = Nextline(statement)
         self._stdout_cache = list[str]()
         context['nextline'] = self._nextline
 
     @spec.hookimpl(trylast=True)  # trylast so to be the innermost context
     @asynccontextmanager
-    async def lifespan(self) -> AsyncIterator[None]:
+    async def lifespan(self, hook: pluggy.PluginManager) -> AsyncIterator[None]:
         '''Yield within the nextline context.'''
         async with (self._nextline, self._cache_stdout()):
             yield

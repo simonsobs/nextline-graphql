@@ -49,16 +49,6 @@ def configure(settings: Dynaconf, hook: pluggy.PluginManager) -> None:
 
 
 @hookspec
-def initial_run_no() -> Optional[int]:
-    '''Run No. of the first run.'''
-
-
-@hookspec
-def initial_script() -> Optional[str]:
-    '''The script of the first run.'''
-
-
-@hookspec
 def schema() -> Optional[tuple[type, type | None, type | None]]:
     '''The GraphQL schema (Query, Mutation, Subscription)'''
 
