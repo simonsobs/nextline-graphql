@@ -22,7 +22,7 @@ classifiers = [
 ]
 dependencies = [
     "nextline>=0.6.2",
-    "nextline-rdb>=0.2.4",
+    "nextline-rdb>=0.3.0",
     "apluggy>=0.9.8",
     "dynaconf>=3.2",
     "starlette>=0.31",
