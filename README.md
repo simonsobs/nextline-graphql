@@ -53,14 +53,14 @@ The container has one environment variable, which is to change the [DB URL](http
 
 | Environment variable | Default value                                | Description                                                                                   |
 | -------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `NEXTLINE_DB__URL`   | `sqlite:///:memory:?check_same_thread=false` | The [DB URL](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls) of SQLAlchemy |
+| `NEXTLINE_DB__URL`   | `sqlite+aiosqlite://` | The [DB URL](https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls) of SQLAlchemy |
 
 For example, the following command uses a file on the host machine
 `db/db.sqlite3` as the persistent DB. The directory `db/` and the file
 `db.sqlite3` will be created if they don't exist.
 
 ```bash
-docker run -p 8080:8000 --env NEXTLINE_DB__URL='sqlite:////db/db.sqlite3' -v "$(pwd)/db:/db" ghcr.io/simonsobs/nextline-graphql
+docker run -p 8080:8000 --env NEXTLINE_DB__URL='sqlite+aiosqlite:////db/db.sqlite3' -v "$(pwd)/db:/db" ghcr.io/simonsobs/nextline-graphql
 ```
 
 ### from PyPI
