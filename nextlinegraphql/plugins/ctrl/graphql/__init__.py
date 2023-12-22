@@ -6,6 +6,7 @@ sub = pwd / 'mutations'
 MUTATE_EXEC = (sub / 'Exec.gql').read_text()
 MUTATE_RESET = (sub / 'Reset.gql').read_text()
 MUTATE_SEND_PDB_COMMAND = (sub / 'SendPdbCommand.gql').read_text()
+MUTATE_RUN_AND_CONTINUE = (sub / 'RunAndContinue.gql').read_text()
 
 sub = pwd / 'queries'
 QUERY_STATE = (sub / 'State.gql').read_text()
