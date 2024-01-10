@@ -66,10 +66,11 @@ def _compose_schema(hook: PluginManager) -> BaseSchema:
 
 
 class _EGraphQL(GraphQL):
-    """Extend the strawberry GraphQL app
+    '''Extend the strawberry GraphQL app to override the `get_context` method
 
+    This class is implemented in the way described in the strawberry document:
     https://strawberry.rocks/docs/integrations/asgi
-    """
+    '''
 
     def set_hook(self, hook: PluginManager) -> '_EGraphQL':
         self._hook = hook
