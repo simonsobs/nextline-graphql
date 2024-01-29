@@ -2,7 +2,7 @@ __all__ = ['spec', 'load_plugins']
 
 from apluggy import PluginManager
 
-from nextlinegraphql.plugins import ctrl, graphql
+from nextlinegraphql.plugins import ctrl, dev, graphql
 
 from . import spec
 
@@ -17,6 +17,7 @@ def load_plugins() -> PluginManager:
     # https://pluggy.readthedocs.io/en/stable/#call-time-order
     pm.register(graphql.Plugin(), name='graphql')
     pm.register(ctrl.Plugin(), name='ctrl')
+    pm.register(dev.Plugin(), name='dev')
     # pm.set_blocked('schedule')
     pm.load_setuptools_entrypoints(spec.PROJECT_NAME)
 
