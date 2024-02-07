@@ -26,10 +26,11 @@ def create_app() -> Starlette:
     config = load_settings(hook)
     print('Settings:', config.as_dict())
 
-    hook.hook.configure(settings=config, hook=hook)
     configure_logging(config.logging)
-
     logger = getLogger(__name__)
+    logger.info('Logging configured')
+
+    hook.hook.configure(settings=config, hook=hook)
 
     plugin_names = [n for n, p in hook.list_name_plugin() if p]
     logger.info(f'Pluggy project name: {hook.project_name!r}')
