@@ -71,7 +71,7 @@ These plugins are included in this package.
 These plugins are not included in this package. They can be installed separately.
 
 - [**nextline-rdb:**](https://github.com/simonsobs/nextline-rdb) A relational database for nextline. It stores configuration, execution history, and other information. It is implemented with [SQLAlchemy 2](https://www.sqlalchemy.org/).
-- [**nextline-scheduler:**](https://github.com/simonsobs/nextline-schedule) An interface to the [_SO scheduler_](https://github.com/simonsobs/scheduler).
+- [**nextline-schedule:**](https://github.com/simonsobs/nextline-schedule) An interface to the [_SO scheduler_](https://github.com/simonsobs/scheduler).
 - [**nextline-alert:**](https://github.com/simonsobs/nextline-alert) An interface to the alert system [_campana_](https://github.com/simonsobs/campana).
 
 ### Web App
@@ -126,7 +126,7 @@ uvicorn --lifespan on --factory --port 8080 nextlinegraphql:create_app
 Check with a web browser at <http://localhost:8080/>.
 
 If you check out external plugins, nextline-graphql automatically detects them
-as plugins. An example can be found in
+as plugins. An example can be described in
 [nextline-rdb](https://github.com/simonsobs/nextline-rdb).
 
 ## Configuration
