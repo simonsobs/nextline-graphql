@@ -1,4 +1,3 @@
-import traceback
 from typing import TYPE_CHECKING, Optional
 
 import strawberry
@@ -41,9 +40,7 @@ def query_source_line(info: Info, line_no: int, file_name: Optional[str]) -> str
 
 def query_exception(info: Info) -> Optional[str]:
     nextline: Nextline = info.context["nextline"]
-    if exc := nextline.exception():
-        return "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
-    return None
+    return nextline.format_exception()
 
 
 def query_continuous_enabled(info: Info) -> bool:

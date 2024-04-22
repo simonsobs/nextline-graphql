@@ -21,7 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "nextline>=0.7.2",
+    "nextline>=0.7.3",
     "apluggy>=0.9.9",
     "dynaconf>=3.2",
     "starlette>=0.31",
