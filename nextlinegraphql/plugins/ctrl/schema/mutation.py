@@ -1,8 +1,15 @@
+from pathlib import Path
 from typing import Optional
 
 import strawberry
 from nextline import Nextline
 from strawberry.types import Info
+
+from nextlinegraphql.plugins.ctrl import example_script as example_script_module
+
+EXAMPLE_SCRIPT_PATH = Path(example_script_module.__file__).parent / 'script.py'
+assert EXAMPLE_SCRIPT_PATH.is_file()
+example_script = EXAMPLE_SCRIPT_PATH.read_text()
 
 
 async def mutate_exec(info: Info) -> bool:
@@ -56,6 +63,13 @@ async def mutate_kill(info: Info) -> bool:
     return True
 
 
+async def mutate_load_example_script(info: Info) -> bool:
+    nextline = info.context['nextline']
+    assert isinstance(nextline, Nextline)
+    await nextline.reset(statement=example_script)
+    return True
+
+
 @strawberry.type
 class Mutation:
     exec: bool = strawberry.field(resolver=mutate_exec)
@@ -65,3 +79,4 @@ class Mutation:
     interrupt: bool = strawberry.field(resolver=mutate_interrupt)
     terminate: bool = strawberry.field(resolver=mutate_terminate)
     kill: bool = strawberry.field(resolver=mutate_kill)
+    load_example_script: bool = strawberry.field(resolver=mutate_load_example_script)
