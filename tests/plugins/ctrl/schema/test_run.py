@@ -1,7 +1,6 @@
 import asyncio
 from typing import Any
 
-from async_asgi_testclient import TestClient
 from nextline.utils import agen_with_wait
 
 from nextlinegraphql.plugins.ctrl.graphql import (
@@ -13,7 +12,7 @@ from nextlinegraphql.plugins.ctrl.graphql import (
     SUBSCRIBE_STATE,
     SUBSCRIBE_TRACE_IDS,
 )
-from nextlinegraphql.plugins.graphql.test import gql_request, gql_subscribe
+from nextlinegraphql.plugins.graphql.test import TestClient, gql_request, gql_subscribe
 
 
 async def test_run(client: TestClient):

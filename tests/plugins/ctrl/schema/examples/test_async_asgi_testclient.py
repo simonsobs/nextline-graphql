@@ -1,6 +1,5 @@
-from async_asgi_testclient import TestClient
-
 from nextlinegraphql import create_app
+from nextlinegraphql.plugins.graphql.test import TestClient
 
 
 ##__________________________________________________________________||
