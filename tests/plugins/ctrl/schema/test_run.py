@@ -114,31 +114,32 @@ async def _control_trace(schema: Schema, context: Any, trace_no: int) -> None:
         assert (data := result.data)
         state = data['prompting']
         # e.g. {'fileName': '<string>', 'lineNo': 1, 'prompting': 1, 'traceEvent': 'line'}
-        if state['prompting']:
-            command = 'next'
-            if state['traceEvent'] == 'line':
-                query_result = await schema.execute(
-                    QUERY_SOURCE_LINE,
-                    context_value=context,
-                    variable_values={
-                        'lineNo': state['lineNo'],
-                        'fileName': state['fileName'],
-                    },
-                )
-                assert (data := query_result.data)
-                source_line = data['sourceLine']
-
-                if source_line in to_step:
-                    command = 'step'
-
+        if not state['prompting']:
+            continue
+        command = 'next'
+        if state['traceEvent'] == 'line':
             query_result = await schema.execute(
-                MUTATE_SEND_PDB_COMMAND,
+                QUERY_SOURCE_LINE,
                 context_value=context,
                 variable_values={
-                    'command': command,
-                    'promptNo': state['prompting'],
-                    'traceNo': trace_no,
+                    'lineNo': state['lineNo'],
+                    'fileName': state['fileName'],
                 },
             )
             assert (data := query_result.data)
-            assert data['sendPdbCommand']
+            source_line = data['sourceLine']
+
+            if source_line in to_step:
+                command = 'step'
+
+        query_result = await schema.execute(
+            MUTATE_SEND_PDB_COMMAND,
+            context_value=context,
+            variable_values={
+                'command': command,
+                'promptNo': state['prompting'],
+                'traceNo': trace_no,
+            },
+        )
+        assert (data := query_result.data)
+        assert data['sendPdbCommand']
