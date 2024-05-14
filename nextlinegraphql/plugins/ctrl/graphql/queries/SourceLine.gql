@@ -1,3 +1,5 @@
 query SourceLine($lineNo: Int!, $fileName: String) {
-  sourceLine(lineNo: $lineNo, fileName: $fileName)
+  ctrl {
+    sourceLine(lineNo: $lineNo, fileName: $fileName)
+  }
 }

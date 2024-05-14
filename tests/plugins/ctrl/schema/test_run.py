@@ -36,7 +36,7 @@ async def test_schema() -> None:
 
         result = await schema.execute(QUERY_STATE, context_value=context)
         assert (data := result.data)
-        assert 'initialized' == data['state']
+        assert 'initialized' == data['ctrl']['state']
 
         await asyncio.sleep(0.01)
 
@@ -48,7 +48,7 @@ async def test_schema() -> None:
 
         result = await schema.execute(MUTATE_EXEC, context_value=context)
         assert (data := result.data)
-        assert data['exec']
+        assert data['ctrl']['exec']
 
         states, *_ = await asyncio.gather(
             task_subscribe_state,
@@ -59,7 +59,7 @@ async def test_schema() -> None:
 
         result = await schema.execute(QUERY_STATE, context_value=context)
         assert (data := result.data)
-        assert 'finished' == data['state']
+        assert 'finished' == data['ctrl']['state']
 
 
 async def _subscribe_state(schema: Schema, context: Any) -> list[str]:
@@ -68,7 +68,7 @@ async def _subscribe_state(schema: Schema, context: Any) -> list[str]:
     assert hasattr(sub, '__aiter__')
     async for result in sub:
         assert (data := result.data)
-        state = data['state']
+        state = data['ctrlState']
         ret.append(state)
         if state == 'finished':
             break
@@ -85,7 +85,7 @@ async def _control_execution(schema: Schema, context: Any) -> None:
     async for result in agen:
         assert isinstance(result, GraphQLExecutionResult)
         assert (data := result.data)
-        trace_ids: list[int] = data['traceIds']
+        trace_ids: list[int] = data['ctrlTraceIds']
         if not (ids := set(trace_ids)):
             break
         new_ids, prev_ids = ids - prev_ids, ids
@@ -112,7 +112,7 @@ async def _control_trace(schema: Schema, context: Any, trace_no: int) -> None:
 
     async for result in sub:
         assert (data := result.data)
-        state = data['prompting']
+        state = data['ctrlPrompting']
         # e.g. {'fileName': '<string>', 'lineNo': 1, 'prompting': 1, 'traceEvent': 'line'}
         if not state['prompting']:
             continue
@@ -127,7 +127,7 @@ async def _control_trace(schema: Schema, context: Any, trace_no: int) -> None:
                 },
             )
             assert (data := query_result.data)
-            source_line = data['sourceLine']
+            source_line = data['ctrl']['sourceLine']
 
             if source_line in to_step:
                 command = 'step'
@@ -142,4 +142,4 @@ async def _control_trace(schema: Schema, context: Any, trace_no: int) -> None:
             },
         )
         assert (data := query_result.data)
-        assert data['sendPdbCommand']
+        assert data['ctrl']['sendPdbCommand']

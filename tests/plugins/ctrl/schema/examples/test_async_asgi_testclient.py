@@ -4,7 +4,9 @@ from nextlinegraphql.plugins.graphql.test import TestClient
 
 async def test_query():
     query = '''
-      { hello }
+      { ctrl
+        { hello }
+      }
     '''
     data = {'query': query}
 
@@ -16,14 +18,14 @@ async def test_query():
     async with TestClient(create_app()) as client:
         resp = await client.post('/', json=data, headers=headers)
         assert resp.status_code == 200
-        expect = {'data': {'hello': 'Hello, Mozilla/5.0!'}}
+        expect = {'data': {'ctrl': {'hello': 'Hello, Mozilla/5.0!'}}}
         assert expect == resp.json()
 
 
 async def test_subscription():
     query = '''
       subscription {
-        counter
+        ctrlCounter
       }
     '''
 
@@ -45,7 +47,7 @@ async def test_subscription():
             expect = {
                 'type': 'data',
                 'id': '1',
-                'payload': {'data': {'counter': 1}},
+                'payload': {'data': {'ctrlCounter': 1}},
             }
             actual = await ws.receive_json()
             assert expect == actual
@@ -53,7 +55,7 @@ async def test_subscription():
             expect = {
                 'type': 'data',
                 'id': '1',
-                'payload': {'data': {'counter': 2}},
+                'payload': {'data': {'ctrlCounter': 2}},
             }
             actual = await ws.receive_json()
             assert expect == actual
@@ -61,7 +63,7 @@ async def test_subscription():
             expect = {
                 'type': 'data',
                 'id': '1',
-                'payload': {'data': {'counter': 3}},
+                'payload': {'data': {'ctrlCounter': 3}},
             }
             actual = await ws.receive_json()
             assert expect == actual
@@ -69,7 +71,7 @@ async def test_subscription():
             expect = {
                 'type': 'data',
                 'id': '1',
-                'payload': {'data': {'counter': 4}},
+                'payload': {'data': {'ctrlCounter': 4}},
             }
             actual = await ws.receive_json()
             assert expect == actual
@@ -77,7 +79,7 @@ async def test_subscription():
             expect = {
                 'type': 'data',
                 'id': '1',
-                'payload': {'data': {'counter': 5}},
+                'payload': {'data': {'ctrlCounter': 5}},
             }
             actual = await ws.receive_json()
             assert expect == actual

@@ -1,3 +1,5 @@
 query Source($fileName: String) {
-  source(fileName: $fileName)
+  ctrl {
+    source(fileName: $fileName)
+  }
 }

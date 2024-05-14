@@ -24,5 +24,5 @@ async def test_query() -> None:
         result = await schema.execute(MUTATE_LOAD_EXAMPLE_SCRIPT, context_value=context)
         assert not result.errors
         assert result.data
-        assert result.data['loadExampleScript'] is True
+        assert result.data['ctrl']['loadExampleScript'] is True
         assert nextline.statement == example_script

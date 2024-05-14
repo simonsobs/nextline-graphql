@@ -34,10 +34,10 @@ async def test_schema(statement: str | None) -> None:
             MUTATE_RESET, context_value=context, variable_values=variables
         )
         assert (data := result.data)
-        assert data['reset'] is True
+        assert data['ctrl']['reset'] is True
 
         result = await schema.execute(QUERY_SOURCE, context_value=context)
         assert (data := result.data)
 
         expected = statement or example_script
-        assert expected.split('\n') == data['source']
+        assert expected.split('\n') == data['ctrl']['source']

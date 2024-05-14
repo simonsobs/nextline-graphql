@@ -21,4 +21,4 @@ async def test_schema() -> None:
         result = await schema.execute(QUERY_EXCEPTION, context_value=context)
         assert (data := result.data)
 
-        assert "Exception: ('foo', 'bar')" in data['exception']
+        assert "Exception: ('foo', 'bar')" in data['ctrl']['exception']

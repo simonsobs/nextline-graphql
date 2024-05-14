@@ -73,24 +73,24 @@ def subscribe_continuous_enabled(info: Info) -> AsyncIterator[bool]:
 
 @strawberry.type
 class Subscription:
-    counter: AsyncIterator[int] = strawberry.field(
+    ctrl_counter: AsyncIterator[int] = strawberry.field(
         is_subscription=True, resolver=subscribe_counter
     )
-    state: AsyncIterator[str] = strawberry.field(
+    ctrl_state: AsyncIterator[str] = strawberry.field(
         is_subscription=True, resolver=subscribe_state
     )
-    run_no: AsyncIterator[int] = strawberry.field(
+    ctrl_run_no: AsyncIterator[int] = strawberry.field(
         is_subscription=True, resolver=subscribe_run_no
     )
-    trace_ids: AsyncIterator[tuple[int, ...]] = strawberry.field(
+    ctrl_trace_ids: AsyncIterator[tuple[int, ...]] = strawberry.field(
         is_subscription=True, resolver=subscribe_trace_ids
     )
-    prompting: AsyncIterator[PromptingData] = strawberry.field(
+    ctrl_prompting: AsyncIterator[PromptingData] = strawberry.field(
         is_subscription=True, resolver=subscribe_prompting
     )
-    stdout: AsyncIterator[str] = strawberry.field(
+    ctrl_stdout: AsyncIterator[str] = strawberry.field(
         is_subscription=True, resolver=subscribe_stdout
     )
-    continuous_enabled: AsyncIterator[bool] = strawberry.field(
+    ctrl_continuous_enabled: AsyncIterator[bool] = strawberry.field(
         is_subscription=True, resolver=subscribe_continuous_enabled
     )
