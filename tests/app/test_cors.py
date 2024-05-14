@@ -1,4 +1,4 @@
-from async_asgi_testclient import TestClient
+from nextlinegraphql.plugins.graphql.test import TestClient
 
 
 async def test_get(client: TestClient):

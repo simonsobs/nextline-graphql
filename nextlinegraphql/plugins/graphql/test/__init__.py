@@ -1,3 +1,8 @@
-__all__ = ['gql_request', 'gql_request_response', 'gql_subscribe']
+__all__ = [
+    'TestClient',
+    'gql_request',
+    'gql_request_response',
+    'gql_subscribe',
+]
 
-from .funcs import gql_request, gql_request_response, gql_subscribe
+from .funcs import TestClient, gql_request, gql_request_response, gql_subscribe
