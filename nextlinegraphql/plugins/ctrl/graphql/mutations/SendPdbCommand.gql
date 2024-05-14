@@ -1,3 +1,5 @@
 mutation SendPdbCommand($command: String!, $promptNo: Int!, $traceNo: Int!) {
-  sendPdbCommand(command: $command, promptNo: $promptNo, traceNo: $traceNo)
+  ctrl {
+    sendPdbCommand(command: $command, promptNo: $promptNo, traceNo: $traceNo)
+  }
 }

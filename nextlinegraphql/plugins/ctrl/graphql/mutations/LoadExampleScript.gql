@@ -1,3 +1,5 @@
 mutation LoadExampleScript {
-  loadExampleScript
+  ctrl {
+    loadExampleScript
+  }
 }

@@ -1,3 +1,5 @@
 mutation Exec {
-  exec
+  ctrl {
+    exec
+  }
 }

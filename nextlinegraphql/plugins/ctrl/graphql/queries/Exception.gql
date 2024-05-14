@@ -1,3 +1,5 @@
 query Exception {
-  exception
+  ctrl {
+    exception
+  }
 }

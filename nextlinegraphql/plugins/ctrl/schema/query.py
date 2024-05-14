@@ -49,7 +49,7 @@ def query_continuous_enabled(info: Info) -> bool:
 
 
 @strawberry.type
-class Query:
+class QueryCtrl:
     hello: str = strawberry.field(resolver=query_hello)
     state: str = strawberry.field(resolver=query_state)
     run_no: int = strawberry.field(resolver=query_run_no)
@@ -58,3 +58,10 @@ class Query:
     source_line: str = strawberry.field(resolver=query_source_line)
     exception: Optional[str] = strawberry.field(resolver=query_exception)
     continuous_enabled: bool = strawberry.field(resolver=query_continuous_enabled)
+
+
+@strawberry.type
+class Query:
+    @strawberry.field
+    def ctrl(self) -> QueryCtrl:
+        return QueryCtrl()

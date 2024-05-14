@@ -71,7 +71,7 @@ async def mutate_load_example_script(info: Info) -> bool:
 
 
 @strawberry.type
-class Mutation:
+class MutationCtrl:
     exec: bool = strawberry.field(resolver=mutate_exec)
     run_and_continue: bool = strawberry.field(resolver=mutate_run_and_continue)
     reset: bool = strawberry.field(resolver=mutate_reset)
@@ -80,3 +80,10 @@ class Mutation:
     terminate: bool = strawberry.field(resolver=mutate_terminate)
     kill: bool = strawberry.field(resolver=mutate_kill)
     load_example_script: bool = strawberry.field(resolver=mutate_load_example_script)
+
+
+@strawberry.type
+class Mutation:
+    @strawberry.field
+    def ctrl(self) -> MutationCtrl:
+        return MutationCtrl()
