@@ -1,8 +1,13 @@
 import asyncio
+from pathlib import Path
 from typing import Any
 
+from graphql import ExecutionResult as GraphQLExecutionResult
+from nextline import Nextline
 from nextline.utils import agen_with_wait
+from strawberry import Schema
 
+from nextlinegraphql.plugins.ctrl import example_script as example_script_module
 from nextlinegraphql.plugins.ctrl.graphql import (
     MUTATE_EXEC,
     MUTATE_SEND_PDB_COMMAND,
@@ -12,101 +17,128 @@ from nextlinegraphql.plugins.ctrl.graphql import (
     SUBSCRIBE_STATE,
     SUBSCRIBE_TRACE_IDS,
 )
-from nextlinegraphql.plugins.graphql.test import TestClient, gql_request, gql_subscribe
+from nextlinegraphql.plugins.ctrl.schema import Mutation, Query, Subscription
+
+EXAMPLE_SCRIPT_PATH = Path(example_script_module.__file__).parent / 'script.py'
+example_script = EXAMPLE_SCRIPT_PATH.read_text()
 
 
-async def test_run(client: TestClient):
-    task_subscribe_state = asyncio.create_task(subscribe_state(client))
+async def test_schema() -> None:
+    schema = Schema(query=Query, mutation=Mutation, subscription=Subscription)
+    assert schema
+    nextline = Nextline(example_script, trace_modules=True, trace_threads=True)
+    async with nextline:
+        context = {'nextline': nextline}
 
-    data = await gql_request(client, QUERY_STATE)
-    assert 'initialized' == data['state']
+        task_subscribe_state = asyncio.create_task(
+            _subscribe_state(schema, context=context)
+        )
 
-    await asyncio.sleep(0.01)
+        result = await schema.execute(QUERY_STATE, context_value=context)
+        assert (data := result.data)
+        assert 'initialized' == data['state']
 
-    task_control_execution = asyncio.create_task(control_execution(client))
+        await asyncio.sleep(0.01)
 
-    await asyncio.sleep(0.01)
+        task_control_execution = asyncio.create_task(
+            _control_execution(schema, context=context)
+        )
 
-    data = await gql_request(client, MUTATE_EXEC)
-    assert data['exec']
+        await asyncio.sleep(0.01)
 
-    states, *_ = await asyncio.gather(
-        task_subscribe_state,
-        task_control_execution,
-    )
-    assert ['initialized', 'running', 'finished'] == states
+        result = await schema.execute(MUTATE_EXEC, context_value=context)
+        assert (data := result.data)
+        assert data['exec']
 
-    data = await gql_request(client, QUERY_STATE)
-    assert 'finished' == data['state']
+        states, *_ = await asyncio.gather(
+            task_subscribe_state,
+            task_control_execution,
+        )
+
+        assert ['initialized', 'running', 'finished'] == states
+
+        result = await schema.execute(QUERY_STATE, context_value=context)
+        assert (data := result.data)
+        assert 'finished' == data['state']
 
 
-async def subscribe_state(client: TestClient) -> list[str]:
+async def _subscribe_state(schema: Schema, context: Any) -> list[str]:
     ret = []
-    async for data in gql_subscribe(client, SUBSCRIBE_STATE):
-        s = data['state']
-        ret.append(s)
-        if s == 'finished':
+    sub = await schema.subscribe(SUBSCRIBE_STATE, context_value=context)
+    assert hasattr(sub, '__aiter__')
+    async for result in sub:
+        assert (data := result.data)
+        state = data['state']
+        ret.append(state)
+        if state == 'finished':
             break
     return ret
 
 
-async def control_execution(client: TestClient):
-    agen = agen_with_wait(gql_subscribe(client, SUBSCRIBE_TRACE_IDS))
-    data: Any
+async def _control_execution(schema: Schema, context: Any) -> None:
+    sub = await schema.subscribe(SUBSCRIBE_TRACE_IDS, context_value=context)
+    assert not isinstance(sub, GraphQLExecutionResult)
+
+    agen = agen_with_wait(sub)
 
     prev_ids = set[int]()
-    async for data in agen:
-        if not (ids := set(data['traceIds'])):
+    async for result in agen:
+        assert isinstance(result, GraphQLExecutionResult)
+        assert (data := result.data)
+        trace_ids: list[int] = data['traceIds']
+        if not (ids := set(trace_ids)):
             break
         new_ids, prev_ids = ids - prev_ids, ids
         tasks = {
             asyncio.create_task(
-                control_trace(client, id_),
+                _control_trace(schema, context, id_),
             )
             for id_ in new_ids
         }
-        _, pending = await agen.asend(tasks)
+        _, pending = await agen.asend(tasks)  # type: ignore
 
     await asyncio.gather(*pending)
 
 
-async def control_trace(client: TestClient, trace_no: int) -> None:
-    # print(f'control_trace({trace_no})')
-
+async def _control_trace(schema: Schema, context: Any, trace_no: int) -> None:
     to_step = ['script_threading.run()', 'script_asyncio.run()']
 
-    async for data in gql_subscribe(
-        client,
+    sub = await schema.subscribe(
         SUBSCRIBE_PROMPTING,
-        variables={'traceId': trace_no},
-    ):
+        context_value=context,
+        variable_values={'traceId': trace_no},
+    )
+    assert not isinstance(sub, GraphQLExecutionResult)
+
+    async for result in sub:
+        assert (data := result.data)
         state = data['prompting']
-        # print(state)
+        # e.g. {'fileName': '<string>', 'lineNo': 1, 'prompting': 1, 'traceEvent': 'line'}
         if state['prompting']:
             command = 'next'
             if state['traceEvent'] == 'line':
-                data = await gql_request(
-                    client,
+                query_result = await schema.execute(
                     QUERY_SOURCE_LINE,
-                    variables={
+                    context_value=context,
+                    variable_values={
                         'lineNo': state['lineNo'],
                         'fileName': state['fileName'],
                     },
                 )
+                assert (data := query_result.data)
                 source_line = data['sourceLine']
 
-                # print(source_line)
-                # print(source_line in to_step)
                 if source_line in to_step:
                     command = 'step'
 
-            data = await gql_request(
-                client,
+            query_result = await schema.execute(
                 MUTATE_SEND_PDB_COMMAND,
-                variables={
+                context_value=context,
+                variable_values={
                     'command': command,
                     'promptNo': state['prompting'],
                     'traceNo': trace_no,
                 },
             )
+            assert (data := query_result.data)
             assert data['sendPdbCommand']
