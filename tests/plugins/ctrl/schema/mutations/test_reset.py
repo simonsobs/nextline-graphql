@@ -4,13 +4,11 @@ from nextlinegraphql import create_app
 from nextlinegraphql.plugins.ctrl.graphql import MUTATE_RESET, QUERY_SOURCE
 from nextlinegraphql.plugins.graphql.test import TestClient
 
-##__________________________________________________________________||
 SOURCE_ONE = '''
 import time
 time.sleep(0.1)
 '''.strip()
 
-##__________________________________________________________________||
 params = [
     pytest.param(None, id='no-statement'),
     pytest.param(SOURCE_ONE, id='statement'),
@@ -35,6 +33,3 @@ async def test_reset(snapshot, statement):
         resp = await client.post('/', json=data, headers=headers)
         assert resp.status_code == 200
         snapshot.assert_match(resp.json())
-
-
-##__________________________________________________________________||

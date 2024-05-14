@@ -2,7 +2,6 @@ from nextlinegraphql import create_app
 from nextlinegraphql.plugins.graphql.test import TestClient
 
 
-##__________________________________________________________________||
 async def test_query():
     query = '''
       { hello }
@@ -21,7 +20,6 @@ async def test_query():
         assert expect == resp.json()
 
 
-##__________________________________________________________________||
 async def test_subscription():
     query = '''
       subscription {
@@ -87,6 +85,3 @@ async def test_subscription():
             expect = {'type': 'complete', 'id': '1'}
             actual = await ws.receive_json()
             assert expect == actual
-
-
-##__________________________________________________________________||
