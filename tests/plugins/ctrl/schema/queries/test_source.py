@@ -1,12 +1,18 @@
 from pathlib import Path
 
 import pytest
+from nextline import Nextline
+from strawberry import Schema
+from syrupy.assertion import SnapshotAssertion
 
 from nextlinegraphql.plugins.ctrl import example_script as example_script_module
 from nextlinegraphql.plugins.ctrl.graphql import QUERY_SOURCE
-from nextlinegraphql.plugins.graphql.test import TestClient, gql_request
+from nextlinegraphql.plugins.ctrl.schema import Mutation, Query, Subscription
 
 EXAMPLE_SCRIPT_DIR = Path(example_script_module.__file__).resolve().parent
+EXAMPLE_SCRIPT_PATH = EXAMPLE_SCRIPT_DIR / 'script.py'
+example_script = EXAMPLE_SCRIPT_PATH.read_text()
+
 SCRIPT_PATH = str(EXAMPLE_SCRIPT_DIR / 'script_threading.py')
 
 params = [
@@ -17,10 +23,20 @@ params = [
 
 
 @pytest.mark.parametrize('file_name', params)
-async def test_source(client: TestClient, snapshot, file_name):
-    variables = {}
-    if file_name:
-        variables['fileName'] = file_name
+async def test_schema(snapshot: SnapshotAssertion, file_name: str | None) -> None:
+    schema = Schema(query=Query, mutation=Mutation, subscription=Subscription)
+    assert schema
+    nextline = Nextline(example_script, trace_modules=True, trace_threads=True)
+    async with nextline:
+        context = {'nextline': nextline}
 
-    data = await gql_request(client, QUERY_SOURCE, variables=variables)
-    snapshot.assert_match(data)
+        variables = {}
+        if file_name:
+            variables['fileName'] = file_name
+
+        result = await schema.execute(
+            QUERY_SOURCE, context_value=context, variable_values=variables
+        )
+        assert (data := result.data)
+
+        snapshot.assert_match(data)

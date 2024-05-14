@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_source[default]
+# name: test_schema[default]
   dict({
     'source': list([
       'import time',
@@ -28,7 +28,7 @@
     ]),
   })
 # ---
-# name: test_source[path]
+# name: test_schema[path]
   dict({
     'source': list([
       'from threading import Thread',
@@ -56,7 +56,7 @@
     ]),
   })
 # ---
-# name: test_source[string]
+# name: test_schema[string]
   dict({
     'source': list([
       'import time',
