@@ -21,8 +21,8 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "nextline>=0.7.4",
-    "apluggy>=0.9.9",
+    "nextline>=0.7.5",
+    "apluggy>=1.0",
     "dynaconf>=3.2",
     "starlette>=0.31",
     "strawberry-graphql>=0.213",
