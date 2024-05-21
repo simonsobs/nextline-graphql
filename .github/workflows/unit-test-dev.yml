@@ -6,10 +6,10 @@ name: Run unit tests with Nextline dev
 on:
   push:
     branches:
-      - "**"
+      - main
   pull_request:
     branches:
-      - "**"
+      - main
 
 concurrency:
   group: unit-test-dev-${{ github.head_ref }}
@@ -21,7 +21,7 @@ env:
 
 jobs:
   run:
-    name: Python ${{ matrix.python-version }}
+    name: Python ${{ matrix.python-version }} on Linux
     runs-on: ubuntu-latest
     strategy:
       matrix:

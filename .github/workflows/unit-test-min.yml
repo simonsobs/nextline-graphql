@@ -11,10 +11,10 @@ name: Run unit tests with oldest dependency versions
 on:
   push:
     branches:
-      - "**"
+      - main
   pull_request:
     branches:
-      - "**"
+      - main
 
 concurrency:
   group: unit-test-min-${{ github.head_ref }}

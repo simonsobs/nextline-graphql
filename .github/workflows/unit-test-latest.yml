@@ -7,10 +7,10 @@ name: Run unit tests with latest dependency versions
 on:
   push:
     branches:
-      - "**"
+      - main
   pull_request:
     branches:
-      - "**"
+      - main
 
 concurrency:
   group: unit-test-latest-${{ github.head_ref }}
