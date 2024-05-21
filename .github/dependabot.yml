@@ -1,11 +1,24 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
+# The documentation for all configuration options:
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
 updates:
+  # For `pyproject.toml`
   - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  # For `ci/latest/requirements.txt`, used in unit-test-latest.yml
+  - package-ecosystem: "pip"
+    directory: "/ci/latest"
+    schedule:
+      interval: "daily"
+
+  # Note: `ci/minimum/requirements.txt` is not updated by Dependabot.
+
+  #
+  - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
