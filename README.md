@@ -1,3 +1,9 @@
+# nextline-graphql
+
+_The plugin-based framework of the Nextline backend API server_
+
+---
+
 [![PyPI - Version](https://img.shields.io/pypi/v/nextline-graphql.svg)](https://pypi.org/project/nextline-graphql)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/nextline-graphql.svg)](https://pypi.org/project/nextline-graphql)
 
@@ -6,9 +12,7 @@
 [![Test Status](https://github.com/simonsobs/nextline-graphql/actions/workflows/type-check.yml/badge.svg)](https://github.com/simonsobs/nextline-graphql/actions/workflows/type-check.yml)
 [![codecov](https://codecov.io/gh/simonsobs/nextline-graphql/branch/main/graph/badge.svg)](https://codecov.io/gh/simonsobs/nextline-graphql)
 
-# nextline-graphql
-
-The plugin-based framework of the backend API server of Nextline.
+---
 
 **Table of Contents**
 
