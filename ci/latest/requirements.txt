@@ -12,5 +12,5 @@ async-asgi-testclient==1.4.0
 pytest-asyncio==0.23.7
 pytest-cov==4.1.0
 pytest-timeout==2.3.1
-pytest==7.4.0
+pytest==8.2.1
 syrupy==4.6.1
