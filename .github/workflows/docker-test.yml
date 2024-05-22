@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Docker container
         run: |
-          docker run --name test-container ${{ env.IMAGE_NAME }}:latest
+          docker run --name test-container -d ${{ env.IMAGE_NAME }}:latest
           sleep 5
           docker logs test-container
           docker stop test-container
