@@ -1,4 +1,8 @@
 name: Build and test Docker image
+# This workflow builds a Docker image and runs a container to test the image.
+# Five seconds after it starts the container, it prints the logs of the container.
+# Then, it checks if the container is running. If the container is not running, the
+# workflow exits with an error.
 
 on:
   push:
@@ -37,4 +41,8 @@ jobs:
           docker run --name test-container -d ${{ env.IMAGE_NAME }}:latest
           sleep 5
           docker logs test-container
+          if [ "$(docker ps -f name=test-container -q)" = "" ]; then
+            echo "Container is not running."
+            exit 1
+          fi
           docker stop test-container
