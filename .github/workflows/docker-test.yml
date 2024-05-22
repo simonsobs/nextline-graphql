@@ -1,4 +1,4 @@
-name: Test buidling Docker image
+name: Build and test Docker image
 
 on:
   push:
@@ -27,4 +27,14 @@ jobs:
         with:
           context: .
           push: false
-          tags: user/test-image:latest
+          tags: ${{ env.IMAGE_NAME }}:latest
+
+      - name: List Docker images
+        run: docker images
+
+      - name: Run Docker container
+        run: |
+          docker run --name test-container ${{ env.IMAGE_NAME }}:latest
+          sleep 5
+          docker logs test-container
+          docker stop test-container
