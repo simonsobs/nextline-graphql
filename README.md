@@ -17,6 +17,7 @@ _The plugin-based framework of the Nextline backend API server_
 **Table of Contents**
 
 - [Introduction](#introduction)
+- [Citation](#citation)
 - [Packages](#packages)
   - [Core package](#core-package)
   - [Plugin system](#plugin-system)
@@ -40,6 +41,15 @@ users simultaneously from web browsers.
 Nextline consists of multiple packages. This package, _nextline-graphql_, provides the
 framework for the backend API server. It is a plugin-based framework. Features
 are added by plugins.
+
+## Citation
+
+Please use the following DOI for [the core
+package](https://github.com/simonsobs/nextline) to cite Nextline in general
+unless you need to refer to a specific package.
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11451619.svg)](https://doi.org/10.5281/zenodo.11451619)
+
 
 ## Packages
 
