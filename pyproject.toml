@@ -68,6 +68,7 @@ branch = true
 source = ["nextlinegraphql", "tests"]
 concurrency = ["multiprocessing"]
 omit = [
+    "nextlinegraphql/plugins/ctrl/example_script/*",
     "venv/*",
     "*/site-packages/*",
 ]
@@ -81,6 +82,7 @@ exclude_lines = [
     "raise NotImplementedError",
     "if 0:",
     'if __name__ == "__main__":',
+    "if TYPE_CHECKING:",
 ]
 ignore_errors = true
 
