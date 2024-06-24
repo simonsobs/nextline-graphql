@@ -2,11 +2,10 @@ from pathlib import Path
 
 import pytest
 from nextline import Nextline
-from strawberry import Schema
 
 from nextlinegraphql.plugins.ctrl import example_script as example_script_module
 from nextlinegraphql.plugins.ctrl.graphql import MUTATE_RESET, QUERY_SOURCE
-from nextlinegraphql.plugins.ctrl.schema import Mutation, Query, Subscription
+from tests.plugins.ctrl.schema.conftest import Schema
 
 EXAMPLE_SCRIPT_PATH = Path(example_script_module.__file__).parent / 'script.py'
 example_script = EXAMPLE_SCRIPT_PATH.read_text()
@@ -23,9 +22,7 @@ params = [
 
 
 @pytest.mark.parametrize('statement', params)
-async def test_schema(statement: str | None) -> None:
-    schema = Schema(query=Query, mutation=Mutation, subscription=Subscription)
-    assert schema
+async def test_schema(schema: Schema, statement: str | None) -> None:
     nextline = Nextline(example_script, trace_modules=True, trace_threads=True)
     async with nextline:
         context = {'nextline': nextline}

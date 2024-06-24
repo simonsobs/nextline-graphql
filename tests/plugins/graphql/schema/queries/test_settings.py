@@ -1,14 +1,12 @@
 import json
 
 from dynaconf import Dynaconf
-from strawberry import Schema
 
 from nextlinegraphql.plugins.graphql.graphql import QUERY_SETTINGS
-from nextlinegraphql.plugins.graphql.schema import Query
+from tests.plugins.graphql.schema.conftest import Schema
 
 
-async def test_settings() -> None:
-    schema = Schema(query=Query)
+async def test_settings(schema: Schema) -> None:
     settings = {'FOO': 'bar'}
     conf = Dynaconf(**settings)
     context = {'settings': conf}
