@@ -65,7 +65,7 @@ norecursedirs = "nextlinegraphql/plugins/db/alembic build"
 
 [tool.coverage.run]
 branch = true
-source = ["nextlinegraphql"]
+source = ["nextlinegraphql", "tests"]
 concurrency = ["multiprocessing"]
 omit = [
     "venv/*",
