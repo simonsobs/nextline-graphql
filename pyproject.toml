@@ -63,6 +63,27 @@ addopts = "--doctest-modules"
 doctest_optionflags = ["ELLIPSIS"]
 norecursedirs = "nextlinegraphql/plugins/db/alembic build"
 
+[tool.coverage.run]
+branch = true
+source = ["nextlinegraphql", "tests"]
+concurrency = ["multiprocessing"]
+omit = [
+    "venv/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self\\.debug",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    'if __name__ == "__main__":',
+]
+ignore_errors = true
+
 [tool.black]
 skip-string-normalization = true
 target_version = ['py310', 'py311', 'py312']
