@@ -12,5 +12,5 @@ class Plugin:
         self._settings = settings
 
     @spec.hookimpl
-    def schema(self):
+    def schema(self) -> tuple[type, type | None, type | None]:
         return (Query, None, None)

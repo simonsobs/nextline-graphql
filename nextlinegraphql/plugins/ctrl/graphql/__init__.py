@@ -1,23 +1,35 @@
 from pathlib import Path
 
+from graphql import parse, print_ast
+
+
+def read_gql(path: Path | str) -> str:
+    '''Load a GraphQL query from a file while checking its syntax.'''
+
+    text = Path(path).read_text()
+    parsed = parse(text)
+    reformatted = print_ast(parsed)
+    return reformatted
+
+
 pwd = Path(__file__).resolve().parent
 
 sub = pwd / 'mutations'
-MUTATE_EXEC = (sub / 'Exec.gql').read_text()
-MUTATE_RESET = (sub / 'Reset.gql').read_text()
-MUTATE_SEND_PDB_COMMAND = (sub / 'SendPdbCommand.gql').read_text()
-MUTATE_RUN_AND_CONTINUE = (sub / 'RunAndContinue.gql').read_text()
-MUTATE_LOAD_EXAMPLE_SCRIPT = (sub / 'LoadExampleScript.gql').read_text()
+MUTATE_EXEC = read_gql(sub / 'Exec.gql')
+MUTATE_RESET = read_gql(sub / 'Reset.gql')
+MUTATE_SEND_PDB_COMMAND = read_gql(sub / 'SendPdbCommand.gql')
+MUTATE_RUN_AND_CONTINUE = read_gql(sub / 'RunAndContinue.gql')
+MUTATE_LOAD_EXAMPLE_SCRIPT = read_gql(sub / 'LoadExampleScript.gql')
 
 sub = pwd / 'queries'
-QUERY_STATE = (sub / 'State.gql').read_text()
-QUERY_EXCEPTION = (sub / 'Exception.gql').read_text()
-QUERY_SOURCE = (sub / 'Source.gql').read_text()
-QUERY_SOURCE_LINE = (sub / 'SourceLine.gql').read_text()
+QUERY_STATE = read_gql(sub / 'State.gql')
+QUERY_EXCEPTION = read_gql(sub / 'Exception.gql')
+QUERY_SOURCE = read_gql(sub / 'Source.gql')
+QUERY_SOURCE_LINE = read_gql(sub / 'SourceLine.gql')
 
 sub = pwd / 'subscriptions'
-SUBSCRIBE_COUNTER = (sub / 'Counter.gql').read_text()
-SUBSCRIBE_STATE = (sub / 'State.gql').read_text()
-SUBSCRIBE_STDOUT = (sub / 'Stdout.gql').read_text()
-SUBSCRIBE_TRACE_IDS = (sub / 'TraceIds.gql').read_text()
-SUBSCRIBE_PROMPTING = (sub / 'Prompting.gql').read_text()
+SUBSCRIBE_COUNTER = read_gql(sub / 'Counter.gql')
+SUBSCRIBE_STATE = read_gql(sub / 'State.gql')
+SUBSCRIBE_STDOUT = read_gql(sub / 'Stdout.gql')
+SUBSCRIBE_TRACE_IDS = read_gql(sub / 'TraceIds.gql')
+SUBSCRIBE_PROMPTING = read_gql(sub / 'Prompting.gql')

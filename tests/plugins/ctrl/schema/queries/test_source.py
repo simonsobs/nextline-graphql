@@ -2,12 +2,11 @@ from pathlib import Path
 
 import pytest
 from nextline import Nextline
-from strawberry import Schema
 from syrupy.assertion import SnapshotAssertion
 
 from nextlinegraphql.plugins.ctrl import example_script as example_script_module
 from nextlinegraphql.plugins.ctrl.graphql import QUERY_SOURCE
-from nextlinegraphql.plugins.ctrl.schema import Mutation, Query, Subscription
+from tests.plugins.ctrl.schema.conftest import Schema
 
 EXAMPLE_SCRIPT_DIR = Path(example_script_module.__file__).resolve().parent
 EXAMPLE_SCRIPT_PATH = EXAMPLE_SCRIPT_DIR / 'script.py'
@@ -23,9 +22,9 @@ params = [
 
 
 @pytest.mark.parametrize('file_name', params)
-async def test_schema(snapshot: SnapshotAssertion, file_name: str | None) -> None:
-    schema = Schema(query=Query, mutation=Mutation, subscription=Subscription)
-    assert schema
+async def test_schema(
+    schema: Schema, snapshot: SnapshotAssertion, file_name: str | None
+) -> None:
     nextline = Nextline(example_script, trace_modules=True, trace_threads=True)
     async with nextline:
         context = {'nextline': nextline}

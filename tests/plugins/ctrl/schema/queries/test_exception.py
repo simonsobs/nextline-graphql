@@ -1,17 +1,14 @@
 from nextline import Nextline
-from strawberry import Schema
 
 from nextlinegraphql.plugins.ctrl.graphql import QUERY_EXCEPTION
-from nextlinegraphql.plugins.ctrl.schema import Mutation, Query, Subscription
+from tests.plugins.ctrl.schema.conftest import Schema
 
 SOURCE_RAISE = '''
 raise Exception('foo', 'bar')
 '''.strip()
 
 
-async def test_schema() -> None:
-    schema = Schema(query=Query, mutation=Mutation, subscription=Subscription)
-    assert schema
+async def test_schema(schema: Schema) -> None:
     nextline = Nextline(SOURCE_RAISE, trace_modules=True, trace_threads=True)
     async with nextline:
         context = {'nextline': nextline}
