@@ -100,9 +100,9 @@ profile = "black"
 [tool.mypy]
 plugins = "strawberry.ext.mypy_plugin"
 exclude = '''(?x)(
-    db/alembic/versions/.*\.py$
-    | example_script/.*\.py$
+    example_script/.*\.py$
 )'''
+disallow_untyped_defs = true
 
 [[tool.mypy.overrides]]
 module = [
