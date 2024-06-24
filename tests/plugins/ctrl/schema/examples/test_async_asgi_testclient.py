@@ -2,7 +2,7 @@ from nextlinegraphql import create_app
 from nextlinegraphql.plugins.graphql.test import TestClient
 
 
-async def test_query():
+async def test_query() -> None:
     query = '''
       { ctrl
         { hello }
@@ -22,7 +22,7 @@ async def test_query():
         assert expect == resp.json()
 
 
-async def test_subscription():
+async def test_subscription() -> None:
     query = '''
       subscription {
         ctrlCounter

@@ -1,7 +1,7 @@
 from nextlinegraphql.plugins.graphql.test import TestClient
 
 
-async def test_get(client: TestClient):
+async def test_get(client: TestClient) -> None:
     '''test if CORSMiddleware is in effect
 
     The response header should include CORSMiddleware
@@ -24,7 +24,7 @@ async def test_get(client: TestClient):
     assert resp.status_code == 200
 
 
-async def test_preflight(client: TestClient):
+async def test_preflight(client: TestClient) -> None:
     '''test if CORSMiddleware is in effect with the preflighted request
 
     https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#preflighted_requests

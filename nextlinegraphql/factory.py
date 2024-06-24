@@ -1,5 +1,6 @@
 import contextlib
 import logging.config
+from collections.abc import AsyncIterator
 from logging import getLogger
 from typing import Any
 
@@ -37,7 +38,7 @@ def create_app() -> Starlette:
     logger.info(f'Loaded plugins: {plugin_names}')
 
     @contextlib.asynccontextmanager
-    async def lifespan(app: Starlette):
+    async def lifespan(app: Starlette) -> AsyncIterator[None]:
         context = dict[Any, Any]()
         await hook.ahook.update_lifespan_context(app=app, hook=hook, context=context)
         async with hook.awith.lifespan(app=app, hook=hook, context=context):
@@ -57,7 +58,7 @@ def create_app() -> Starlette:
     return app
 
 
-def configure_logging(config: dict):
+def configure_logging(config: dict) -> None:
     logging.config.dictConfig(config)
 
     # https://pypi.org/project/logging_tree/

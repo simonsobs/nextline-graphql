@@ -1,5 +1,5 @@
-from collections.abc import MutableMapping
-from typing import Any, Optional
+from collections.abc import AsyncIterator, MutableMapping
+from typing import TYPE_CHECKING, Any, Optional
 
 import strawberry
 from apluggy import PluginManager, asynccontextmanager
@@ -14,6 +14,9 @@ from nextlinegraphql.hook import spec
 
 from .schema import Query
 
+if TYPE_CHECKING:
+    from strawberry.asgi import Request, Response, WebSocket
+
 
 class Plugin:
     @spec.hookimpl
@@ -22,12 +25,12 @@ class Plugin:
         self._app = _create_app(hook=hook)
 
     @spec.hookimpl
-    def schema(self):
+    def schema(self) -> tuple[type, type | None, type | None]:
         return (Query, None, None)
 
     @spec.hookimpl(tryfirst=True)  # tryfirst so to be the outermost context
     @asynccontextmanager
-    async def lifespan(self, app: Starlette):
+    async def lifespan(self, app: Starlette) -> AsyncIterator[None]:
         app.mount('/', self._app)
         yield
 
@@ -76,7 +79,11 @@ class _EGraphQL(GraphQL):
         self._hook = hook
         return self
 
-    async def get_context(self, request, response=None) -> Optional[Any]:
+    async def get_context(
+        self,
+        request: 'Request | WebSocket',
+        response: Optional['Response'] = None,
+    ) -> Optional[Any]:
         context = {'request': request, 'response': response}
         self._hook.hook.update_strawberry_context(context=context)
         return context

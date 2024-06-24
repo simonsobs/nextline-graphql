@@ -8,7 +8,7 @@ from nextlinegraphql.plugins.ctrl.graphql import (
 from nextlinegraphql.plugins.graphql.test import TestClient, gql_request, gql_subscribe
 
 
-async def test_plugin(client: TestClient):
+async def test_plugin(client: TestClient) -> None:
     data = await gql_request(client, QUERY_STATE)
     assert data['ctrl']['state'] == 'initialized'
 

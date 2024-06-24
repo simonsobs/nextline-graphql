@@ -17,7 +17,7 @@ from .schema import Mutation, Query, Subscription
 
 class Plugin:
     @spec.hookimpl
-    def schema(self):
+    def schema(self) -> tuple[type, type | None, type | None]:
         return (Query, Mutation, Subscription)
 
     @spec.hookimpl

@@ -4,7 +4,7 @@ from dynaconf import Dynaconf
 from pytest import FixtureRequest, MonkeyPatch, fixture
 
 
-def test_merge(config: Dynaconf, envvar_url: bool, envvar_connect_args: bool):
+def test_merge(config: Dynaconf, envvar_url: bool, envvar_connect_args: bool) -> None:
     '''Confirm how merging works
 
     https://www.dynaconf.com/merging/
@@ -30,7 +30,7 @@ def test_merge(config: Dynaconf, envvar_url: bool, envvar_connect_args: bool):
 
 
 @fixture
-def config():
+def config() -> Dynaconf:
     here = Path(__file__).resolve().parent
     ret = Dynaconf(
         envvar_prefix='NEXTLINE',
@@ -44,7 +44,7 @@ def config():
 
 
 @fixture(params=[True, False])
-def envvar_url(request: FixtureRequest, monkeypatch: MonkeyPatch):
+def envvar_url(request: FixtureRequest, monkeypatch: MonkeyPatch) -> bool:
     if ret := request.param:
         monkeypatch.setenv('NEXTLINE_DB__URL', 'sqlite:///env.sqlite3')
         # dunder merging
@@ -53,7 +53,9 @@ def envvar_url(request: FixtureRequest, monkeypatch: MonkeyPatch):
 
 
 @fixture(params=[False, True, None])
-def envvar_connect_args(request: FixtureRequest, monkeypatch: MonkeyPatch):
+def envvar_connect_args(
+    request: FixtureRequest, monkeypatch: MonkeyPatch
+) -> bool | None:
     # False: intact
     # True: override
     # None: remove

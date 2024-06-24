@@ -1,5 +1,5 @@
 '''Hook specification for Nextline GraphQL plugin.'''
-from collections.abc import MutableMapping, Sequence
+from collections.abc import AsyncIterator, MutableMapping, Sequence
 from typing import Optional
 
 import apluggy as pluggy
@@ -62,13 +62,16 @@ async def update_lifespan_context(
 
 @hookspec
 @asynccontextmanager
-async def lifespan(app: Starlette, hook: pluggy.PluginManager, context: MutableMapping):
+async def lifespan(
+    app: Starlette, hook: pluggy.PluginManager, context: MutableMapping
+) -> AsyncIterator[None]:
     '''Called within the Starlette lifespan context.
 
     The context is passed from the update_lifespan_context hook.
 
     The Starlette lifespan yields within this hook
     '''
+    yield
 
 
 @hookspec
