@@ -1,12 +1,11 @@
 # .coveragerc to control coverage.py
 [run]
 branch = True
+source_pkgs = nextlinegraphql
 concurrency = multiprocessing
 omit =
-     nextlinegraphql/_version.py
      venv/*
      */site-packages/*
-     /home/travis/virtualenv/*
 
 [report]
 # Regexes for lines to exclude from consideration
@@ -27,6 +26,3 @@ exclude_lines =
     if __name__ == .__main__.:
 
 ignore_errors = True
-
-[html]
-directory = coverage_html_report
