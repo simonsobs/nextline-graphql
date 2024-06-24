@@ -1,4 +1,4 @@
-query State {
+query CtrlState {
   ctrl {
     state
   }

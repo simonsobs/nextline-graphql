@@ -1,4 +1,4 @@
-query Exception {
+query CtrlException {
   ctrl {
     exception
   }

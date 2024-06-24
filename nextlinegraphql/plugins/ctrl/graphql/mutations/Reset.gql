@@ -1,4 +1,4 @@
-mutation Reset($statement: String) {
+mutation CtrlReset($statement: String) {
   ctrl {
     reset(statement: $statement)
   }
