@@ -62,6 +62,8 @@ addopts = "--doctest-modules"
 # doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE",]
 doctest_optionflags = ["ELLIPSIS"]
 norecursedirs = "nextlinegraphql/plugins/db/alembic build"
+log_cli = false
+log_cli_level = "INFO"
 
 [tool.coverage.run]
 branch = true
