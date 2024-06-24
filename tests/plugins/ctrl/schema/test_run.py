@@ -10,9 +10,14 @@ from nextlinegraphql.plugins.ctrl import example_script as example_script_module
 from nextlinegraphql.plugins.ctrl.graphql import (
     MUTATE_EXEC,
     MUTATE_SEND_PDB_COMMAND,
+    QUERY_CONTINUOUS_ENABLED,
+    QUERY_RUN_NO,
     QUERY_SOURCE_LINE,
     QUERY_STATE,
+    QUERY_TRACE_IDS,
+    SUBSCRIBE_CONTINUOUS_ENABLED,
     SUBSCRIBE_PROMPTING,
+    SUBSCRIBE_RUN_NO,
     SUBSCRIBE_STATE,
     SUBSCRIBE_TRACE_IDS,
 )
@@ -24,9 +29,14 @@ example_script = EXAMPLE_SCRIPT_PATH.read_text()
 
 async def test_schema(schema: Schema) -> None:
     nextline = Nextline(example_script, trace_modules=True, trace_threads=True)
+    context = {'nextline': nextline}
+    task_subscribe_run_no = asyncio.create_task(
+        _subscribe_run_no(schema, context=context)
+    )
+    task_subscribe_continuous_enabled = asyncio.create_task(
+        _subscribe_continuous_enabled(schema, context=context)
+    )
     async with nextline:
-        context = {'nextline': nextline}
-
         task_subscribe_state = asyncio.create_task(
             _subscribe_state(schema, context=context)
         )
@@ -47,16 +57,36 @@ async def test_schema(schema: Schema) -> None:
         assert (data := result.data)
         assert data['ctrl']['exec']
 
+        result = await schema.execute(QUERY_RUN_NO, context_value=context)
+        assert (data := result.data)
+        assert 1 == data['ctrl']['runNo']
+
+        result = await schema.execute(QUERY_TRACE_IDS, context_value=context)
+        assert (data := result.data)
+        data['ctrl']['traceIds']
+
+        result = await schema.execute(QUERY_CONTINUOUS_ENABLED, context_value=context)
+        assert (data := result.data)
+        assert False is data['ctrl']['continuousEnabled']
+
         states, *_ = await asyncio.gather(
             task_subscribe_state,
             task_control_execution,
         )
+
+        await task_control_execution
 
         assert ['initialized', 'running', 'finished'] == states
 
         result = await schema.execute(QUERY_STATE, context_value=context)
         assert (data := result.data)
         assert 'finished' == data['ctrl']['state']
+
+    run_nos = await task_subscribe_run_no
+    assert [1] == run_nos
+
+    continuous_enabled = await task_subscribe_continuous_enabled
+    assert [False] == continuous_enabled
 
 
 async def _subscribe_state(schema: Schema, context: Any) -> list[str]:
@@ -69,6 +99,28 @@ async def _subscribe_state(schema: Schema, context: Any) -> list[str]:
         ret.append(state)
         if state == 'finished':
             break
+    return ret
+
+
+async def _subscribe_run_no(schema: Schema, context: Any) -> list[int]:
+    ret = []
+    sub = await schema.subscribe(SUBSCRIBE_RUN_NO, context_value=context)
+    assert hasattr(sub, '__aiter__')
+    async for result in sub:
+        assert (data := result.data)
+        run_no = data['ctrlRunNo']
+        ret.append(run_no)
+    return ret
+
+
+async def _subscribe_continuous_enabled(schema: Schema, context: Any) -> list[bool]:
+    ret = []
+    sub = await schema.subscribe(SUBSCRIBE_CONTINUOUS_ENABLED, context_value=context)
+    assert hasattr(sub, '__aiter__')
+    async for result in sub:
+        assert (data := result.data)
+        continuous_enabled = data['ctrlContinuousEnabled']
+        ret.append(continuous_enabled)
     return ret
 
 
