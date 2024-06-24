@@ -1,4 +1,4 @@
-mutation LoadExampleScript {
+mutation CtrlLoadExampleScript {
   ctrl {
     loadExampleScript
   }

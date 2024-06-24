@@ -1,0 +1,5 @@
+mutation CtrlKill {
+  ctrl {
+    kill
+  }
+}

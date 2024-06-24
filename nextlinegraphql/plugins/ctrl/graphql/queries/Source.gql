@@ -1,4 +1,4 @@
-query Source($fileName: String) {
+query CtrlSource($fileName: String) {
   ctrl {
     source(fileName: $fileName)
   }

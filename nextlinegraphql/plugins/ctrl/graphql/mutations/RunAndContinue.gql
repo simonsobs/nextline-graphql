@@ -1,4 +1,4 @@
-mutation RunAndContinue {
+mutation CtrlRunAndContinue {
   ctrl {
     runAndContinue
   }

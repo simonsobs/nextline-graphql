@@ -1,0 +1,5 @@
+mutation CtrlInterrupt {
+  ctrl {
+    interrupt
+  }
+}

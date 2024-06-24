@@ -1,0 +1,5 @@
+query CtrlContinuousEnabled {
+  ctrl {
+    continuousEnabled
+  }
+}

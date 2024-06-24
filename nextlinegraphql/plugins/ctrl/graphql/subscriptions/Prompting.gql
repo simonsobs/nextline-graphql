@@ -1,4 +1,4 @@
-subscription Prompting($traceId: Int!) {
+subscription CtrlPromptingS($traceId: Int!) {
   ctrlPrompting(traceId: $traceId) {
     prompting
     fileName

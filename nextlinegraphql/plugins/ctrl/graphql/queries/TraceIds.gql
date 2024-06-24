@@ -1,0 +1,5 @@
+query CtrlTraceIds {
+  ctrl {
+    traceIds
+  }
+}
