@@ -15,10 +15,10 @@ for i in range(10):
 
 async def test_schema(schema: Schema) -> None:
     nextline = Nextline(SOURCE, trace_modules=True, trace_threads=True)
-    cache = list[str]()
-    nextline.register(CacheStdout(cache))
+    cache_stdout = CacheStdout(nextline)
+    nextline.register(cache_stdout)
     started = asyncio.Event()
-    context = {'nextline': nextline, 'stdout_cache': cache}
+    context = {'nextline': nextline, 'ctrl': {'cache_stdout': cache_stdout}}
     async with nextline:
         task = asyncio.create_task(nextline.run_continue_and_wait(started=started))
         await started.wait()

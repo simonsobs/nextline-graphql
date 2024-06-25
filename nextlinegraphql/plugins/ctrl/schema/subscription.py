@@ -1,12 +1,11 @@
 import asyncio
 from collections.abc import AsyncIterator
-from typing import TYPE_CHECKING
 
 import strawberry
+from nextline import Nextline
 from strawberry.types import Info
 
-if TYPE_CHECKING:
-    from nextline import Nextline
+from nextlinegraphql.plugins.ctrl.cache import CacheStdout
 
 
 @strawberry.type
@@ -57,13 +56,10 @@ async def subscribe_prompting(
         yield y
 
 
-async def subscribe_stdout(info: Info) -> AsyncIterator[str]:
-    nextline: Nextline = info.context["nextline"]
-    stdout_cache: list[str] = info.context["stdout_cache"]
-    yield ''.join(stdout_cache)
-    async for i in nextline.subscribe_stdout():
-        assert i.text is not None
-        yield i.text
+def subscribe_stdout(info: Info) -> AsyncIterator[str]:
+    cache_stdout = info.context['ctrl']['cache_stdout']
+    assert isinstance(cache_stdout, CacheStdout)
+    return cache_stdout.subscribe()
 
 
 def subscribe_continuous_enabled(info: Info) -> AsyncIterator[bool]:
