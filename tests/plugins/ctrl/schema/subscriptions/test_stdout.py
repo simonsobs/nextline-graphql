@@ -8,18 +8,20 @@ from nextlinegraphql.plugins.ctrl.graphql import SUBSCRIBE_STDOUT
 from tests.plugins.ctrl.schema.conftest import Schema
 
 SOURCE = '''
+import time
 for i in range(10):
     print(i)
+    time.sleep(0.005)
 '''.strip()
 
 
 async def test_schema(schema: Schema) -> None:
     nextline = Nextline(SOURCE, trace_modules=True, trace_threads=True)
-    cache_stdout = CacheStdout(nextline)
+    cache_stdout = CacheStdout()
     nextline.register(cache_stdout)
     started = asyncio.Event()
     context = {'nextline': nextline, 'ctrl': {'cache_stdout': cache_stdout}}
-    async with nextline:
+    async with cache_stdout, nextline:
         task = asyncio.create_task(nextline.run_continue_and_wait(started=started))
         await started.wait()
         sub = asyncio.create_task(_subscribe_stdout(schema, context=context))
