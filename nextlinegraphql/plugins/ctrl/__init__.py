@@ -27,8 +27,8 @@ class Plugin:
     @asynccontextmanager
     async def lifespan(self) -> AsyncIterator[None]:
         '''Yield within the nextline context.'''
+        self._nextline.register(CacheStdout(self._stdout_cache))
         async with self._nextline:
-            self._nextline.register(CacheStdout(self._stdout_cache))
             yield
 
     @spec.hookimpl
