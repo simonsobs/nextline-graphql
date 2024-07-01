@@ -2,7 +2,7 @@
 # This file is used in a GitHub Actions workflow to test the compatibility.
 # This file needs to be manually updated to be consistent with
 # `pyproject.toml`.
-nextline==0.7.12
+nextline==0.7.15
 apluggy==1.0.0
 dynaconf==3.2.1
 starlette==0.31.0
