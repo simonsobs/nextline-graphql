@@ -8,16 +8,10 @@ from nextline.utils.pubsub import PubSubItem
 
 class CacheStdout:
     def __init__(self) -> None:
-        self._cache = list[str]()
-        self._pubsub = PubSubItem[str]()
+        self._pubsub = PubSubItem[str](cache=True)
 
     async def subscribe(self) -> AsyncIterator[str]:
-        # TODO: Make sure no missing or duplicated items are yielded. If the
-        # `last` option is `True`, duplicate items can be yielded and shown on
-        # the web client. However, the tests still pass.
-        # NOTE: The cache can be implemented in `PubSubItem` itself.
-        yield ''.join(self._cache)
-        async for text in self._pubsub.subscribe(last=False):
+        async for text in self._pubsub.subscribe():
             yield text
 
     async def aclose(self) -> None:
@@ -31,9 +25,8 @@ class CacheStdout:
 
     @hookimpl
     async def on_initialize_run(self) -> None:
-        self._cache.clear()
+        self._pubsub.clear()
 
     @hookimpl
     async def on_write_stdout(self, event: OnWriteStdout) -> None:
-        self._cache.append(event.text)
         await self._pubsub.publish(event.text)
