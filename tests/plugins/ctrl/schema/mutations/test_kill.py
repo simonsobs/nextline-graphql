@@ -1,6 +1,7 @@
 import asyncio
 
 from nextline import Nextline
+from strawberry.types import ExecutionResult
 
 from nextlinegraphql.plugins.ctrl.graphql import MUTATE_KILL
 from tests.plugins.ctrl.schema.conftest import Schema
@@ -21,6 +22,7 @@ async def test_schema(schema: Schema) -> None:
         await started.wait()
         result = await schema.execute(MUTATE_KILL, context_value=context)
 
+        assert isinstance(result, ExecutionResult)
         assert (data := result.data)
         assert data['ctrl']['kill'] is True
 

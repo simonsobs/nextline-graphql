@@ -1,6 +1,7 @@
 import json
 
 from dynaconf import Dynaconf
+from strawberry.types import ExecutionResult
 
 from nextlinegraphql.plugins.graphql.graphql import QUERY_SETTINGS
 from tests.plugins.graphql.schema.conftest import Schema
@@ -11,6 +12,7 @@ async def test_settings(schema: Schema) -> None:
     conf = Dynaconf(**settings)
     context = {'settings': conf}
     result = await schema.execute(QUERY_SETTINGS, context_value=context)
+    assert isinstance(result, ExecutionResult)
     assert not result.errors
     assert result.data
     assert result.data['settings']
