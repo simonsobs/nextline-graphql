@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 from nextline import Nextline
+from strawberry.types import ExecutionResult
 from syrupy.assertion import SnapshotAssertion
 
 from nextlinegraphql.plugins.ctrl import example_script as example_script_module
@@ -36,6 +37,7 @@ async def test_schema(
         result = await schema.execute(
             QUERY_SOURCE, context_value=context, variable_values=variables
         )
+        assert isinstance(result, ExecutionResult)
         assert (data := result.data)
 
         snapshot.assert_match(data)

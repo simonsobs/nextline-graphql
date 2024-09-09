@@ -1,4 +1,5 @@
 from nextline import Nextline
+from strawberry.types import ExecutionResult
 
 from nextlinegraphql.plugins.ctrl.graphql import QUERY_EXCEPTION
 from tests.plugins.ctrl.schema.conftest import Schema
@@ -16,6 +17,7 @@ async def test_schema(schema: Schema) -> None:
         await nextline.run_continue_and_wait()
 
         result = await schema.execute(QUERY_EXCEPTION, context_value=context)
+        assert isinstance(result, ExecutionResult)
         assert (data := result.data)
 
         assert "Exception: ('foo', 'bar')" in data['ctrl']['exception']

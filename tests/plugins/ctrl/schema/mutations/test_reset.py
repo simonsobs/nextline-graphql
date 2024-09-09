@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 from nextline import Nextline
+from strawberry.types import ExecutionResult
 
 from nextlinegraphql.plugins.ctrl import example_script as example_script_module
 from nextlinegraphql.plugins.ctrl.graphql import MUTATE_RESET, QUERY_SOURCE
@@ -30,10 +31,12 @@ async def test_schema(schema: Schema, statement: str | None) -> None:
         result = await schema.execute(
             MUTATE_RESET, context_value=context, variable_values=variables
         )
+        assert isinstance(result, ExecutionResult)
         assert (data := result.data)
         assert data['ctrl']['reset'] is True
 
         result = await schema.execute(QUERY_SOURCE, context_value=context)
+        assert isinstance(result, ExecutionResult)
         assert (data := result.data)
 
         expected = statement or example_script

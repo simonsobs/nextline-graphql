@@ -5,6 +5,7 @@ from typing import Any
 from graphql import ExecutionResult as GraphQLExecutionResult
 from nextline import Nextline
 from nextline.utils import agen_with_wait
+from strawberry.types import ExecutionResult
 
 from nextlinegraphql.plugins.ctrl import example_script as example_script_module
 from nextlinegraphql.plugins.ctrl.graphql import (
@@ -42,6 +43,7 @@ async def test_schema(schema: Schema) -> None:
         )
 
         result = await schema.execute(QUERY_STATE, context_value=context)
+        assert isinstance(result, ExecutionResult)
         assert (data := result.data)
         assert 'initialized' == data['ctrl']['state']
 
@@ -54,18 +56,22 @@ async def test_schema(schema: Schema) -> None:
         await asyncio.sleep(0.01)
 
         result = await schema.execute(MUTATE_EXEC, context_value=context)
+        assert isinstance(result, ExecutionResult)
         assert (data := result.data)
         assert data['ctrl']['exec']
 
         result = await schema.execute(QUERY_RUN_NO, context_value=context)
+        assert isinstance(result, ExecutionResult)
         assert (data := result.data)
         assert 1 == data['ctrl']['runNo']
 
         result = await schema.execute(QUERY_TRACE_IDS, context_value=context)
+        assert isinstance(result, ExecutionResult)
         assert (data := result.data)
         data['ctrl']['traceIds']
 
         result = await schema.execute(QUERY_CONTINUOUS_ENABLED, context_value=context)
+        assert isinstance(result, ExecutionResult)
         assert (data := result.data)
         assert False is data['ctrl']['continuousEnabled']
 
@@ -79,6 +85,7 @@ async def test_schema(schema: Schema) -> None:
         assert ['initialized', 'running', 'finished'] == states
 
         result = await schema.execute(QUERY_STATE, context_value=context)
+        assert isinstance(result, ExecutionResult)
         assert (data := result.data)
         assert 'finished' == data['ctrl']['state']
 
@@ -175,6 +182,7 @@ async def _control_trace(schema: Schema, context: Any, trace_no: int) -> None:
                     'fileName': state['fileName'],
                 },
             )
+            assert isinstance(query_result, ExecutionResult)
             assert (data := query_result.data)
             source_line = data['ctrl']['sourceLine']
 
@@ -190,5 +198,6 @@ async def _control_trace(schema: Schema, context: Any, trace_no: int) -> None:
                 'traceNo': trace_no,
             },
         )
+        assert isinstance(query_result, ExecutionResult)
         assert (data := query_result.data)
         assert data['ctrl']['sendPdbCommand']
