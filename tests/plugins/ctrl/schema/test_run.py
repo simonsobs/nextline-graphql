@@ -1,8 +1,8 @@
 import asyncio
+from collections.abc import AsyncIterator
 from pathlib import Path
 from typing import Any
 
-from graphql import ExecutionResult as GraphQLExecutionResult
 from nextline import Nextline
 from nextline.utils import agen_with_wait
 from strawberry.types import ExecutionResult
@@ -133,13 +133,13 @@ async def _subscribe_continuous_enabled(schema: Schema, context: Any) -> list[bo
 
 async def _control_execution(schema: Schema, context: Any) -> None:
     sub = await schema.subscribe(SUBSCRIBE_TRACE_IDS, context_value=context)
-    assert not isinstance(sub, GraphQLExecutionResult)
+    assert isinstance(sub, AsyncIterator)
 
     agen = agen_with_wait(sub)
 
     prev_ids = set[int]()
     async for result in agen:
-        assert isinstance(result, GraphQLExecutionResult)
+        assert isinstance(result, ExecutionResult)
         assert (data := result.data)
         trace_ids: list[int] = data['ctrlTraceIds']
         if not (ids := set(trace_ids)):
@@ -164,7 +164,7 @@ async def _control_trace(schema: Schema, context: Any, trace_no: int) -> None:
         context_value=context,
         variable_values={'traceId': trace_no},
     )
-    assert not isinstance(sub, GraphQLExecutionResult)
+    assert isinstance(sub, AsyncIterator)
 
     async for result in sub:
         assert (data := result.data)
