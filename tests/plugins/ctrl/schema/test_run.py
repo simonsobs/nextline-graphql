@@ -3,10 +3,10 @@ from collections.abc import AsyncIterator
 from pathlib import Path
 from typing import Any
 
-from nextline import Nextline
-from nextline.utils import agen_with_wait
 from strawberry.types import ExecutionResult
 
+from nextline import Nextline
+from nextline.utils import agen_with_wait
 from nextlinegraphql.plugins.ctrl import example_script as example_script_module
 from nextlinegraphql.plugins.ctrl.graphql import (
     MUTATE_EXEC,

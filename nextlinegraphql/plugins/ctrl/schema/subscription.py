@@ -2,9 +2,9 @@ import asyncio
 from collections.abc import AsyncIterator
 
 import strawberry
-from nextline import Nextline
 from strawberry.types import Info
 
+from nextline import Nextline
 from nextlinegraphql.plugins.ctrl.cache import CacheStdout
 
 

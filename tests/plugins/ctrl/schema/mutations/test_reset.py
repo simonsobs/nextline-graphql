@@ -1,9 +1,9 @@
 from pathlib import Path
 
 import pytest
-from nextline import Nextline
 from strawberry.types import ExecutionResult
 
+from nextline import Nextline
 from nextlinegraphql.plugins.ctrl import example_script as example_script_module
 from nextlinegraphql.plugins.ctrl.graphql import MUTATE_RESET, QUERY_SOURCE
 from tests.plugins.ctrl.schema.conftest import Schema

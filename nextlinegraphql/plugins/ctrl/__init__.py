@@ -3,8 +3,8 @@ __all__ = ['Plugin']
 from collections.abc import AsyncIterator, MutableMapping
 
 from apluggy import asynccontextmanager
-from nextline import Nextline
 
+from nextline import Nextline
 from nextlinegraphql.hook import spec
 
 from .cache import CacheStdout
