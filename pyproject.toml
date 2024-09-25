@@ -10,35 +10,35 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [
-    { name = "Simons Observatory", email = "so_software@simonsobservatory.org" },
+  { name = "Simons Observatory", email = "so_software@simonsobservatory.org" },
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "nextline>=0.7.15",
-    "apluggy>=1.0",
-    "dynaconf>=3.2",
-    "starlette>=0.31",
-    "strawberry-graphql>=0.240",
-    "websockets>=12.0",
-    "rich>=13.6",
-    "async-asgi-testclient>=1.4",
+  "nextline>=0.7.15",
+  "apluggy>=1.0",
+  "dynaconf>=3.2",
+  "starlette>=0.31",
+  "strawberry-graphql>=0.240",
+  "websockets>=12.0",
+  "rich>=13.6",
+  "async-asgi-testclient>=1.4",
 ]
 
 [project.optional-dependencies]
 dev = ["black", "flake8", "logging_tree", "mypy", "tox", "twine", "uvicorn"]
 tests = [
-    "pytest-asyncio>=0.21",
-    "pytest-cov>=4.1",
-    "pytest-timeout>=2.2",
-    "pytest>=7.4",
-    "syrupy>=4.6",
+  "pytest-asyncio>=0.21",
+  "pytest-cov>=4.1",
+  "pytest-timeout>=2.2",
+  "pytest>=7.4",
+  "syrupy>=4.6",
 ]
 
 [project.urls]
@@ -70,34 +70,51 @@ branch = true
 source = ["nextlinegraphql", "tests"]
 concurrency = ["multiprocessing"]
 omit = [
-    "nextlinegraphql/plugins/ctrl/example_script/*",
-    "venv/*",
-    "*/site-packages/*",
+  "nextlinegraphql/plugins/ctrl/example_script/*",
+  "venv/*",
+  "*/site-packages/*",
 ]
 
 [tool.coverage.report]
 exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "if self\\.debug",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if 0:",
-    'if __name__ == "__main__":',
-    "if TYPE_CHECKING:",
+  "pragma: no cover",
+  "def __repr__",
+  "if self\\.debug",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "if 0:",
+  'if __name__ == "__main__":',
+  "if TYPE_CHECKING:",
 ]
 ignore_errors = true
 
-[tool.black]
-skip-string-normalization = true
-target_version = ['py310', 'py311', 'py312']
-exclude = '''(?x)(
-   plugins/db/alembic/versions/.*\.py$
-    | example_script/.*\.py$
-)'''
+[tool.ruff]
+line-length = 88
+extend-exclude = ["example_script"]
 
-[tool.isort]
-profile = "black"
+[tool.ruff.format]
+quote-style = "preserve"
+
+[tool.ruff.lint]
+select = [
+  "E", # pycodestyle errors
+  "W", # pycodestyle warnings
+  "F", # pyflakes
+  "I", # isort
+]
+ignore = [
+  "E203", # Whitespace before '{symbol}'
+  "E265", # Block comment should start with #
+  "E266", # Too many leading # before block comment
+  "E501", # Line too long ({width} > {limit})
+  "E741", # Ambiguous variable name '{name}'
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 20
+
+[tool.ruff.lint.isort]
+known-first-party = ["nextline"]
 
 [tool.mypy]
 plugins = "strawberry.ext.mypy_plugin"
@@ -108,9 +125,9 @@ disallow_untyped_defs = true
 
 [[tool.mypy.overrides]]
 module = [
-    "dynaconf.*",
-    "async_asgi_testclient.*",
-    "snapshottest.*",
-    "apluggy.*",
+  "dynaconf.*",
+  "async_asgi_testclient.*",
+  "snapshottest.*",
+  "apluggy.*",
 ]
 ignore_missing_imports = true

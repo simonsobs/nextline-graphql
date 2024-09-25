@@ -10,7 +10,6 @@
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "python.testing.pytestArgs": ["tests"],
-  "isort.check": true,
   "markdownlint.config": {
     "MD033": { "allowed_elements": ["i", "span", "a", "img"] },
     "MD041": false

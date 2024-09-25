@@ -2,9 +2,9 @@ from pathlib import Path
 from typing import Optional
 
 import strawberry
-from nextline import Nextline
 from strawberry.types import Info
 
+from nextline import Nextline
 from nextlinegraphql.plugins.ctrl import example_script as example_script_module
 
 EXAMPLE_SCRIPT_PATH = Path(example_script_module.__file__).parent / 'script.py'
