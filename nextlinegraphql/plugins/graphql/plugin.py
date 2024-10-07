@@ -80,9 +80,7 @@ class _EGraphQL(GraphQL):
         return self
 
     async def get_context(
-        self,
-        request: 'Request | WebSocket',
-        response: Optional['Response'] = None,
+        self, request: 'Request | WebSocket', response: 'Response | WebSocket'
     ) -> Optional[Any]:
         context = {'request': request, 'response': response}
         self._hook.hook.update_strawberry_context(context=context)
