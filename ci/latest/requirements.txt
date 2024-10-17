@@ -1,7 +1,7 @@
 # The exact requirements of the latest versions of the dependencies. This file
 # is used in a GitHub Actions workflow to test the compatibility with the
 # latest versions of the dependencies. This file is monitored by Dependabot.
-nextline==0.7.16
+nextline==0.7.17
 apluggy==1.0.3
 dynaconf==3.2.6
 starlette==0.39.2
