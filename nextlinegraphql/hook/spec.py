@@ -1,4 +1,5 @@
 '''Hook specification for Nextline GraphQL plugin.'''
+
 from collections.abc import AsyncIterator, MutableMapping, Sequence
 from typing import Optional
 
@@ -71,7 +72,7 @@ async def lifespan(
 
     The Starlette lifespan yields within this hook
     '''
-    yield
+    yield  # pragma: no cover
 
 
 @hookspec

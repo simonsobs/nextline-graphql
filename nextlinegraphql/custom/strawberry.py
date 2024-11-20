@@ -2,6 +2,7 @@
 
 Strawberry: https://strawberry.rocks
 '''
+
 from typing import TYPE_CHECKING
 
 from strawberry.asgi import GraphQL as GraphQL_
@@ -16,7 +17,7 @@ class GraphQL(GraphQL_):
 
     async def __call__(self, scope: 'Scope', receive: 'Receive', send: 'Send') -> None:
         if scope["type"] == "websocket":
-            if not scope.get("subprotocols"):
+            if not scope.get("subprotocols"):  # pragma: no branch
                 # strawberry closes the websocket connection if
                 # subprotocols are empty, which is the case for
                 # async_asgi_testclient.
