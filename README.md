@@ -50,7 +50,6 @@ unless you need to refer to a specific package.
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11451619.svg)](https://doi.org/10.5281/zenodo.11451619)
 
-
 ## Packages
 
 ### Core package
@@ -84,8 +83,13 @@ These plugins are included in this package.
 These plugins are not included in this package. They can be installed separately.
 
 - [**nextline-rdb:**](https://github.com/simonsobs/nextline-rdb) A relational database for nextline. It stores configuration, execution history, and other information. It is implemented with [SQLAlchemy 2](https://www.sqlalchemy.org/).
-- [**nextline-schedule:**](https://github.com/simonsobs/nextline-schedule) An interface to the [_SO scheduler_](https://github.com/simonsobs/scheduler).
+- [**nextline-schedule:**](https://github.com/simonsobs/nextline-schedule) The **auto mode**. The **queue system**. An interface to the [_SO scheduler_](https://github.com/simonsobs/scheduler).
 - [**nextline-alert:**](https://github.com/simonsobs/nextline-alert) An interface to the alert system [_campana_](https://github.com/simonsobs/campana).
+
+### Utility
+
+- [**nextline-test-utils:**](https://github.com/simonsobs/nextline-test-utils)
+  A collection of test utilities for backend development
 
 ### Web App
 
