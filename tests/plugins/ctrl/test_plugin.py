@@ -23,7 +23,7 @@ async def test_plugin(client: TestClient) -> None:
 
 async def _subscribe_state(client: TestClient) -> list[str]:
     ret = []
-    async for data in gql_subscribe(client, SUBSCRIBE_STATE):
+    async for data in gql_subscribe(client, SUBSCRIBE_STATE):  # pragma: no branch
         s = data['ctrlState']
         ret.append(s)
         if s == 'finished':

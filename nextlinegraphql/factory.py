@@ -41,7 +41,9 @@ def create_app() -> Starlette:
     async def lifespan(app: Starlette) -> AsyncIterator[None]:
         context = dict[Any, Any]()
         await hook.ahook.update_lifespan_context(app=app, hook=hook, context=context)
-        async with hook.awith.lifespan(app=app, hook=hook, context=context):
+        async with hook.awith.lifespan(
+            app=app, hook=hook, context=context
+        ):  # pragma: no branch
             yield
 
     middleware = [
