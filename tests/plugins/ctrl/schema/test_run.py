@@ -100,7 +100,7 @@ async def _subscribe_state(schema: Schema, context: Any) -> list[str]:
     ret = []
     sub = await schema.subscribe(SUBSCRIBE_STATE, context_value=context)
     assert hasattr(sub, '__aiter__')
-    async for result in sub:
+    async for result in sub:  # pragma: no branch
         assert (data := result.data)
         state = data['ctrlState']
         ret.append(state)
@@ -138,7 +138,7 @@ async def _control_execution(schema: Schema, context: Any) -> None:
     agen = agen_with_wait(sub)
 
     prev_ids = set[int]()
-    async for result in agen:
+    async for result in agen:  # pragma: no branch
         assert isinstance(result, ExecutionResult)
         assert (data := result.data)
         trace_ids: list[int] = data['ctrlTraceIds']
