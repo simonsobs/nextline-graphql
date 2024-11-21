@@ -24,6 +24,7 @@ _The plugin-based framework of the Nextline backend API server_
   - [Plugins](#plugins)
     - [Internal plugins](#internal-plugins)
     - [External plugins](#external-plugins)
+  - [Utility](#utility)
   - [Web App](#web-app)
 - [How to run the Nextline backend API server](#how-to-run-the-nextline-backend-api-server)
   - [As a Docker container](#as-a-docker-container)
