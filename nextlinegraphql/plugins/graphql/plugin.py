@@ -1,8 +1,9 @@
 from collections.abc import AsyncIterator, MutableMapping
+from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any, Optional
 
 import strawberry
-from apluggy import PluginManager, asynccontextmanager
+from apluggy import PluginManager
 from dynaconf import Dynaconf
 from starlette.applications import Starlette
 from starlette.types import ASGIApp
