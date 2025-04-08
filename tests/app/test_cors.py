@@ -34,7 +34,7 @@ async def test_preflight(client: TestClient) -> None:
     headers = {
         'ORIGIN': 'https://foo.example',
         'Access-Control-Request-Method': 'POST',
-        'Access-Control-Request-Headers': 'Content-Type',
+        'Access-Control-Request-Headers': 'X-PINGOTHER, Content-Type',
     }
 
     resp = await client.options('/', headers=headers)
