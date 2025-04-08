@@ -51,6 +51,7 @@ def create_app() -> Starlette:
             CORSMiddleware,
             allow_origins=["*"],
             allow_methods=['GET', 'POST', 'OPTIONS'],
+            allow_headers=['*'],
         )
     ]
 
