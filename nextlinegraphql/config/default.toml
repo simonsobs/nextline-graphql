@@ -3,6 +3,13 @@
 # Syntax can be learned from Dynaconf examples 
 # https://github.com/rochacbruno/learndynaconf/tree/main/configs
 
+# The CORS section is commented out because the lists `['*']` would be merged
+# with the local settings rather than overridden. The default values are
+# instead provided with `Validate()` in the code.
+# [cors]
+# allow_origins = ["*"]
+# allow_headers = ["*"]
+
 [logging]
 disable_existing_loggers = false
 version = 1
