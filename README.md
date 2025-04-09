@@ -150,8 +150,23 @@ as plugins. An example can be described in
 ## Configuration
 
 nextline-graphql uses [dynaconf](https://www.dynaconf.com/) for configuration
-management. nextline-graphql itself does not have any configuration except for
-logging. External plugins have configurations.
+management. nextline-graphql itself has configuration for CORS and logging.
+External plugins can extend the configuration.
+
+### CORS
+
+These CORS (Cross-Origin Resource Sharing) settings will be given to
+`allow_origin` and `allow_headers` of Starlette's
+[`CORSMiddleware`](https://www.starlette.io/middleware/#corsmiddleware).
+
+| Environment variable           | Default value | Description                                                                                                                                                                                                                                                                                                                               |
+| ------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXTLINE_CORS__ALLOW_ORIGINS` | `['*']`       | A list of allowed origins, e.g., `["http://example.com:8080"]`. The default value (`"*"`) allows any origins.                                                                                                                                                                                                                             |
+| `NEXTLINE_CORS__ALLOW_HEADERS` | `['*']`       | A list of allowed HTTP request headers. For example, `['remote-user', 'remote-name', 'remote-email']` can be appropriate values if Authelia is used. Some headers such as `Content-Type` are always allowed (See [the Starlette doc](https://www.starlette.io/middleware/#corsmiddleware)). The default value (`"*"`) allows any headers. |
+
+### Logging
+
+See [`default.toml`](./nextlinegraphql/config/default.toml).
 
 ## Check out code for development
 
