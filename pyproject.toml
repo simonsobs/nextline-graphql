@@ -65,7 +65,6 @@ timeout = 60
 addopts = "--doctest-modules"
 # doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE",]
 doctest_optionflags = ["ELLIPSIS"]
-norecursedirs = "nextlinegraphql/plugins/db/alembic build"
 log_cli = false
 log_cli_level = "INFO"
 
@@ -118,7 +117,7 @@ ignore = [
 max-complexity = 20
 
 [tool.ruff.lint.isort]
-known-first-party = ["nextline"]
+known-first-party = ["nextline", "nextline_test_utils"]
 
 [tool.mypy]
 plugins = "strawberry.ext.mypy_plugin"
