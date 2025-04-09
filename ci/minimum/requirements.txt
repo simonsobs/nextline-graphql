@@ -10,8 +10,10 @@ strawberry-graphql==0.241.0
 websockets==12.0.0
 rich==13.6.0
 async-asgi-testclient==1.4.0
+nextline-test-utils==0.1.2
 pytest-asyncio==0.21.0
 pytest-cov==4.1.0
 pytest-timeout==2.2.0
 pytest==7.4.0
+hypothesis==6.130.0
 syrupy==4.6.0
