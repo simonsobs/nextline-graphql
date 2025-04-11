@@ -13,7 +13,7 @@ from .config import load_settings
 from .hook import load_plugins
 
 
-def create_app() -> Starlette:
+def create_app(external_plugins: bool = True) -> Starlette:
     '''App factory for Uvicorn
 
     Use the factory option to run.
@@ -23,7 +23,7 @@ def create_app() -> Starlette:
     Uvicorn Doc: https://www.uvicorn.org/#application-factories
     '''
 
-    hook = load_plugins()
+    hook = load_plugins(external=external_plugins)
     config = load_settings(hook)
     print('Settings:', config.as_dict())
 
