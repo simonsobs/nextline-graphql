@@ -17,4 +17,6 @@ async def client(app: Starlette) -> AsyncIterator[TestClient]:
 
 @pytest.fixture
 def app() -> Starlette:
+    # TODO: Use `external_plugins=False` for the tests that
+    #       don't need external plugins.
     return create_app()

@@ -7,7 +7,7 @@ from nextlinegraphql.plugins import ctrl, dev, graphql
 from . import spec
 
 
-def load_plugins() -> PluginManager:
+def load_plugins(external: bool = True) -> PluginManager:
     '''Return a pluggy PluginManager with the plugins registered'''
 
     pm = PluginManager(spec.PROJECT_NAME)
@@ -19,6 +19,8 @@ def load_plugins() -> PluginManager:
     pm.register(ctrl.Plugin(), name='ctrl')
     pm.register(dev.Plugin(), name='dev')
     # pm.set_blocked('schedule')
-    pm.load_setuptools_entrypoints(spec.PROJECT_NAME)
+
+    if external:
+        pm.load_setuptools_entrypoints(spec.PROJECT_NAME)
 
     return pm
