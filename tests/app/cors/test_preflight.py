@@ -98,7 +98,7 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
         if allow_headers is not None:
             m.setenv('NEXTLINE_CORS__ALLOW_HEADERS', repr(allow_headers))
 
-        app = create_app()
+        app = create_app(external_plugins=False)
         async with TestClient(app) as client:
             #
             resp = await client.options('/', headers=headers)
