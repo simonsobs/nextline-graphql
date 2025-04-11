@@ -1,4 +1,4 @@
-from hypothesis import HealthCheck, Phase, given, settings
+from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 from pytest import MonkeyPatch
 
@@ -9,12 +9,7 @@ from nextlinegraphql.plugins.graphql.test import TestClient
 from .strategies import st_origins
 
 
-@settings(
-    max_examples=10,
-    deadline=None,
-    suppress_health_check=[HealthCheck.function_scoped_fixture],
-    phases=[Phase.generate],
-)
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(data=st.data())
 async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
     '''Test CORS configurations.

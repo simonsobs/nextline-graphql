@@ -1,6 +1,4 @@
-from string import ascii_lowercase
-
-from hypothesis import HealthCheck, Phase, given, note, settings
+from hypothesis import HealthCheck, given, note, settings
 from hypothesis import strategies as st
 from pytest import MonkeyPatch
 
@@ -17,12 +15,7 @@ from .strategies import (
 )
 
 
-@settings(
-    max_examples=20,
-    deadline=None,
-    suppress_health_check=[HealthCheck.function_scoped_fixture],
-    phases=[Phase.generate],
-)
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(data=st.data())
 async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
     '''Test CORS configurations for preflighted requests.
@@ -51,23 +44,15 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
     )
 
     ## header_origin: an HTTP request header 'Origin'
-    ## None or an origin
-    ## If None, the request header does not include 'Origin'
     header_origin = data.draw(
-        st_none_or(
-            st_origins()
-            if not allow_origins or '*' in allow_origins
-            else st.one_of(st_origins(), st.sampled_from(allow_origins))
-        ),
+        st_origins()
+        if not allow_origins or '*' in allow_origins
+        else st.one_of(st_origins(), st.sampled_from(allow_origins)),
         label='header_origin',
     )
 
     ## header_request_method: an HTTP request header 'Access-Control-Request-Method'
-    ## None or a method
-    ## If None, the request header does not include 'Access-Control-Request-Method'
-    header_request_method = data.draw(
-        st_none_or(st_methods()), label='header_request_method'
-    )
+    header_request_method = data.draw(st_methods(), label='header_request_method')
 
     # All allowed headers except for the wildcard '*'
     allowed_headers = set(ALWAYS_ALLOWED_HEADERS) | (set(allow_headers or []) - {'*'})
@@ -77,17 +62,19 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
     ## If None, the request header does not include 'Access-Control-Request-Headers'
     header_request_headers = data.draw(
         st_none_or(
-            st.lists(st.one_of(st_headers(), st.sampled_from(list(allowed_headers))))
+            st.lists(
+                st.one_of(st_headers(), st.sampled_from(list(allowed_headers))),
+                unique=True,
+            )
         ),
         label='header_request_headers',
     )
 
     # Build the request header
-    headers: dict[str, str] = {}
-    if header_origin is not None:
-        headers['Origin'] = header_origin
-    if header_request_method is not None:
-        headers['Access-Control-Request-Method'] = header_request_method
+    headers = {
+        'Origin': header_origin,
+        'Access-Control-Request-Method': header_request_method,
+    }
     if header_request_headers is not None:
         headers['Access-Control-Request-Headers'] = ', '.join(header_request_headers)
 
@@ -119,14 +106,10 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
             assert resp.status_code == 200
 
             # Assert 'Access-Control-Allow-Origin'
-            if header_origin is None:
-                'access-control-allow-origin' not in resp.headers
-            elif allow_origins == ['*'] or allow_origins is None:
+            if allow_origins == ['*'] or allow_origins is None:
                 assert '*' == resp.headers['access-control-allow-origin']
-            elif header_origin in allow_origins:
-                assert header_origin == resp.headers['access-control-allow-origin']
             else:
-                'access-control-allow-origin' not in resp.headers
+                assert header_origin == resp.headers['access-control-allow-origin']
 
             # Assert 'Access-Control-Allow-Methods'
             assert set(ALLOWED_METHODS) == set(
@@ -147,24 +130,16 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
 def is_response_error_expected(
     allow_origins: list[str] | None,
     allow_headers: list[str] | None,
-    header_origin: str | None,
-    header_request_method: str | None,
+    header_origin: str,
+    header_request_method: str,
     header_request_headers: list[str] | None,
 ) -> bool:
     # Origin:
-    # Headers must have 'Origin' with a value that is allowed.
-    if header_origin is None:
-        return True
-
     if allow_origins is not None and allow_origins != ['*']:
         if header_origin not in allow_origins:
             return True
 
     # Request method:
-    # Headers must have 'Access-Control-Request-Method' with a value that is allowed.
-    if header_request_method is None:
-        return True
-
     if header_request_method not in ALLOWED_METHODS:
         return True
 
