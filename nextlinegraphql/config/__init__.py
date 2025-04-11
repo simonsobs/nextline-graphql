@@ -1,7 +1,8 @@
 '''Configuration by Dynaconf.
 
-Dynaconf: https://www.dynaconf.com/ 
+Dynaconf: https://www.dynaconf.com/
 '''
+
 __all__ = ['load_settings']
 from collections.abc import Sequence
 from itertools import chain
@@ -17,7 +18,13 @@ DEFAULT_CONFIG_PATH = HERE / 'default.toml'
 assert DEFAULT_CONFIG_PATH.is_file()
 
 MINIMAL_PRELOAD = (str(DEFAULT_CONFIG_PATH),)
-MINIMAL_VALIDATORS = ()
+MINIMAL_VALIDATORS = (
+    # NOTE: Provide default values `['*']` here so that these values will be overridden
+    # by the settings file. If the default values were provided in `default.toml`, the
+    # lists would be merged instead of overridden.
+    Validator('CORS.ALLOW_ORIGINS', is_type_of=list, default=['*']),
+    Validator('CORS.ALLOW_HEADERS', is_type_of=list, default=['*']),
+)
 
 
 def load_settings(hook: PluginManager) -> Dynaconf:
