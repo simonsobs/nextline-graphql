@@ -3,7 +3,7 @@
 # latest versions of the dependencies. This file is monitored by Dependabot.
 nextline==0.7.20
 apluggy==1.1.0
-dynaconf==3.2.10
+dynaconf==3.2.11
 starlette==0.46.2
 strawberry-graphql==0.263.2
 websockets==15.0.1
