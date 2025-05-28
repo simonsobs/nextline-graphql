@@ -43,6 +43,16 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
         label='allow_headers',
     )
 
+    ## allow_credentials: an env var NEXTLINE_CORS__ALLOW_CREDENTIALS
+    ## None or a boolean
+    ## True only if neither `allow_origins` nor `allow_headers` is None or ['*']
+    ## If None, the environment variable is not set, default to False
+    if allow_origins not in (None, ['*']) and allow_headers not in (None, ['*']):
+        st_allow_credentials = st_none_or(st.booleans())
+    else:
+        st_allow_credentials = st_none_or(st.just(False))
+    allow_credentials = data.draw(st_allow_credentials, label='allow_credentials')
+
     ## header_origin: an HTTP request header 'Origin'
     header_origin = data.draw(
         st_origins()
@@ -84,6 +94,8 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
             m.setenv('NEXTLINE_CORS__ALLOW_ORIGINS', repr(allow_origins))
         if allow_headers is not None:
             m.setenv('NEXTLINE_CORS__ALLOW_HEADERS', repr(allow_headers))
+        if allow_credentials is not None:
+            m.setenv('NEXTLINE_CORS__ALLOW_CREDENTIALS', str(allow_credentials).lower())
 
         app = create_app(external_plugins=False)
         async with TestClient(app) as client:

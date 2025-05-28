@@ -24,6 +24,7 @@ MINIMAL_VALIDATORS = (
     # lists would be merged instead of overridden.
     Validator('CORS.ALLOW_ORIGINS', is_type_of=list, default=['*']),
     Validator('CORS.ALLOW_HEADERS', is_type_of=list, default=['*']),
+    Validator('CORS.ALLOW_CREDENTIALS', is_type_of=bool),
 )
 
 
