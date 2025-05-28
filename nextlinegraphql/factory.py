@@ -52,6 +52,7 @@ def create_app(external_plugins: bool = True) -> Starlette:
             allow_origins=config.cors['allow_origins'],
             allow_methods=['GET', 'POST', 'OPTIONS'],
             allow_headers=config.cors['allow_headers'],
+            allow_credentials=config.cors['allow_credentials'],
         )
     ]
 
