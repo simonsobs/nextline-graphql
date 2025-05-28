@@ -163,7 +163,7 @@ These CORS (Cross-Origin Resource Sharing) settings will be given to
 | ------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `NEXTLINE_CORS__ALLOW_ORIGINS` | `['*']`       | A list of allowed origins, e.g., `["http://example.com:8080"]`. The default value (`"*"`) allows any origins.                                                                                                                                                                                                                             |
 | `NEXTLINE_CORS__ALLOW_HEADERS` | `['*']`       | A list of allowed HTTP request headers. For example, `['remote-user', 'remote-name', 'remote-email']` can be appropriate values if Authelia is used. Some headers such as `Content-Type` are always allowed (See [the Starlette doc](https://www.starlette.io/middleware/#corsmiddleware)). The default value (`"*"`) allows any headers. |
-' `NEXTLINE_CORS__ALLOW_CREDENTIALS` | `False`       | Whether to support cookies. If `True`, the wildcard (`"*"`) cannot be used for `NEXTLINE_CORS__ALLOW_ORIGINS` or `NEXTLINE_CORS__ALLOW_HEADERS`. They need to be listed explicitly. |
+' `NEXTLINE_CORS__ALLOW_CREDENTIALS` | `false`       | Whether to support cookies. If `True`, the wildcard (`"*"`) cannot be used for `NEXTLINE_CORS__ALLOW_ORIGINS` or `NEXTLINE_CORS__ALLOW_HEADERS`. They need to be listed explicitly. |
 
 ### Logging
 
