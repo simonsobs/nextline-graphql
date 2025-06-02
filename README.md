@@ -19,17 +19,18 @@ _The plugin-based framework of the Nextline backend API server_
 - [Introduction](#introduction)
 - [Citation](#citation)
 - [Packages](#packages)
-  - [Core package](#core-package)
-  - [Plugin system](#plugin-system)
-  - [Plugins](#plugins)
-    - [Internal plugins](#internal-plugins)
-    - [External plugins](#external-plugins)
-  - [Utility](#utility)
-  - [Web App](#web-app)
+  - [Backend API server (Python)](#backend-api-server-python)
+    - [Core package](#core-package)
+    - [Plugin system](#plugin-system)
+    - [Plugins](#plugins)
+    - [Utility](#utility)
+  - [Frontend web app (TypeScript)](#frontend-web-app-typescript)
 - [How to run the Nextline backend API server](#how-to-run-the-nextline-backend-api-server)
   - [As a Docker container](#as-a-docker-container)
   - [In a virtual environment](#in-a-virtual-environment)
 - [Configuration](#configuration)
+  - [CORS](#cors)
+  - [Logging](#logging)
 - [Check out code for development](#check-out-code-for-development)
 
 ## Introduction
@@ -53,13 +54,15 @@ unless you need to refer to a specific package.
 
 ## Packages
 
-### Core package
+### Backend API server (Python)
+
+#### Core package
 
 - [**nextline:**](https://github.com/simonsobs/nextline) The core functionality
   of Nextline. It controls the execution of the Python scripts. It is used by
   the plugin _ctrl_.
 
-### Plugin system
+#### Plugin system
 
 The plugin system of _nextline-graphql_ is _apluggy_.
 
@@ -67,9 +70,9 @@ The plugin system of _nextline-graphql_ is _apluggy_.
   [pluggy](https://pluggy.readthedocs.io/) to support asyncio and context
   managers.
 
-### Plugins
+#### Plugins
 
-#### Internal plugins
+##### Internal plugins
 
 These plugins are included in this package.
 
@@ -79,7 +82,7 @@ These plugins are included in this package.
   the execution of the Python scripts. It uses the package
   [_nextline_](https://github.com/simonsobs/nextline).
 
-#### External plugins
+##### External plugins
 
 These plugins are not included in this package. They can be installed separately.
 
@@ -87,23 +90,23 @@ These plugins are not included in this package. They can be installed separately
 - [**nextline-schedule:**](https://github.com/simonsobs/nextline-schedule) The **auto mode**. The **queue system**. An interface to the [_SO scheduler_](https://github.com/simonsobs/scheduler).
 - [**nextline-alert:**](https://github.com/simonsobs/nextline-alert) An interface to the alert system [_campana_](https://github.com/simonsobs/campana).
 
-### Utility
+#### Utility
 
 - [**nextline-test-utils:**](https://github.com/simonsobs/nextline-test-utils)
   A collection of test utilities for backend development
 
-### Web App
+### Frontend web app (TypeScript)
 
-The front-end web app is currently in a single package. The development of a
+The frontend web app is currently in a single package. The development of a
 plugin-based system is planned.
 
-- [**nextline-web:**](https://github.com/simonsobs/nextline-web) (TypeScript)
-  The front-end web app of Nextline. It is a Vue.js app.
+- [**nextline-web:**](https://github.com/simonsobs/nextline-web)
+  The frontend web app of Nextline. It is a Vue.js app.
 
 ## How to run the Nextline backend API server
 
 The section shows how to run the Nextline backend API server. How to run the
-front-end web app is described
+frontend web app is described
 [elsewhere](https://github.com/simonsobs/nextline-web).
 
 ### As a Docker container
