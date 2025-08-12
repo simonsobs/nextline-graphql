@@ -7,7 +7,7 @@ dynaconf==3.2.11
 starlette==0.47.2
 strawberry-graphql==0.278.1
 websockets==15.0.1
-rich==14.0.0
+rich==14.1.0
 async-asgi-testclient==1.4.11
 nextline-test-utils==0.1.2
 pytest-asyncio==1.1.0
