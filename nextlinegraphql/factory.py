@@ -14,13 +14,28 @@ from .hook import load_plugins
 
 
 def create_app(external_plugins: bool = True) -> Starlette:
-    '''App factory for Uvicorn
+    '''App factory for Uvicorn.
 
-    Use the factory option to run.
+    Parameters
+    ----------
+    external_plugins
+        Whether to load external plugins. (Used for testing.)
+
+    Returns
+    -------
+    Starlette
+        The configured ASGI application instance.
+
+    Notes
+    -----
+    Use the factory option to run with Uvicorn:
 
     $ uvicorn --factory nextlinegraphql:create_app
 
-    Uvicorn Doc: https://www.uvicorn.org/#application-factories
+    See Also
+    --------
+    Uvicorn Application Factories : https://www.uvicorn.org/#application-factories
+
     '''
 
     hook = load_plugins(external=external_plugins)
