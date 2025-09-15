@@ -31,6 +31,7 @@ _The plugin-based framework of the Nextline backend API server_
 - [Configuration](#configuration)
   - [CORS](#cors)
   - [Logging](#logging)
+  - [`ctrl` plugin](#ctrl-plugin)
 - [Check out code for development](#check-out-code-for-development)
 
 ## Introduction
@@ -184,7 +185,7 @@ These CORS (Cross-Origin Resource Sharing) settings will be given to
 
 See [`default.toml`](./nextlinegraphql/config/default.toml).
 
-### CTRL plugin
+### `ctrl` plugin
 
 | Environment variable           | Default value | Description                                                                                                                                 |
 | ------------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
