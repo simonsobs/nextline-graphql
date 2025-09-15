@@ -15,13 +15,13 @@ from .config import load_settings
 from .hook import load_plugins
 
 
-def create_app(external_plugins: bool = True) -> Starlette:
+def create_app(enable_external_plugins: bool = True) -> Starlette:
     '''App factory for Uvicorn.
 
     Parameters
     ----------
-    external_plugins
-        Whether to load external plugins. (Used for testing.)
+    enable_external_plugins
+        Do not load external plugins if False. (Used for tests.)
 
     Returns
     -------
@@ -40,7 +40,7 @@ def create_app(external_plugins: bool = True) -> Starlette:
 
     '''
 
-    hook, config = create_hook_and_config(external_plugins)
+    hook, config = create_hook_and_config(enable_external_plugins)
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette) -> AsyncIterator[None]:
@@ -67,9 +67,9 @@ def create_app(external_plugins: bool = True) -> Starlette:
 
 
 def create_hook_and_config(
-    external_plugins: bool,
+    enable_external_plugins: bool,
 ) -> tuple[PluginManager, LazySettings]:
-    hook = load_plugins(external=external_plugins)
+    hook = load_plugins(external=enable_external_plugins)
     config = load_settings(hook)
     print('Settings:', config.as_dict())
 
