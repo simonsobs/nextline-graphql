@@ -164,8 +164,9 @@ as plugins. An example can be described in
 ## Configuration
 
 nextline-graphql uses [dynaconf](https://www.dynaconf.com/) for configuration
-management. nextline-graphql itself has configuration for CORS and logging.
-External plugins can extend the configuration.
+management. nextline-graphql itself has configuration for CORS and logging. The
+internal plugin `ctrl` also has configurations. External plugins can extend the
+configuration.
 
 ### CORS
 
@@ -182,6 +183,13 @@ These CORS (Cross-Origin Resource Sharing) settings will be given to
 ### Logging
 
 See [`default.toml`](./nextlinegraphql/config/default.toml).
+
+### CTRL plugin
+
+| Environment variable           | Default value | Description                                                                                                                                 |
+| ------------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXTLINE_CTRL__TRACE_MODULES` | `false`       | By default (`false`), Nextline only traces the main Python script. If `true`, Nextline traces execution of imported Python modules as well. |
+| `NEXTLINE_CTRL__TRACE_THREADS` | `false`       | By default (`false`), Nextline only traces the main thread. If `true`, Nextline traces execution of other threads as well.                   |
 
 ## Check out code for development
 

@@ -21,6 +21,7 @@ def st_origins() -> st.SearchStrategy[str]:
         st.just('') | ports,
     )
 
+
 # https://www.starlette.io/middleware/#corsmiddleware
 ALWAYS_ALLOWED_HEADERS = (
     'Accept',

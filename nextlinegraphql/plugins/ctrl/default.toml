@@ -1,0 +1,8 @@
+# Default settings
+#
+# Syntax can be learned from Dynaconf examples 
+# https://github.com/rochacbruno/learndynaconf/tree/main/configs
+
+[ctrl]
+trace_modules = false
+trace_threads = false
