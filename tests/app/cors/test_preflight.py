@@ -97,7 +97,9 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
         if allow_credentials is not None:
             m.setenv('NEXTLINE_CORS__ALLOW_CREDENTIALS', str(allow_credentials).lower())
 
-        app = create_app(enable_external_plugins=False)
+        app = create_app(
+            enable_external_plugins=False, enable_logging_configuration=False
+        )
         async with TestClient(app) as client:
             #
             resp = await client.options('/', headers=headers)
