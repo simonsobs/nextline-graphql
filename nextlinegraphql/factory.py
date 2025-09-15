@@ -4,6 +4,8 @@ from collections.abc import AsyncIterator
 from logging import getLogger
 from typing import Any
 
+from apluggy import PluginManager
+from dynaconf import LazySettings
 from rich import print
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
@@ -38,19 +40,7 @@ def create_app(external_plugins: bool = True) -> Starlette:
 
     '''
 
-    hook = load_plugins(external=external_plugins)
-    config = load_settings(hook)
-    print('Settings:', config.as_dict())
-
-    configure_logging(config.logging)
-    logger = getLogger(__name__)
-    logger.info('Logging configured')
-
-    hook.hook.configure(settings=config, hook=hook)
-
-    plugin_names = [n for n, p in hook.list_name_plugin() if p]
-    logger.info(f'Pluggy project name: {hook.project_name!r}')
-    logger.info(f'Loaded plugins: {plugin_names}')
+    hook, config = create_hook_and_config(external_plugins)
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette) -> AsyncIterator[None]:
@@ -74,6 +64,25 @@ def create_app(external_plugins: bool = True) -> Starlette:
     app = Starlette(debug=True, lifespan=lifespan, middleware=middleware)
 
     return app
+
+
+def create_hook_and_config(
+    external_plugins: bool,
+) -> tuple[PluginManager, LazySettings]:
+    hook = load_plugins(external=external_plugins)
+    config = load_settings(hook)
+    print('Settings:', config.as_dict())
+
+    configure_logging(config.logging)
+    logger = getLogger(__name__)
+    logger.info('Logging configured')
+
+    hook.hook.configure(settings=config, hook=hook)
+
+    plugin_names = [n for n, p in hook.list_name_plugin() if p]
+    logger.info(f'Pluggy project name: {hook.project_name!r}')
+    logger.info(f'Loaded plugins: {plugin_names}')
+    return hook, config
 
 
 def configure_logging(config: dict) -> None:
