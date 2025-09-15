@@ -48,7 +48,9 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
             m.setenv('NEXTLINE_CORS__ALLOW_ORIGINS', repr(allow_origins))
 
         app = create_app(
-            enable_external_plugins=False, enable_logging_configuration=False
+            enable_external_plugins=False,
+            enable_logging_configuration=False,
+            print_settings=False,
         )
         async with TestClient(app) as client:
             #

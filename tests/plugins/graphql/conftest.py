@@ -9,7 +9,11 @@ from nextlinegraphql.plugins.graphql.test import TestClient
 
 @pytest.fixture
 async def client() -> AsyncIterator[TestClient]:
-    app = create_app(enable_external_plugins=False, enable_logging_configuration=False)
+    app = create_app(
+        enable_external_plugins=False,
+        enable_logging_configuration=False,
+        print_settings=False,
+    )
     async with TestClient(app) as y:
         await asyncio.sleep(0)
         yield y

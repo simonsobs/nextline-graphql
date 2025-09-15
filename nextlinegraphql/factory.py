@@ -16,7 +16,9 @@ from .hook import load_plugins
 
 
 def create_app(
-    enable_external_plugins: bool = True, enable_logging_configuration: bool = True
+    enable_external_plugins: bool = True,
+    enable_logging_configuration: bool = True,
+    print_settings: bool = True,
 ) -> Starlette:
     '''App factory for Uvicorn.
 
@@ -26,6 +28,8 @@ def create_app(
         Do not load external plugins if False. (Used for tests.)
     enable_logging_configuration
         Leave logging configuration intact if False. (Used for tests.)
+    print_settings
+        Do not print settings if False. (Used for tests.)
 
     Returns
     -------
@@ -47,6 +51,7 @@ def create_app(
     hook, config = create_hook_and_config(
         enable_external_plugins=enable_external_plugins,
         enable_logging_configuration=enable_logging_configuration,
+        print_settings=print_settings,
     )
 
     @contextlib.asynccontextmanager
@@ -76,10 +81,12 @@ def create_app(
 def create_hook_and_config(
     enable_external_plugins: bool,
     enable_logging_configuration: bool,
+    print_settings: bool
 ) -> tuple[PluginManager, LazySettings]:
     hook = load_plugins(external=enable_external_plugins)
     config = load_settings(hook)
-    print('Settings:', config.as_dict())
+    if print_settings:
+        print('Settings:', config.as_dict())
 
     if enable_logging_configuration:
         configure_logging(config.logging)
