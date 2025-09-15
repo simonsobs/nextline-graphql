@@ -15,13 +15,17 @@ from .config import load_settings
 from .hook import load_plugins
 
 
-def create_app(enable_external_plugins: bool = True) -> Starlette:
+def create_app(
+    enable_external_plugins: bool = True, enable_logging_configuration: bool = True
+) -> Starlette:
     '''App factory for Uvicorn.
 
     Parameters
     ----------
     enable_external_plugins
         Do not load external plugins if False. (Used for tests.)
+    enable_logging_configuration
+        Leave logging configuration intact if False. (Used for tests.)
 
     Returns
     -------
@@ -40,7 +44,10 @@ def create_app(enable_external_plugins: bool = True) -> Starlette:
 
     '''
 
-    hook, config = create_hook_and_config(enable_external_plugins)
+    hook, config = create_hook_and_config(
+        enable_external_plugins=enable_external_plugins,
+        enable_logging_configuration=enable_logging_configuration,
+    )
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette) -> AsyncIterator[None]:
@@ -68,12 +75,14 @@ def create_app(enable_external_plugins: bool = True) -> Starlette:
 
 def create_hook_and_config(
     enable_external_plugins: bool,
+    enable_logging_configuration: bool,
 ) -> tuple[PluginManager, LazySettings]:
     hook = load_plugins(external=enable_external_plugins)
     config = load_settings(hook)
     print('Settings:', config.as_dict())
 
-    configure_logging(config.logging)
+    if enable_logging_configuration:
+        configure_logging(config.logging)
     logger = getLogger(__name__)
     logger.info('Logging configured')
 
