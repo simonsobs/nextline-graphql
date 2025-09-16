@@ -5,7 +5,7 @@ from logging import getLogger
 from typing import Any
 
 from apluggy import PluginManager
-from dynaconf import LazySettings
+from dynaconf import Dynaconf
 from rich import print
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
@@ -82,7 +82,7 @@ def create_hook_and_config(
     enable_external_plugins: bool,
     enable_logging_configuration: bool,
     print_settings: bool
-) -> tuple[PluginManager, LazySettings]:
+) -> tuple[PluginManager, Dynaconf]:
     hook = load_plugins(external=enable_external_plugins)
     config = load_settings(hook)
     if print_settings:
