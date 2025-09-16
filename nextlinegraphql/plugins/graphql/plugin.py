@@ -1,11 +1,11 @@
 from collections.abc import AsyncIterator, Iterable, MutableMapping
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING, Any, Optional
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, TypeAlias
 
 import strawberry
 from apluggy import PluginManager
-from dynaconf import Dynaconf
+from dynaconf import Dynaconf, Validator
 from starlette.applications import Starlette
 from starlette.types import ASGIApp
 from strawberry.schema import BaseSchema
@@ -17,10 +17,34 @@ from nextlinegraphql.hook import spec
 from .schema import Query
 
 if TYPE_CHECKING:
-    from strawberry.asgi import Request, Response, WebSocket
+HERE = Path(__file__).resolve().parent
+DEFAULT_CONFIG_PATH = HERE / 'default.toml'
+
+assert DEFAULT_CONFIG_PATH.is_file()
+
+PRELOAD = (str(DEFAULT_CONFIG_PATH),)
+SETTINGS = ()
+VALIDATORS = (
+    # NOTE: Provide default values `['*']` here so that these values will be overridden
+    # by the settings file. If the default values were provided in `default.toml`, the
+    # lists would be merged instead of overridden.
+    Validator('GRAPHQL.MUTATION_ALLOW_ORIGINS', is_type_of=list, default=['*']),
+)
 
 
 class Plugin:
+    @spec.hookimpl
+    def dynaconf_preload(self) -> Optional[tuple[str, ...]]:
+        return PRELOAD
+
+    @spec.hookimpl
+    def dynaconf_settings_files(self) -> Optional[tuple[str, ...]]:
+        return SETTINGS
+
+    @spec.hookimpl
+    def dynaconf_validators(self) -> Optional[tuple[Validator, ...]]:
+        return VALIDATORS
+
     @spec.hookimpl
     def configure(self, settings: Dynaconf, hook: PluginManager) -> None:
         self._settings = settings
