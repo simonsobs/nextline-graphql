@@ -1,6 +1,6 @@
 # nextline-graphql
 
-_The plugin-based framework of the Nextline backend API server_
+_The plugin-based framework of a Python API server._
 
 ---
 
@@ -36,14 +36,13 @@ _The plugin-based framework of the Nextline backend API server_
 
 ## Introduction
 
-_Nextline_ is a DAQ sequencer of the [Observatory Control System
-(OCS)](https://github.com/simonsobs/ocs/). Nextline allows line-by-line
-execution of concurrent Python scripts, which control telescopes, by multiple
-users simultaneously from web browsers.
+This package provides the framework for a plugin-based Python API server.
+Plugins can implement endpoints and services.
 
-Nextline consists of multiple packages. This package, _nextline-graphql_, provides the
-framework for the backend API server. It is a plugin-based framework. Features
-are added by plugins.
+This framework was originally developed as part of _Nextline_, a DAQ sequencer
+of the [Observatory Control System (OCS)](https://github.com/simonsobs/ocs/),
+which allows line-by-line execution of concurrent Python scripts, which control
+telescopes, by multiple users simultaneously from web browsers.
 
 ## Citation
 
@@ -54,6 +53,9 @@ unless you need to refer to a specific package.
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11451619.svg)](https://doi.org/10.5281/zenodo.11451619)
 
 ## Packages
+
+Nextline consists of multiple packages. This package, _nextline-graphql_,
+provides the framework for the backend API server.
 
 | Package                                                                                   | Language   | Release                                                                                                                  | Build                                                                                                                                                                                          | Coverage                                                                                                                                           |
 | :---------------------------------------------------------------------------------------- | ---------- | :----------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -190,23 +192,22 @@ See [`default.toml`](./nextlinegraphql/config/default.toml).
 | Environment variable           | Default value | Description                                                                                                                                 |
 | ------------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `NEXTLINE_CTRL__TRACE_MODULES` | `false`       | By default (`false`), Nextline only traces the main Python script. If `true`, Nextline traces execution of imported Python modules as well. |
-| `NEXTLINE_CTRL__TRACE_THREADS` | `false`       | By default (`false`), Nextline only traces the main thread. If `true`, Nextline traces execution of other threads as well.                   |
+| `NEXTLINE_CTRL__TRACE_THREADS` | `false`       | By default (`false`), Nextline only traces the main thread. If `true`, Nextline traces execution of other threads as well.                  |
 
 ## Check out code for development
 
-This section shows an example way to check out code from GitHub for development.
+How to check out code from GitHub for development:
 
 ```bash
+git clone git@github.com:simonsobs/nextline-graphql.git
+cd nextline-graphql/
 python -m venv venv
 source venv/bin/activate
-git clone git@github.com:simonsobs/nextline.git
-git clone git@github.com:simonsobs/nextline-graphql.git
-pip install -e ./nextline/"[tests,dev]"
-pip install -e ./nextline-graphql/"[tests,dev]"
+pip install -e ./"[tests,dev]"
 ```
 
 To run
 
 ```bash
-uvicorn --port 8080 --lifespan on --factory --reload --reload-dir nextline-graphql --reload-dir nextline nextlinegraphql:create_app
+uvicorn --port 8080 --lifespan on --factory --reload nextlinegraphql:create_app
 ```
