@@ -1,6 +1,7 @@
-from collections.abc import AsyncIterator, MutableMapping
+from collections.abc import AsyncIterator, Iterable, MutableMapping
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, TypeAlias
 
 import strawberry
 from apluggy import PluginManager
@@ -46,19 +47,14 @@ def _create_app(hook: PluginManager) -> ASGIApp:
     return app
 
 
+TRIO_LIST: TypeAlias = Iterable[tuple[type | None, type | None, type | None]]
+
+
 def _compose_schema(hook: PluginManager) -> BaseSchema:
     # [(Query, Mutation, Subscription), ...]
-    three_types = hook.hook.schema()
+    trio_list: TRIO_LIST = hook.hook.schema()
 
-    # [(Query, ...), (Mutation, ...), (Subscription, ...)]
-    transposed = list(map(tuple, zip(*three_types)))
-    transposed = [tuple(t for t in l if t) for l in transposed]  # remove None
-
-    q, m, s = transposed
-    assert q  # Query is required
-    Query = merge_types('Query', q)  # type: ignore
-    Mutation = m and merge_types('Mutation', m) or None  # type: ignore
-    Subscription = s and merge_types('Subscription', s) or None  # type: ignore
+    Query, Mutation, Subscription = _merge_trios(trio_list)
 
     schema = strawberry.Schema(
         query=Query,
@@ -67,6 +63,20 @@ def _compose_schema(hook: PluginManager) -> BaseSchema:
     )
 
     return schema
+
+
+def _merge_trios(trio_list: TRIO_LIST) -> tuple[type, type | None, type | None]:
+    # [(Query, ...), (Mutation, ...), (Subscription, ...)]
+    transposed = list(map(tuple, zip(*trio_list)))
+    transposed = [tuple(t for t in l if t) for l in transposed]  # remove None
+
+    q, m, s = transposed
+    assert q  # Query is required
+    Query = merge_types('Query', q)
+    Mutation = m and merge_types('Mutation', m) or None
+    Subscription = s and merge_types('Subscription', s) or None
+
+    return Query, Mutation, Subscription
 
 
 class _EGraphQL(GraphQL):
