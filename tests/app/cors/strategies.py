@@ -81,7 +81,7 @@ def st_allow_origins() -> st.SearchStrategy[list[str]]:
 def st_header_origin(allow_origins: list[str] | None) -> st.SearchStrategy[str]:
     '''A strategy for an HTTP request header 'Origin'.
 
-    None or an origin that may be allowed.
+    An origin that may be allowed.
     '''
     return (
         st_origins()

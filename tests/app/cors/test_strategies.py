@@ -4,6 +4,8 @@ from urllib.parse import urlparse
 from hypothesis import given
 from hypothesis import strategies as st
 
+from nextline_test_utils.strategies import st_none_or
+
 from .strategies import (
     ALL_METHODS,
     st_allow_origins,
@@ -41,7 +43,7 @@ def test_allow_origins(allow_origins: list[str]) -> None:
 
 @given(data=st.data())
 def test_header_origin(data: st.DataObject) -> None:
-    allow_origins = data.draw(st_allow_origins())
+    allow_origins = data.draw(st_none_or(st_allow_origins()))
     header_origin = data.draw(st_header_origin(allow_origins))
 
     if allow_origins and '*' not in allow_origins:
