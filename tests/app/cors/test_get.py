@@ -2,6 +2,7 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 from pytest import MonkeyPatch
 
+from nextline_test_utils.strategies import st_none_or
 from nextlinegraphql import create_app
 from nextlinegraphql.plugins.graphql.test import TestClient
 
@@ -22,11 +23,11 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
 
     ## None, ['*'], or a list of origins
     ## If None, no environment variable is set, default to ['*']
-    allow_origins = data.draw(st_allow_origins())
+    allow_origins = data.draw(st_none_or(st_allow_origins()))
 
     ## None or an origin that may be allowed
     ## If None, the request header does not include 'Origin'
-    header_origin = data.draw(st_header_origin(allow_origins))
+    header_origin = data.draw(st_none_or(st_header_origin(allow_origins)))
 
     # Build the request header
     headers = {'accept': 'text/html'}
