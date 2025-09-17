@@ -54,34 +54,14 @@ def create_app(
         print_settings=print_settings,
     )
 
-    @contextlib.asynccontextmanager
-    async def lifespan(app: Starlette) -> AsyncIterator[None]:
-        context = dict[Any, Any]()
-        await hook.ahook.update_lifespan_context(app=app, hook=hook, context=context)
-        async with hook.awith.lifespan(
-            app=app, hook=hook, context=context
-        ):  # pragma: no branch
-            yield
-
-    middleware = [
-        Middleware(
-            CORSMiddleware,
-            allow_origins=config.cors['allow_origins'],
-            allow_methods=['GET', 'POST', 'OPTIONS'],
-            allow_headers=config.cors['allow_headers'],
-            allow_credentials=config.cors['allow_credentials'],
-        )
-    ]
-
-    app = Starlette(debug=True, lifespan=lifespan, middleware=middleware)
-
+    app = create_app_from(hook, config)
     return app
 
 
 def create_hook_and_config(
     enable_external_plugins: bool,
     enable_logging_configuration: bool,
-    print_settings: bool
+    print_settings: bool,
 ) -> tuple[PluginManager, Dynaconf]:
     hook = load_plugins(external=enable_external_plugins)
     config = load_settings(hook)
@@ -107,3 +87,27 @@ def configure_logging(config: dict) -> None:
     # https://pypi.org/project/logging_tree/
     # import logging_tree
     # logging_tree.printout()
+
+
+def create_app_from(hook: PluginManager, config: Dynaconf) -> Starlette:
+    @contextlib.asynccontextmanager
+    async def lifespan(app: Starlette) -> AsyncIterator[None]:
+        context = dict[Any, Any]()
+        await hook.ahook.update_lifespan_context(app=app, hook=hook, context=context)
+        async with hook.awith.lifespan(
+            app=app, hook=hook, context=context
+        ):  # pragma: no branch
+            yield
+
+    middleware = [
+        Middleware(
+            CORSMiddleware,
+            allow_origins=config.cors['allow_origins'],
+            allow_methods=['GET', 'POST', 'OPTIONS'],
+            allow_headers=config.cors['allow_headers'],
+            allow_credentials=config.cors['allow_credentials'],
+        )
+    ]
+
+    app = Starlette(debug=True, lifespan=lifespan, middleware=middleware)
+    return app
