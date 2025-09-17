@@ -23,19 +23,11 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
 
     ## None, ['*'], or a list of origins
     ## If None, no environment variable is set, default to ['*']
-    allow_origins = data.draw(
-        st.one_of(st.none(), st.just(['*']), st.lists(st_origins()))
-    )
+    allow_origins = data.draw(st_allow_origins())
 
-    ## None of an origin
+    ## None or an origin that may be allowed
     ## If None, the request header does not include 'Origin'
-    header_origin = data.draw(
-        st_none_or(
-            st_origins()
-            if not allow_origins or '*' in allow_origins
-            else st.one_of(st_origins(), st.sampled_from(allow_origins))
-        )
-    )
+    header_origin = data.draw(st_header_origin(allow_origins))
 
     # Build the request header
     headers = {'accept': 'text/html'}
@@ -68,3 +60,17 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
                 assert header_origin == resp.headers['access-control-allow-origin']
             else:
                 'access-control-allow-origin' not in resp.headers
+
+
+def st_allow_origins() -> st.SearchStrategy[list[str] | None]:
+    '''None, ['*'], or a list of origins.'''
+    return st.one_of(st.none(), st.just(['*']), st.lists(st_origins()))
+
+
+def st_header_origin(allow_origins: list[str] | None) -> st.SearchStrategy[str | None]:
+    '''None or an origin that may be allowed.'''
+    return st_none_or(
+        st_origins()
+        if not allow_origins or '*' in allow_origins
+        else st.one_of(st.sampled_from(allow_origins), st_origins())
+    )
