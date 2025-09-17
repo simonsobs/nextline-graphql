@@ -73,12 +73,18 @@ def st_methods() -> st.SearchStrategy[str]:
 
 
 def st_allow_origins() -> st.SearchStrategy[list[str] | None]:
-    '''None, ['*'], or a list of origins.'''
+    '''A strategy for allowed CORS origins.
+
+    None, ['*'], or a list of origins.
+    '''
     return st.one_of(st.none(), st.just(['*']), st.lists(st_origins()))
 
 
 def st_header_origin(allow_origins: list[str] | None) -> st.SearchStrategy[str | None]:
-    '''None or an origin that may be allowed.'''
+    '''A strategy for an HTTP request header 'Origin'.
+
+    None or an origin that may be allowed.
+    '''
     return st_none_or(
         st_origins()
         if not allow_origins or '*' in allow_origins
