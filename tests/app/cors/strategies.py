@@ -3,6 +3,8 @@ from string import ascii_lowercase
 from hypothesis import provisional
 from hypothesis import strategies as st
 
+from nextline_test_utils.strategies import st_none_or
+
 # Headers always allowed by CORS.
 # https://www.starlette.io/middleware/#corsmiddleware
 ALWAYS_ALLOWED_HEADERS = (
@@ -68,3 +70,17 @@ def st_methods() -> st.SearchStrategy[str]:
 
     '''
     return st.sampled_from(ALL_METHODS)
+
+
+def st_allow_origins() -> st.SearchStrategy[list[str] | None]:
+    '''None, ['*'], or a list of origins.'''
+    return st.one_of(st.none(), st.just(['*']), st.lists(st_origins()))
+
+
+def st_header_origin(allow_origins: list[str] | None) -> st.SearchStrategy[str | None]:
+    '''None or an origin that may be allowed.'''
+    return st_none_or(
+        st_origins()
+        if not allow_origins or '*' in allow_origins
+        else st.one_of(st.sampled_from(allow_origins), st_origins())
+    )

@@ -2,11 +2,10 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 from pytest import MonkeyPatch
 
-from nextline_test_utils.strategies import st_none_or
 from nextlinegraphql import create_app
 from nextlinegraphql.plugins.graphql.test import TestClient
 
-from .strategies import st_origins
+from .strategies import st_allow_origins, st_header_origin
 
 
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
@@ -60,17 +59,3 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
                 assert header_origin == resp.headers['access-control-allow-origin']
             else:
                 'access-control-allow-origin' not in resp.headers
-
-
-def st_allow_origins() -> st.SearchStrategy[list[str] | None]:
-    '''None, ['*'], or a list of origins.'''
-    return st.one_of(st.none(), st.just(['*']), st.lists(st_origins()))
-
-
-def st_header_origin(allow_origins: list[str] | None) -> st.SearchStrategy[str | None]:
-    '''None or an origin that may be allowed.'''
-    return st_none_or(
-        st_origins()
-        if not allow_origins or '*' in allow_origins
-        else st.one_of(st.sampled_from(allow_origins), st_origins())
-    )
