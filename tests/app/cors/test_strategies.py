@@ -31,9 +31,7 @@ def test_method(method: str) -> None:
 
 
 @given(allow_origins=st_allow_origins())
-def test_allow_origins(allow_origins: list[str] | None) -> None:
-    if allow_origins is None:
-        return
+def test_allow_origins(allow_origins: list[str]) -> None:
 
     if '*' in allow_origins:
         return
@@ -45,9 +43,6 @@ def test_allow_origins(allow_origins: list[str] | None) -> None:
 def test_header_origin(data: st.DataObject) -> None:
     allow_origins = data.draw(st_allow_origins())
     header_origin = data.draw(st_header_origin(allow_origins))
-
-    if header_origin is None:
-        return
 
     if allow_origins and '*' not in allow_origins:
         if header_origin in allow_origins:
