@@ -3,8 +3,6 @@ from string import ascii_lowercase
 from hypothesis import provisional
 from hypothesis import strategies as st
 
-from nextline_test_utils.strategies import st_none_or
-
 # Headers always allowed by CORS.
 # https://www.starlette.io/middleware/#corsmiddleware
 ALWAYS_ALLOWED_HEADERS = (
