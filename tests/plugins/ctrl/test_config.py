@@ -29,7 +29,6 @@ def test_property(
     trace_modules: bool | None, trace_threads: bool | None, monkeypatch: MonkeyPatch
 ) -> None:
     with monkeypatch.context() as m:
-        pass
         if trace_modules is not None:
             m.setenv('NEXTLINE_CTRL__TRACE_MODULES', str(trace_modules).lower())
         if trace_threads is not None:
