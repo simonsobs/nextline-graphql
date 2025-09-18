@@ -34,7 +34,6 @@ def test_method(method: str) -> None:
 
 @given(allow_origins=st_allow_origins())
 def test_allow_origins(allow_origins: list[str]) -> None:
-
     if '*' in allow_origins:
         return
 
