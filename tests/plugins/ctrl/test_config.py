@@ -3,7 +3,7 @@ from hypothesis import strategies as st
 from pytest import MonkeyPatch
 
 from nextline_test_utils.strategies import st_none_or
-from nextlinegraphql.factory import create_hook_and_config
+from nextlinegraphql.factory import create_app_for_test
 from nextlinegraphql.plugins.ctrl import Plugin
 
 DEFAULT_TRACE_MODULES = False
@@ -11,11 +11,9 @@ DEFAULT_TRACE_THREADS = False
 
 
 def test_default() -> None:
-    hook, config = create_hook_and_config(
-        enable_external_plugins=False,
-        enable_logging_configuration=False,
-        print_settings=False,
-    )
+    app = create_app_for_test()
+    hook = app.hook
+    config = app.config
     assert config.ctrl.trace_modules is DEFAULT_TRACE_MODULES
     assert config.ctrl.trace_threads is DEFAULT_TRACE_THREADS
 
@@ -37,11 +35,9 @@ def test_property(
         if trace_threads is not None:
             m.setenv('NEXTLINE_CTRL__TRACE_THREADS', str(trace_threads).lower())
 
-        hook, config = create_hook_and_config(
-            enable_external_plugins=False,
-            enable_logging_configuration=True,
-            print_settings=True,
-        )
+        app = create_app_for_test()
+        hook = app.hook
+        config = app.config
 
         expected_trace_modules = (
             trace_modules if trace_modules is not None else DEFAULT_TRACE_MODULES

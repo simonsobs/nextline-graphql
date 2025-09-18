@@ -3,7 +3,7 @@ from hypothesis import strategies as st
 from pytest import MonkeyPatch
 
 from nextline_test_utils.strategies import st_none_or
-from nextlinegraphql import create_app
+from nextlinegraphql.factory import create_app_for_test
 from nextlinegraphql.plugins.graphql.test import TestClient
 
 from .strategies import st_allow_origins, st_header_origin
@@ -39,11 +39,7 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
         if allow_origins is not None:
             m.setenv('NEXTLINE_CORS__ALLOW_ORIGINS', repr(allow_origins))
 
-        app = create_app(
-            enable_external_plugins=False,
-            enable_logging_configuration=False,
-            print_settings=False,
-        )
+        app = create_app_for_test()
         async with TestClient(app) as client:
             #
             resp = await client.get('/', headers=headers)

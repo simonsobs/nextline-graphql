@@ -1,4 +1,4 @@
-from nextlinegraphql import create_app
+from nextlinegraphql.factory import create_app_for_test
 from nextlinegraphql.plugins.graphql.test import TestClient
 
 
@@ -15,7 +15,7 @@ async def test_query() -> None:
         'Content-Type:': 'application/json',
     }
 
-    async with TestClient(create_app(enable_external_plugins=False)) as client:
+    async with TestClient(create_app_for_test()) as client:
         resp = await client.post('/', json=data, headers=headers)
         assert resp.status_code == 200
         expect = {'data': {'ctrl': {'hello': 'Hello, Mozilla/5.0!'}}}
@@ -40,7 +40,7 @@ async def test_subscription() -> None:
         },
     }
 
-    async with TestClient(create_app(enable_external_plugins=False)) as client:
+    async with TestClient(create_app_for_test()) as client:
         async with client.websocket_connect('/') as ws:
             await ws.send_json(data)
 
