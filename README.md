@@ -23,8 +23,6 @@ _The plugin-based framework of a Python API server._
     - [Core package](#core-package)
     - [Plugin system](#plugin-system)
     - [Plugins](#plugins)
-      - [Internal plugins](#internal-plugins)
-      - [External plugins](#external-plugins)
     - [Utility](#utility)
   - [Frontend web app (TypeScript)](#frontend-web-app-typescript)
 - [How to run the Nextline backend API server](#how-to-run-the-nextline-backend-api-server)
