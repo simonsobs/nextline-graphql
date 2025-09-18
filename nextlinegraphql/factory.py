@@ -28,12 +28,14 @@ class App(Starlette):
 
 
 def create_app_for_test(
+    extra_plugins: list[object] | None = None,
     enable_external_plugins: bool = False,
     enable_logging_configuration: bool = False,
     print_settings: bool = False,
 ) -> App:
     '''`create_app()` with default parameters suitable for tests.'''
     return create_app(
+        extra_plugins=extra_plugins,
         enable_external_plugins=enable_external_plugins,
         enable_logging_configuration=enable_logging_configuration,
         print_settings=print_settings,
@@ -41,6 +43,7 @@ def create_app_for_test(
 
 
 def create_app(
+    extra_plugins: list[object] | None = None,
     enable_external_plugins: bool = True,
     enable_logging_configuration: bool = True,
     print_settings: bool = True,
@@ -49,6 +52,8 @@ def create_app(
 
     Parameters
     ----------
+    extra_plugins
+        Additional plugins to load. (Used for tests.)
     enable_external_plugins
         Do not load external plugins if False. (Used for tests.)
     enable_logging_configuration
@@ -74,6 +79,7 @@ def create_app(
     '''
 
     hook, config = create_hook_and_config(
+        extra_plugins=extra_plugins,
         enable_external_plugins=enable_external_plugins,
         enable_logging_configuration=enable_logging_configuration,
         print_settings=print_settings,
@@ -84,11 +90,12 @@ def create_app(
 
 
 def create_hook_and_config(
+    extra_plugins: list[object] | None,
     enable_external_plugins: bool,
     enable_logging_configuration: bool,
     print_settings: bool,
 ) -> tuple[PluginManager, Dynaconf]:
-    hook = load_plugins(external=enable_external_plugins)
+    hook = load_plugins(external=enable_external_plugins, plugins=extra_plugins)
     config = load_settings(hook)
     if print_settings:
         print('Settings:', config.as_dict())

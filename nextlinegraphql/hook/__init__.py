@@ -7,7 +7,9 @@ from nextlinegraphql.plugins import ctrl, dev, graphql
 from . import spec
 
 
-def load_plugins(external: bool = True) -> PluginManager:
+def load_plugins(
+    external: bool = True, plugins: list[object] | None = None
+) -> PluginManager:
     '''Return a pluggy PluginManager with the plugins registered'''
 
     pm = PluginManager(spec.PROJECT_NAME)
@@ -22,5 +24,9 @@ def load_plugins(external: bool = True) -> PluginManager:
 
     if external:
         pm.load_setuptools_entrypoints(spec.PROJECT_NAME)
+
+    if plugins:
+        for plugin in plugins:
+            pm.register(plugin)
 
     return pm
