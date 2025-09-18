@@ -23,6 +23,8 @@ _The plugin-based framework of a Python API server._
     - [Core package](#core-package)
     - [Plugin system](#plugin-system)
     - [Plugins](#plugins)
+      - [Internal plugins](#internal-plugins)
+      - [External plugins](#external-plugins)
     - [Utility](#utility)
   - [Frontend web app (TypeScript)](#frontend-web-app-typescript)
 - [How to run the Nextline backend API server](#how-to-run-the-nextline-backend-api-server)
@@ -31,6 +33,7 @@ _The plugin-based framework of a Python API server._
 - [Configuration](#configuration)
   - [CORS](#cors)
   - [Logging](#logging)
+  - [`graphql` plugin](#graphql-plugin)
   - [`ctrl` plugin](#ctrl-plugin)
 - [Check out code for development](#check-out-code-for-development)
 
@@ -186,6 +189,16 @@ These CORS (Cross-Origin Resource Sharing) settings will be given to
 ### Logging
 
 See [`default.toml`](./nextlinegraphql/config/default.toml).
+
+### `graphql` plugin
+
+| Environment variable                       | Default value | Description                                                                                      |
+| ------------------------------------------ | ------------- | ------------------------------------------------------------------------------------------------ |
+| `NEXTLINE_GRAPHQL__MUTATION_ALLOW_ORIGINS` | `[*]`         | A list of allowed origins for GraphQL Mutations. The default value (`"*"`) allows any origins.\* |
+
+- In addition to the CORS settings above, this setting provides further access control for
+  GraphQL Mutations. With this setting, you can allow only GraphQL Queries and Subscriptions from
+  certain origins while prohibiting Mutations.
 
 ### `ctrl` plugin
 
