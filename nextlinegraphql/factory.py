@@ -15,11 +15,23 @@ from .config import load_settings
 from .hook import load_plugins
 
 
+class App(Starlette):
+    '''A wrap of ASGI App to attach hook and config.'''
+
+    def set_hook(self, hook: PluginManager) -> 'App':
+        self.hook = hook
+        return self
+
+    def set_config(self, config: Dynaconf) -> 'App':
+        self.config = config
+        return self
+
+
 def create_app(
     enable_external_plugins: bool = True,
     enable_logging_configuration: bool = True,
     print_settings: bool = True,
-) -> Starlette:
+) -> App:
     '''App factory for Uvicorn.
 
     Parameters
@@ -88,10 +100,9 @@ def configure_logging(config: dict) -> None:
     # import logging_tree
     # logging_tree.printout()
 
-
-def create_app_from(hook: PluginManager, config: Dynaconf) -> Starlette:
+def create_app_from(hook: PluginManager, config: Dynaconf) -> App:
     @contextlib.asynccontextmanager
-    async def lifespan(app: Starlette) -> AsyncIterator[None]:
+    async def lifespan(app: App) -> AsyncIterator[None]:
         context = dict[Any, Any]()
         await hook.ahook.update_lifespan_context(app=app, hook=hook, context=context)
         async with hook.awith.lifespan(
@@ -109,5 +120,9 @@ def create_app_from(hook: PluginManager, config: Dynaconf) -> Starlette:
         )
     ]
 
-    app = Starlette(debug=True, lifespan=lifespan, middleware=middleware)
+    app = (
+        App(debug=True, lifespan=lifespan, middleware=middleware)
+        .set_hook(hook)
+        .set_config(config)
+    )
     return app
