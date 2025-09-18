@@ -27,6 +27,19 @@ class App(Starlette):
         return self
 
 
+def create_app_for_test(
+    enable_external_plugins: bool = False,
+    enable_logging_configuration: bool = False,
+    print_settings: bool = False,
+) -> App:
+    '''`create_app()` with default parameters suitable for tests.'''
+    return create_app(
+        enable_external_plugins=enable_external_plugins,
+        enable_logging_configuration=enable_logging_configuration,
+        print_settings=print_settings,
+    )
+
+
 def create_app(
     enable_external_plugins: bool = True,
     enable_logging_configuration: bool = True,
@@ -99,6 +112,7 @@ def configure_logging(config: dict) -> None:
     # https://pypi.org/project/logging_tree/
     # import logging_tree
     # logging_tree.printout()
+
 
 def create_app_from(hook: PluginManager, config: Dynaconf) -> App:
     @contextlib.asynccontextmanager
