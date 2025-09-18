@@ -3,15 +3,16 @@ from hypothesis import strategies as st
 from pytest import MonkeyPatch
 
 from nextline_test_utils.strategies import st_none_or
-from nextlinegraphql import create_app
+from nextlinegraphql.factory import create_app_for_test
 from nextlinegraphql.plugins.graphql.test import TestClient
 
 from .strategies import (
     ALLOWED_METHODS,
     ALWAYS_ALLOWED_HEADERS,
+    st_allow_origins,
+    st_header_origin,
     st_headers,
     st_methods,
-    st_origins,
 )
 
 
@@ -30,10 +31,7 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
     ## allow_origins: an env var NEXTLINE_CORS__ALLOW_ORIGINS
     ## None, ['*'], or a list of origins
     ## If None, the environment variable is not set, default to ['*']
-    allow_origins = data.draw(
-        st.one_of(st.none(), st.just(['*']), st.lists(st_origins())),
-        label='allow_origins',
-    )
+    allow_origins = data.draw(st_none_or(st_allow_origins()), label='allow_origins')
 
     ## allow_headers: an env var NEXTLINE_CORS__ALLOW_HEADERS
     ## None, ['*'], or a list of headers
@@ -54,12 +52,7 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
     allow_credentials = data.draw(st_allow_credentials, label='allow_credentials')
 
     ## header_origin: an HTTP request header 'Origin'
-    header_origin = data.draw(
-        st_origins()
-        if not allow_origins or '*' in allow_origins
-        else st.one_of(st_origins(), st.sampled_from(allow_origins)),
-        label='header_origin',
-    )
+    header_origin = data.draw(st_header_origin(allow_origins), label='header_origin')
 
     ## header_request_method: an HTTP request header 'Access-Control-Request-Method'
     header_request_method = data.draw(st_methods(), label='header_request_method')
@@ -97,11 +90,7 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
         if allow_credentials is not None:
             m.setenv('NEXTLINE_CORS__ALLOW_CREDENTIALS', str(allow_credentials).lower())
 
-        app = create_app(
-            enable_external_plugins=False,
-            enable_logging_configuration=False,
-            print_settings=False,
-        )
+        app = create_app_for_test()
         async with TestClient(app) as client:
             #
             resp = await client.options('/', headers=headers)

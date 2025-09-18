@@ -3,10 +3,10 @@ from hypothesis import strategies as st
 from pytest import MonkeyPatch
 
 from nextline_test_utils.strategies import st_none_or
-from nextlinegraphql import create_app
+from nextlinegraphql.factory import create_app_for_test
 from nextlinegraphql.plugins.graphql.test import TestClient
 
-from .strategies import st_origins
+from .strategies import st_allow_origins, st_header_origin
 
 
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
@@ -23,19 +23,11 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
 
     ## None, ['*'], or a list of origins
     ## If None, no environment variable is set, default to ['*']
-    allow_origins = data.draw(
-        st.one_of(st.none(), st.just(['*']), st.lists(st_origins()))
-    )
+    allow_origins = data.draw(st_none_or(st_allow_origins()))
 
-    ## None of an origin
+    ## None or an origin that may be allowed
     ## If None, the request header does not include 'Origin'
-    header_origin = data.draw(
-        st_none_or(
-            st_origins()
-            if not allow_origins or '*' in allow_origins
-            else st.one_of(st_origins(), st.sampled_from(allow_origins))
-        )
-    )
+    header_origin = data.draw(st_none_or(st_header_origin(allow_origins)))
 
     # Build the request header
     headers = {'accept': 'text/html'}
@@ -47,11 +39,7 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
         if allow_origins is not None:
             m.setenv('NEXTLINE_CORS__ALLOW_ORIGINS', repr(allow_origins))
 
-        app = create_app(
-            enable_external_plugins=False,
-            enable_logging_configuration=False,
-            print_settings=False,
-        )
+        app = create_app_for_test()
         async with TestClient(app) as client:
             #
             resp = await client.get('/', headers=headers)

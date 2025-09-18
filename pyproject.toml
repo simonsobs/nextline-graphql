@@ -65,6 +65,7 @@ timeout = 60
 addopts = "--doctest-modules"
 # doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE",]
 doctest_optionflags = ["ELLIPSIS"]
+filterwarnings = ["ignore::hypothesis.errors.NonInteractiveExampleWarning"]
 log_cli = false
 log_cli_level = "INFO"
 

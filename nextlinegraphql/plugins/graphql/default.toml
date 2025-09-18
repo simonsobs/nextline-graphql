@@ -1,0 +1,10 @@
+# Default settings
+#
+# Syntax can be learned from Dynaconf examples 
+# https://github.com/rochacbruno/learndynaconf/tree/main/configs
+
+[graphql]
+# The following settings are commented out because the lists `['*']` would be
+# merged with the local settings rather than overridden. The default values are
+# instead provided with `Validate()` in the code.
+# mutation_allow_origins = ["*"]
