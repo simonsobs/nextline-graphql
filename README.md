@@ -168,9 +168,9 @@ as plugins. An example can be described in
 ## Configuration
 
 nextline-graphql uses [dynaconf](https://www.dynaconf.com/) for configuration
-management. nextline-graphql itself has configuration for CORS and logging. The
-internal plugin `ctrl` also has configurations. External plugins can extend the
-configuration.
+management. The nextline-graphql framework itself has configuration for CORS
+and logging. The internal plugins have configurations. External plugins can
+extend the configuration.
 
 ### CORS
 
