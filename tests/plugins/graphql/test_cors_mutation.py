@@ -8,7 +8,7 @@ from nextlinegraphql.factory import create_app_for_test
 from nextlinegraphql.hook import spec
 from nextlinegraphql.plugins.graphql.test import TestClient
 from nextlinegraphql.plugins.graphql.test.funcs import PostRequest
-from tests.app.cors.strategies import st_allow_origins, st_header_origin
+from tests.app.cors.strategies import st_allow_origins, st_header_origin, st_origins
 
 
 @strawberry.type
@@ -80,11 +80,21 @@ async def test_property(data: st.DataObject, monkeypatch: MonkeyPatch) -> None:
 
     ## None, ['*'], or a list of origins
     ## If None, no environment variable is set, default to ['*']
-    mutation_allow_origins = allow_origins if allow_origins is not None else ['*']
+    mutation_allow_origins = data.draw(
+        st_none_or(
+            st_allow_origins()
+            if not allow_origins or '*' in allow_origins
+            else st.lists(st.one_of(st.sampled_from(allow_origins), st_origins()))
+        )
+    )
 
     ## None or an origin that may be allowed
     ## If None, the request header does not include 'Origin'
-    header_origin = data.draw(st_none_or(st_header_origin(allow_origins)))
+    header_origin = data.draw(
+        st_none_or(
+            st_header_origin([*(allow_origins or []), *(mutation_allow_origins or [])])
+        )
+    )
 
     # Build the request header
     headers = {'Content-Type:': 'application/json'}
