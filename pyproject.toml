@@ -24,8 +24,8 @@ dependencies = [
   "nextline>=0.7.15",
   "apluggy>=1.0",
   "dynaconf>=3.2",
-  "starlette>=0.31",
-  "strawberry-graphql>=0.241",
+  "starlette>=0.48",
+  "strawberry-graphql>=0.283.2",
   "websockets>=12.0",
   "rich>=13.6",
   "async-asgi-testclient>=1.4",
@@ -38,9 +38,9 @@ tests = [
   "pytest-asyncio>=0.21",
   "pytest-cov>=4.1",
   "pytest-timeout>=2.2",
-  "pytest>=7.4",
+  "pytest>=8.0",
   "hypothesis>=6.130",
-  "syrupy>=4.6",
+  "syrupy>=4.7",
 ]
 
 [project.urls]
