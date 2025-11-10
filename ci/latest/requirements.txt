@@ -2,7 +2,7 @@
 # is used in a GitHub Actions workflow to test the compatibility with the
 # latest versions of the dependencies. This file is monitored by Dependabot.
 nextline==0.7.20
-apluggy==1.1.0
+apluggy==1.1.1
 dynaconf==3.2.11
 starlette==0.48.0
 strawberry-graphql==0.282.0
