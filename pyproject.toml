@@ -5,13 +5,11 @@ build-backend = "hatchling.build"
 [project]
 name = "nextline-graphql"
 dynamic = ["version"]
-description = "A GraphQL API for Nextline"
+description = "Python framework for building plugin‑based HTTP API servers."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-authors = [
-  { name = "Simons Observatory", email = "so_software@simonsobservatory.org" },
-]
+authors = [{ name = "Tai Sakuma", email = "tai.sakuma@gmail.com" }]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
