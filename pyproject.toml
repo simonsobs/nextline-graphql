@@ -5,13 +5,11 @@ build-backend = "hatchling.build"
 [project]
 name = "nextline-graphql"
 dynamic = ["version"]
-description = "A GraphQL API for Nextline"
+description = "Python framework for building plugin‑based HTTP API servers."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-authors = [
-  { name = "Simons Observatory", email = "so_software@simonsobservatory.org" },
-]
+authors = [{ name = "Tai Sakuma", email = "tai.sakuma@gmail.com" }]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
@@ -20,13 +18,14 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
   "nextline>=0.7.15",
   "apluggy>=1.0",
   "dynaconf>=3.2",
-  "starlette>=0.31",
-  "strawberry-graphql>=0.241",
+  "starlette>=0.48",
+  "strawberry-graphql>=0.283.2",
   "websockets>=12.0",
   "rich>=13.6",
   "async-asgi-testclient>=1.4",
@@ -39,9 +38,9 @@ tests = [
   "pytest-asyncio>=0.21",
   "pytest-cov>=4.1",
   "pytest-timeout>=2.2",
-  "pytest>=7.4",
+  "pytest>=8.0",
   "hypothesis>=6.130",
-  "syrupy>=4.6",
+  "syrupy>=4.7",
 ]
 
 [project.urls]
