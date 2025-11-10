@@ -40,19 +40,6 @@ _The plugin-based framework of a Python API server._
 This package provides the framework for a plugin-based Python API server.
 Plugins can implement endpoints and services.
 
-This framework was originally developed as part of _Nextline_, a DAQ sequencer
-of the [Observatory Control System (OCS)](https://github.com/simonsobs/ocs/),
-which allows line-by-line execution of concurrent Python scripts, which control
-telescopes, by multiple users simultaneously from web browsers.
-
-## Citation
-
-Please use the following DOI for [the core
-package](https://github.com/simonsobs/nextline) to cite Nextline in general
-unless you need to refer to a specific package.
-
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11451619.svg)](https://doi.org/10.5281/zenodo.11451619)
-
 ## Packages
 
 Nextline consists of multiple packages. This package, _nextline-graphql_,
