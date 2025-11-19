@@ -1,6 +1,8 @@
 # nextline-graphql
 
-_The plugin-based framework of a Python API server._
+(This package will be renamed in the future.)
+
+_Python framework for building plugin‑based HTTP API servers._
 
 ---
 
@@ -8,7 +10,6 @@ _The plugin-based framework of a Python API server._
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/nextline-graphql.svg)](https://pypi.org/project/nextline-graphql)
 
 [![Test Status](https://github.com/simonsobs/nextline-graphql/actions/workflows/unit-test.yml/badge.svg)](https://github.com/simonsobs/nextline-graphql/actions/workflows/unit-test.yml)
-[![Test Status](https://github.com/simonsobs/nextline-graphql/actions/workflows/unit-test-dev.yml/badge.svg)](https://github.com/simonsobs/nextline-graphql/actions/workflows/unit-test.yml)
 [![Test Status](https://github.com/simonsobs/nextline-graphql/actions/workflows/type-check.yml/badge.svg)](https://github.com/simonsobs/nextline-graphql/actions/workflows/type-check.yml)
 [![codecov](https://codecov.io/gh/simonsobs/nextline-graphql/branch/main/graph/badge.svg)](https://codecov.io/gh/simonsobs/nextline-graphql)
 
@@ -17,15 +18,7 @@ _The plugin-based framework of a Python API server._
 **Table of Contents**
 
 - [Introduction](#introduction)
-- [Citation](#citation)
-- [Packages](#packages)
-  - [Backend API server (Python)](#backend-api-server-python)
-    - [Core package](#core-package)
-    - [Plugin system](#plugin-system)
-    - [Plugins](#plugins)
-    - [Utility](#utility)
-  - [Frontend web app (TypeScript)](#frontend-web-app-typescript)
-- [How to run the Nextline backend API server](#how-to-run-the-nextline-backend-api-server)
+- [How to run](#how-to-run)
   - [As a Docker container](#as-a-docker-container)
   - [In a virtual environment](#in-a-virtual-environment)
 - [Configuration](#configuration)
@@ -40,72 +33,9 @@ _The plugin-based framework of a Python API server._
 This package provides the framework for a plugin-based Python API server.
 Plugins can implement endpoints and services.
 
-## Packages
+(This package will not be specific to Nextline or GraphQL and will be renamed in the future.)
 
-Nextline consists of multiple packages. This package, _nextline-graphql_,
-provides the framework for the backend API server.
-
-| Package                                                                                   | Language   | Release                                                                                                                  | Build                                                                                                                                                                                          | Coverage                                                                                                                                           |
-| :---------------------------------------------------------------------------------------- | ---------- | :----------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [**nextline**](https://github.com/simonsobs/nextline)                                     | Python     | [![PyPI - Version](https://img.shields.io/pypi/v/nextline.svg)](https://pypi.org/project/nextline)                       | [![Test Status](https://github.com/simonsobs/nextline/actions/workflows/unit-test.yml/badge.svg)](https://github.com/simonsobs/nextline/actions/workflows/unit-test.yml)                       |                                                                                                                                                    |
-| [**apluggy**](https://github.com/simonsobs/apluggy)                                       | Python     | [![PyPI - Version](https://img.shields.io/pypi/v/apluggy.svg)](https://pypi.org/project/apluggy)                         | [![Test Status](https://github.com/simonsobs/apluggy/actions/workflows/unit-test.yml/badge.svg)](https://github.com/simonsobs/apluggy/actions/workflows/unit-test.yml)                         | [![codecov](https://codecov.io/gh/simonsobs/apluggy/branch/main/graph/badge.svg)](https://codecov.io/gh/simonsobs/apluggy)                         |
-| [**nextline&#x2011;graphql**](https://github.com/simonsobs/nextline-graphql)              | Python     | [![PyPI - Version](https://img.shields.io/pypi/v/nextline-graphql.svg)](https://pypi.org/project/nextline-graphql)       | [![Test Status](https://github.com/simonsobs/nextline-graphql/actions/workflows/unit-test.yml/badge.svg)](https://github.com/simonsobs/nextline-graphql/actions/workflows/unit-test.yml)       | [![codecov](https://codecov.io/gh/simonsobs/nextline-graphql/branch/main/graph/badge.svg)](https://codecov.io/gh/simonsobs/nextline-graphql)       |
-| [**nextline&#x2011;rdb**](https://github.com/simonsobs/nextline-rdb)                      | Python     | [![PyPI - Version](https://img.shields.io/pypi/v/nextline-rdb.svg)](https://pypi.org/project/nextline-rdb)               | [![Test Status](https://github.com/simonsobs/nextline-rdb/actions/workflows/unit-test.yml/badge.svg)](https://github.com/simonsobs/nextline-rdb/actions/workflows/unit-test.yml)               | [![codecov](https://codecov.io/gh/simonsobs/nextline-rdb/branch/main/graph/badge.svg)](https://codecov.io/gh/simonsobs/nextline-rdb)               |
-| [**nextline&#x2011;schedule**](https://github.com/simonsobs/nextline-schedule)            | Python     | [![PyPI - Version](https://img.shields.io/pypi/v/nextline-schedule.svg)](https://pypi.org/project/nextline-schedule)     | [![Test Status](https://github.com/simonsobs/nextline-schedule/actions/workflows/unit-test.yml/badge.svg)](https://github.com/simonsobs/nextline-schedule/actions/workflows/unit-test.yml)     | [![codecov](https://codecov.io/gh/simonsobs/nextline-schedule/branch/main/graph/badge.svg)](https://codecov.io/gh/simonsobs/nextline-schedule)     |
-| [**nextline&#x2011;alert**](https://github.com/simonsobs/nextline-alert)                  | Python     | [![PyPI - Version](https://img.shields.io/pypi/v/nextline-alert.svg)](https://pypi.org/project/nextline-alert)           | [![Test Status](https://github.com/simonsobs/nextline-alert/actions/workflows/unit-test.yml/badge.svg)](https://github.com/simonsobs/nextline-alert/actions/workflows/unit-test.yml)           | [![codecov](https://codecov.io/gh/simonsobs/nextline-alert/branch/main/graph/badge.svg)](https://codecov.io/gh/simonsobs/nextline-alert)           |
-| [**nextline&#x2011;test&#x2011;utils**](https://github.com/simonsobs/nextline-test-utils) | Python     | [![PyPI - Version](https://img.shields.io/pypi/v/nextline-test-utils.svg)](https://pypi.org/project/nextline-test-utils) | [![Test Status](https://github.com/simonsobs/nextline-test-utils/actions/workflows/unit-test.yml/badge.svg)](https://github.com/simonsobs/nextline-test-utils/actions/workflows/unit-test.yml) | [![codecov](https://codecov.io/gh/simonsobs/nextline-test-utils/branch/main/graph/badge.svg)](https://codecov.io/gh/simonsobs/nextline-test-utils) |
-| [**nextline&#x2011;web**](https://github.com/simonsobs/nextline-web)                      | TypeScript | [![npm](https://img.shields.io/npm/v/nextline-web)](https://www.npmjs.com/package/nextline-web)                          | [![Unit tests](https://github.com/simonsobs/nextline-web/actions/workflows/unit-test.yml/badge.svg)](https://github.com/simonsobs/nextline-web/actions/workflows/unit-test.yml)                |                                                                                                                                                    |
-
-### Backend API server (Python)
-
-#### Core package
-
-- [**nextline:**](https://github.com/simonsobs/nextline) The core functionality
-  of Nextline. It controls the execution of the Python scripts. It is used by
-  the plugin _ctrl_.
-
-#### Plugin system
-
-The plugin system of _nextline-graphql_ is _apluggy_.
-
-- [**apluggy:**](https://github.com/simonsobs/apluggy) A wrapper of
-  [pluggy](https://pluggy.readthedocs.io/) to support asyncio and context
-  managers.
-
-#### Plugins
-
-##### Internal plugins
-
-These plugins are included in this package.
-
-- [**graphql:**](./nextlinegraphql/plugins/graphql/) The entry point of the
-  GraphQL API, implemented with [strawberry-graphql](https://strawberry.rocks/).
-- [**ctrl:**](./nextlinegraphql/plugins/ctrl/) The core plugin that controls
-  the execution of the Python scripts. It uses the package
-  [_nextline_](https://github.com/simonsobs/nextline).
-
-##### External plugins
-
-These plugins are not included in this package. They can be installed separately.
-
-- [**nextline-rdb:**](https://github.com/simonsobs/nextline-rdb) A relational database for nextline. It stores configuration, execution history, and other information. It is implemented with [SQLAlchemy 2](https://www.sqlalchemy.org/).
-- [**nextline-schedule:**](https://github.com/simonsobs/nextline-schedule) The **auto mode**. The **queue system**. An interface to the [_SO scheduler_](https://github.com/simonsobs/scheduler).
-- [**nextline-alert:**](https://github.com/simonsobs/nextline-alert) An interface to the alert system [_campana_](https://github.com/simonsobs/campana).
-
-#### Utility
-
-- [**nextline-test-utils:**](https://github.com/simonsobs/nextline-test-utils)
-  A collection of test utilities for backend development
-
-### Frontend web app (TypeScript)
-
-The frontend web app is currently in a single package. The development of a
-plugin-based system is planned.
-
-- [**nextline-web:**](https://github.com/simonsobs/nextline-web)
-  The frontend web app of Nextline. It is a Vue.js app.
-
-## How to run the Nextline backend API server
+## How to run
 
 The section shows how to run the Nextline backend API server. How to run the
 frontend web app is described
