@@ -5,7 +5,7 @@ nextline==0.7.21
 apluggy==1.1.1
 dynaconf==3.2.11
 starlette==0.48.0
-strawberry-graphql==0.284.1
+strawberry-graphql==0.286.0
 websockets==15.0.1
 rich==14.2.0
 async-asgi-testclient==1.4.11
