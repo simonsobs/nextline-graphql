@@ -9,9 +9,9 @@ _Python framework for building plugin‑based HTTP API servers._
 [![PyPI - Version](https://img.shields.io/pypi/v/nextline-graphql.svg)](https://pypi.org/project/nextline-graphql)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/nextline-graphql.svg)](https://pypi.org/project/nextline-graphql)
 
-[![Test Status](https://github.com/simonsobs/nextline-graphql/actions/workflows/unit-test.yml/badge.svg)](https://github.com/simonsobs/nextline-graphql/actions/workflows/unit-test.yml)
-[![Test Status](https://github.com/simonsobs/nextline-graphql/actions/workflows/type-check.yml/badge.svg)](https://github.com/simonsobs/nextline-graphql/actions/workflows/type-check.yml)
-[![codecov](https://codecov.io/gh/simonsobs/nextline-graphql/branch/main/graph/badge.svg)](https://codecov.io/gh/simonsobs/nextline-graphql)
+[![Test Status](https://github.com/nextline-dev/nextline-graphql/actions/workflows/unit-test.yml/badge.svg)](https://github.com/nextline-dev/nextline-graphql/actions/workflows/unit-test.yml)
+[![Test Status](https://github.com/nextline-dev/nextline-graphql/actions/workflows/type-check.yml/badge.svg)](https://github.com/nextline-dev/nextline-graphql/actions/workflows/type-check.yml)
+[![codecov](https://codecov.io/gh/nextline-dev/nextline-graphql/branch/main/graph/badge.svg)](https://codecov.io/gh/nextline-dev/nextline-graphql)
 
 ---
 
@@ -39,27 +39,27 @@ Plugins can implement endpoints and services.
 
 The section shows how to run the Nextline backend API server. How to run the
 frontend web app is described
-[elsewhere](https://github.com/simonsobs/nextline-web).
+[elsewhere](https://github.com/nextline-dev/nextline-web).
 
 ### As a Docker container
 
 Docker images of the Nextline backend API server are created as
-[ghcr.io/simonsobs/nextline-graphql](https://github.com/simonsobs/nextline-graphql/pkgs/container/nextline-graphql).
+[ghcr.io/nextline-dev/nextline-graphql](https://github.com/nextline-dev/nextline-graphql/pkgs/container/nextline-graphql).
 These images are created by the
-[Dockerfile](https://github.com/simonsobs/nextline-graphql/blob/main/Dockerfile).
+[Dockerfile](https://github.com/nextline-dev/nextline-graphql/blob/main/Dockerfile).
 No external plugins are included in the images.
 
 Use, for example, the following command to run as a Docker container.
 
 ```bash
-docker run -p 8080:8000 ghcr.io/simonsobs/nextline-graphql
+docker run -p 8080:8000 ghcr.io/nextline-dev/nextline-graphql
 ```
 
 If you access to the API server with a web browser, you will see the GraphQL
 IDE: <http://localhost:8080/>.
 
 To include external plugins, you can create a new Docker image with
-_ghcr.io/simonsobs/nextline-graphql_ as the base image. For example,
+_ghcr.io/nextline-dev/nextline-graphql_ as the base image. For example,
 [nextline-rdb](https://github.com/simonsobs/nextline-rdb) shows how to create a
 new Docker image with _nextline-rdb_ as an external plugin.
 
@@ -127,7 +127,7 @@ See [`default.toml`](./nextlinegraphql/config/default.toml).
 How to check out code from GitHub for development:
 
 ```bash
-git clone git@github.com:simonsobs/nextline-graphql.git
+git clone git@github.com:nextline-dev/nextline-graphql.git
 cd nextline-graphql/
 python -m venv venv
 source venv/bin/activate

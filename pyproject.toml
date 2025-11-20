@@ -45,7 +45,7 @@ tests = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/simonsobs/nextline"
+Homepage = "https://github.com/nextline-dev/nextline"
 
 [tool.hatch.version]
 source = "regex_commit"
