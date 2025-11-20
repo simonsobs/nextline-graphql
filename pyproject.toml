@@ -50,6 +50,7 @@ Homepage = "https://github.com/nextline-dev/nextline"
 [tool.hatch.version]
 source = "regex_commit"
 path = "nextlinegraphql/__about__.py"
+check_dirty = false
 tag_sign = false
 
 [tool.hatch.build]
