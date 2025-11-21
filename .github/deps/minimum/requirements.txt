@@ -1,7 +1,6 @@
-# The exact requirements of the oldest supported versions of the dependencies.
-# This file is used in a GitHub Actions workflow to test the compatibility.
-# This file needs to be manually updated to be consistent with
-# `pyproject.toml`.
+# Pinned oldest supported versions of dependencies.
+# Used in GitHub Actions for testing compatibility.
+# Must be manually updated to align with `pyproject.toml`.
 nextline==0.7.15
 apluggy==1.0.0
 dynaconf==3.2.1
@@ -17,3 +16,6 @@ pytest-timeout==2.2.0
 pytest==8.0.0
 hypothesis==6.130.0
 syrupy==4.7.0
+
+# In the future, `pip` may install minimum versions from
+# `pyproject.toml` directly: https://github.com/pypa/pip/issues/8085

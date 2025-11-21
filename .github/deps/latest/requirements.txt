@@ -1,6 +1,6 @@
-# The exact requirements of the latest versions of the dependencies. This file
-# is used in a GitHub Actions workflow to test the compatibility with the
-# latest versions of the dependencies. This file is monitored by Dependabot.
+# Pinned latest versions of dependencies.
+# Used in GitHub Actions for testing compatibility.
+# Monitored by Dependabot.
 nextline==0.7.21
 apluggy==1.1.1
 dynaconf==3.2.11

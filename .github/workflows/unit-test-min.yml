@@ -45,7 +45,7 @@ jobs:
         run: |
           pip list
           pip install -e '.[tests]'
-          pip install -r ci/minimum/requirements.txt
+          pip install -r .github/deps/minimum/requirements.txt
           pip list
 
       - name: Run tests
