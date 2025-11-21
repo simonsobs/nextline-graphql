@@ -21,6 +21,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
 ]
+keywords = ["nextline", "graphql", "plugin", "asgi", "api"]
 dependencies = [
   "nextline>=0.7.15",
   "apluggy>=1.0",
@@ -33,7 +34,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["black", "flake8", "logging_tree", "mypy", "tox", "twine", "uvicorn"]
+dev = ["logging_tree", "uvicorn"]
 tests = [
   "nextline-test-utils>=0.1.2",
   "pytest-asyncio>=0.21",
@@ -43,6 +44,7 @@ tests = [
   "hypothesis>=6.130",
   "syrupy>=4.7",
 ]
+type-check = ["mypy>=1.0"]
 
 [project.urls]
 Homepage = "https://github.com/nextline-dev/nextline"
