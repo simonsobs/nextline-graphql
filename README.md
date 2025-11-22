@@ -73,7 +73,7 @@ python -m venv venv
 source venv/bin/activate
 pip install nextline-graphql
 pip install uvicorn
-uvicorn --lifespan on --factory --port 8080 nextlinegraphql:create_app
+uvicorn --lifespan on --factory --port 8080 nextline_graphql:create_app
 ```
 
 Check with a web browser at <http://localhost:8080/>.
@@ -103,7 +103,7 @@ These CORS (Cross-Origin Resource Sharing) settings will be given to
 
 ### Logging
 
-See [`default.toml`](./nextlinegraphql/config/default.toml).
+See [`default.toml`](./src/nextline_graphql/config/default.toml).
 
 ### `graphql` plugin
 
@@ -137,5 +137,5 @@ pip install -e ./"[tests,dev]"
 To run
 
 ```bash
-uvicorn --port 8080 --lifespan on --factory --reload nextlinegraphql:create_app
+uvicorn --port 8080 --lifespan on --factory --reload nextline_graphql:create_app
 ```

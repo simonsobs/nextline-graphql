@@ -2,7 +2,7 @@ __all__ = ['spec', 'load_plugins']
 
 from apluggy import PluginManager
 
-from nextlinegraphql.plugins import ctrl, dev, graphql
+from nextline_graphql.plugins import ctrl, dev, graphql
 
 from . import spec
 

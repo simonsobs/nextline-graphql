@@ -2,9 +2,9 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 from pytest import MonkeyPatch
 
+from nextline_graphql.factory import create_app_for_test
+from nextline_graphql.plugins.ctrl import Plugin
 from nextline_test_utils.strategies import st_none_or
-from nextlinegraphql.factory import create_app_for_test
-from nextlinegraphql.plugins.ctrl import Plugin
 
 DEFAULT_TRACE_MODULES = False
 DEFAULT_TRACE_THREADS = False

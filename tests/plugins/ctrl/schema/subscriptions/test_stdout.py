@@ -2,8 +2,8 @@ import asyncio
 from typing import Any
 
 from nextline import Nextline
-from nextlinegraphql.plugins.ctrl.cache import CacheStdout
-from nextlinegraphql.plugins.ctrl.graphql import SUBSCRIBE_STDOUT
+from nextline_graphql.plugins.ctrl.cache import CacheStdout
+from nextline_graphql.plugins.ctrl.graphql import SUBSCRIBE_STDOUT
 from tests.plugins.ctrl.schema.conftest import Schema
 
 SOURCE = '''

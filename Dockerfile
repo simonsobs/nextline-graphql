@@ -13,4 +13,4 @@ RUN pip install ./nextline-graphql
 RUN pip install uvicorn
 RUN rm -rf ./nextline-graphql
 
-CMD ["uvicorn", "--lifespan", "on", "--factory", "--host", "0.0.0.0", "nextlinegraphql:create_app"]
+CMD ["uvicorn", "--lifespan", "on", "--factory", "--host", "0.0.0.0", "nextline_graphql:create_app"]

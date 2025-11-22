@@ -8,7 +8,7 @@ from typing import Optional
 from dynaconf import Dynaconf, Validator
 
 from nextline import Nextline
-from nextlinegraphql.hook import spec
+from nextline_graphql.hook import spec
 
 from .cache import CacheStdout
 from .example_script import statement

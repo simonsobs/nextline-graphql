@@ -1,1 +1,3 @@
-__version__ = '0.9.0'
+__all__ = ['__version__']
+
+from nextline_graphql.__about__ import __version__

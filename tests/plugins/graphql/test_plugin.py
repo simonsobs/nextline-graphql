@@ -1,7 +1,7 @@
 import json
 
-from nextlinegraphql.plugins.graphql.graphql import QUERY_SETTINGS
-from nextlinegraphql.plugins.graphql.test import TestClient, gql_request
+from nextline_graphql.plugins.graphql.graphql import QUERY_SETTINGS
+from nextline_graphql.plugins.graphql.test import TestClient, gql_request
 
 
 async def test_plugin(client: TestClient) -> None:

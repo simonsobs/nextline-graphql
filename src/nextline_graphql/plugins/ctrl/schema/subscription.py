@@ -5,7 +5,7 @@ import strawberry
 from strawberry.types import Info
 
 from nextline import Nextline
-from nextlinegraphql.plugins.ctrl.cache import CacheStdout
+from nextline_graphql.plugins.ctrl.cache import CacheStdout
 
 
 @strawberry.type

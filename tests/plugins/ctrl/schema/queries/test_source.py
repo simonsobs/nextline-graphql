@@ -5,8 +5,8 @@ from strawberry.types import ExecutionResult
 from syrupy.assertion import SnapshotAssertion
 
 from nextline import Nextline
-from nextlinegraphql.plugins.ctrl import example_script as example_script_module
-from nextlinegraphql.plugins.ctrl.graphql import QUERY_SOURCE
+from nextline_graphql.plugins.ctrl import example_script as example_script_module
+from nextline_graphql.plugins.ctrl.graphql import QUERY_SOURCE
 from tests.plugins.ctrl.schema.conftest import Schema
 
 EXAMPLE_SCRIPT_DIR = Path(example_script_module.__file__).resolve().parent

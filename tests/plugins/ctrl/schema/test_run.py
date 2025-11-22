@@ -7,8 +7,8 @@ from strawberry.types import ExecutionResult
 
 from nextline import Nextline
 from nextline.utils import agen_with_wait
-from nextlinegraphql.plugins.ctrl import example_script as example_script_module
-from nextlinegraphql.plugins.ctrl.graphql import (
+from nextline_graphql.plugins.ctrl import example_script as example_script_module
+from nextline_graphql.plugins.ctrl.graphql import (
     MUTATE_EXEC,
     MUTATE_SEND_PDB_COMMAND,
     QUERY_CONTINUOUS_ENABLED,

@@ -12,8 +12,8 @@ from strawberry.extensions import SchemaExtension
 from strawberry.schema import BaseSchema
 from strawberry.tools import merge_types
 
-from nextlinegraphql.custom.strawberry import GraphQL
-from nextlinegraphql.hook import spec
+from nextline_graphql.custom.strawberry import GraphQL
+from nextline_graphql.hook import spec
 
 from .cors_mutation import CORSMutation
 from .schema import Query

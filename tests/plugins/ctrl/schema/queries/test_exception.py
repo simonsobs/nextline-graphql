@@ -1,7 +1,7 @@
 from strawberry.types import ExecutionResult
 
 from nextline import Nextline
-from nextlinegraphql.plugins.ctrl.graphql import QUERY_EXCEPTION
+from nextline_graphql.plugins.ctrl.graphql import QUERY_EXCEPTION
 from tests.plugins.ctrl.schema.conftest import Schema
 
 SOURCE_RAISE = '''

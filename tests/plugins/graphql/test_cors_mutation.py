@@ -3,11 +3,11 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 from pytest import MonkeyPatch
 
+from nextline_graphql.factory import create_app_for_test
+from nextline_graphql.hook import spec
+from nextline_graphql.plugins.graphql.test import TestClient
+from nextline_graphql.plugins.graphql.test.funcs import PostRequest
 from nextline_test_utils.strategies import st_none_or
-from nextlinegraphql.factory import create_app_for_test
-from nextlinegraphql.hook import spec
-from nextlinegraphql.plugins.graphql.test import TestClient
-from nextlinegraphql.plugins.graphql.test.funcs import PostRequest
 from tests.app.cors.strategies import st_allow_origins, st_header_origin, st_origins
 
 
