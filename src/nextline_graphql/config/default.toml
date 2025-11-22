@@ -33,6 +33,10 @@ formatter = "default"
 handlers = ["default"]
 level = "DEBUG"
 
+[logging.loggers.nextline_graphql]
+handlers = ["default"]
+level = "DEBUG"
+
 [logging.loggers.nextline]
 handlers = ["default"]
 level = "DEBUG"

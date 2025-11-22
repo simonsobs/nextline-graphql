@@ -1,5 +1,5 @@
 """
-uvicorn --factory --reload --reload-dir nextline-graphql --reload-dir nextline nextlinegraphql:create_app
+uvicorn --factory --reload --reload-dir nextline-graphql --reload-dir nextline nextline_graphql:create_app
 use "--lifespan on" to show exception in lifespan
 """
 

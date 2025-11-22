@@ -70,7 +70,7 @@ def create_app(
     -----
     Use the factory option to run with Uvicorn:
 
-    $ uvicorn --factory nextlinegraphql:create_app
+    $ uvicorn --factory nextline_graphql:create_app
 
     See Also
     --------

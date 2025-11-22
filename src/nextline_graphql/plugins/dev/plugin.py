@@ -1,7 +1,7 @@
 from apluggy import PluginManager
 from dynaconf import Dynaconf
 
-from nextlinegraphql.hook import spec
+from nextline_graphql.hook import spec
 
 from .schema import Query
 
