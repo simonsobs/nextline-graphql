@@ -54,15 +54,13 @@ print = ["icecream"]
 
 [tool.hatch.version]
 source = "regex_commit"
-path = "nextlinegraphql/__about__.py"
+path = "src/nextlinegraphql/__about__.py"
 check_dirty = false
 tag_sign = false
 
-[tool.hatch.build]
-include = ["/nextlinegraphql"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/nextlinegraphql"]
 
-[tool.hatch.build.targets.sdist]
-include = ["/nextlinegraphql"]
 
 [tool.pytest]
 asyncio_mode = "auto"

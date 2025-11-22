@@ -37,4 +37,4 @@ jobs:
           pip list
 
       - name: Run mypy
-        run: mypy --show-traceback nextlinegraphql/ tests/
+        run: mypy --show-traceback src/ tests/
