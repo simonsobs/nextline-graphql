@@ -54,12 +54,12 @@ print = ["icecream"]
 
 [tool.hatch.version]
 source = "regex_commit"
-path = "src/nextlinegraphql/__about__.py"
+path = "src/nextline_graphql/__about__.py"
 check_dirty = false
 tag_sign = false
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/nextlinegraphql"]
+packages = ["src/nextline_graphql", "src/nextlinegraphql"]
 
 
 [tool.pytest]
@@ -70,15 +70,16 @@ addopts = ["--doctest-modules"]
 # doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE",]
 doctest_optionflags = ["ELLIPSIS"]
 filterwarnings = ["ignore::hypothesis.errors.NonInteractiveExampleWarning"]
+norecursedirs = [".hypothesis", "src/nextlinegraphql"]
 log_cli = false
 log_cli_level = "INFO"
 
 [tool.coverage.run]
 branch = true
-source = ["nextlinegraphql", "tests"]
+source = ["nextlinegraphql", "nextline_graphql", "tests"]
 concurrency = ["multiprocessing"]
 omit = [
-  "nextlinegraphql/plugins/ctrl/example_script/*",
+  "src/nextline_graphql/plugins/ctrl/example_script/*",
   "venv/*",
   "*/site-packages/*",
 ]
@@ -130,6 +131,7 @@ exclude = '''(?x)(
     example_script/.*\.py$
 )'''
 disallow_untyped_defs = true
+files = ["src", "tests"]
 
 [[tool.mypy.overrides]]
 module = [
