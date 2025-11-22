@@ -15,7 +15,7 @@ pytest-cov==4.1.0
 pytest-timeout==2.2.0
 pytest==9.0.0
 hypothesis==6.130.0
-syrupy==4.7.0
+syrupy==5.0.0
 
 # In the future, `pip` may install minimum versions from
 # `pyproject.toml` directly: https://github.com/pypa/pip/issues/8085

@@ -45,7 +45,7 @@ tests = [
   "pytest-timeout>=2.2",
   "pytest>=9.0",
   "hypothesis>=6.130",
-  "syrupy>=4.7",
+  "syrupy>=5.0",
 ]
 type-check = ["mypy"]
 lint = ["ruff"]
