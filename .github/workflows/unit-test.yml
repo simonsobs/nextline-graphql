@@ -9,24 +9,26 @@ on:
       - main
 
 concurrency:
-  group: unit-test-${{ github.head_ref }}
+  group: unit-test-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   PYTHONUNBUFFERED: "1"
   FORCE_COLOR: "1"
+  PIP_PROGRESS_BAR: "off"
 
 jobs:
   run:
-    name: Python ${{ matrix.python-version }} on Linux
+    name: Py${{ matrix.python-version }} (${{ matrix.deps }} deps) on Linux
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        deps: [default, latest, min]
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
@@ -34,10 +36,28 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install packages
+        if: matrix.deps == 'default'
         run: |
           pip install --upgrade pip
-          pip install -e '.[tests]'
-          pip list
+          pip install -e . --group tests
+
+      - name: Install packages (latest)
+        # Latest versions of dependencies monitored by Dependabot
+        if: matrix.deps == 'latest'
+        run: |
+          pip install --upgrade pip
+          pip install -e .
+          pip install -r .github/deps/latest/requirements.txt
+
+      - name: Install packages (minimum)
+        # Oldest supported versions of dependencies in `pyproject.toml`
+        if: matrix.deps == 'min'
+        run: |
+          pip install -e .
+          pip install -r .github/deps/minimum/requirements.txt
+
+      - name: List installed packages
+        run: pip list
 
       - name: Run tests
         run: pytest -vv --cov --cov-report=xml
