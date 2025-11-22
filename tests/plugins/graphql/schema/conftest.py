@@ -1,7 +1,7 @@
 import pytest
 from strawberry import Schema
 
-from nextlinegraphql.plugins.graphql.schema import Query
+from nextline_graphql.plugins.graphql.schema import Query
 
 
 @pytest.fixture(scope='session')

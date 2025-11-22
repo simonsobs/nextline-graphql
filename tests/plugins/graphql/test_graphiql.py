@@ -1,4 +1,4 @@
-from nextlinegraphql.plugins.graphql.test import TestClient
+from nextline_graphql.plugins.graphql.test import TestClient
 
 
 async def test_one(client: TestClient) -> None:

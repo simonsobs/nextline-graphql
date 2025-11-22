@@ -3,13 +3,13 @@ from collections.abc import AsyncIterator
 
 import pytest
 
-from nextlinegraphql.factory import create_app_for_test
-from nextlinegraphql.plugins.ctrl.graphql import (
+from nextline_graphql.factory import create_app_for_test
+from nextline_graphql.plugins.ctrl.graphql import (
     MUTATE_RUN_AND_CONTINUE,
     QUERY_STATE,
     SUBSCRIBE_STATE,
 )
-from nextlinegraphql.plugins.graphql.test import TestClient, gql_request, gql_subscribe
+from nextline_graphql.plugins.graphql.test import TestClient, gql_request, gql_subscribe
 
 
 async def test_plugin(client: TestClient) -> None:

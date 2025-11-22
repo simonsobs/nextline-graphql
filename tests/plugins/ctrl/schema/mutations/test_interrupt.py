@@ -3,7 +3,7 @@ import asyncio
 from strawberry.types import ExecutionResult
 
 from nextline import Nextline
-from nextlinegraphql.plugins.ctrl.graphql import MUTATE_INTERRUPT
+from nextline_graphql.plugins.ctrl.graphql import MUTATE_INTERRUPT
 from tests.plugins.ctrl.schema.conftest import Schema
 
 SOURCE = '''

@@ -1,9 +1,9 @@
 from hypothesis import HealthCheck, given, settings
 from pytest import MonkeyPatch
 
+from nextline_graphql.factory import create_app_for_test
+from nextline_graphql.plugins.graphql import Plugin
 from nextline_test_utils.strategies import st_none_or
-from nextlinegraphql.factory import create_app_for_test
-from nextlinegraphql.plugins.graphql import Plugin
 from tests.app.cors.strategies import st_allow_origins
 
 

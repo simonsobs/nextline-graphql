@@ -3,8 +3,8 @@ from pathlib import Path
 from strawberry.types import ExecutionResult
 
 from nextline import Nextline
-from nextlinegraphql.plugins.ctrl import example_script as example_script_module
-from nextlinegraphql.plugins.ctrl.graphql import MUTATE_LOAD_EXAMPLE_SCRIPT
+from nextline_graphql.plugins.ctrl import example_script as example_script_module
+from nextline_graphql.plugins.ctrl.graphql import MUTATE_LOAD_EXAMPLE_SCRIPT
 from tests.plugins.ctrl.schema.conftest import Schema
 
 EXAMPLE_SCRIPT_PATH = Path(example_script_module.__file__).parent / 'script.py'

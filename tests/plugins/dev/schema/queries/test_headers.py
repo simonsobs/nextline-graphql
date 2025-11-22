@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from starlette.requests import Headers, Request
 
-from nextlinegraphql.plugins.dev.graphql import QUERY_HEADERS
+from nextline_graphql.plugins.dev.graphql import QUERY_HEADERS
 from tests.plugins.dev.schema.conftest import Schema
 
 

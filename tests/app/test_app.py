@@ -1,6 +1,5 @@
-from nextlinegraphql import create_app
-from nextlinegraphql.factory import create_app_for_test
-from nextlinegraphql.hook import spec
+from nextline_graphql import create_app
+from nextline_graphql.factory import create_app_for_test
 
 
 def test_app() -> None:

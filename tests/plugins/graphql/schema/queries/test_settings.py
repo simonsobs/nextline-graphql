@@ -3,7 +3,7 @@ import json
 from dynaconf import Dynaconf
 from strawberry.types import ExecutionResult
 
-from nextlinegraphql.plugins.graphql.graphql import QUERY_SETTINGS
+from nextline_graphql.plugins.graphql.graphql import QUERY_SETTINGS
 from tests.plugins.graphql.schema.conftest import Schema
 
 
