@@ -33,7 +33,7 @@ dependencies = [
   "async-asgi-testclient>=1.4",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = ["logging_tree", "uvicorn"]
 tests = [
   "nextline-test-utils>=0.1.2",
