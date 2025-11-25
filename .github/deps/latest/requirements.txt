@@ -1,7 +1,7 @@
 # Pinned latest versions of dependencies.
 # Used in GitHub Actions for testing compatibility.
 # Monitored by Dependabot.
-nextline==0.7.21
+nextline==0.8.0
 apluggy==1.1.2
 dynaconf==3.2.11
 starlette==0.48.0
