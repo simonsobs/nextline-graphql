@@ -4,7 +4,7 @@
 nextline==0.8.0
 apluggy==1.1.2
 dynaconf==3.2.11
-starlette==0.48.0
+starlette==0.50.0
 strawberry-graphql==0.284.1
 websockets==15.0.1
 rich==14.2.0
